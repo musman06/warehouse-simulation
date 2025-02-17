@@ -126,7 +126,7 @@ const loader = new GLTFLoader();
 
 // Warehouse Model Loading
 loader.load(
-  "/src/assets/warehouse/scene.gltf",
+  "/assets/warehouse/scene.gltf",
   (gltf) => {
     const model = gltf.scene;
     model.castShadow = true;
@@ -168,7 +168,7 @@ loader.load(
 
 // Robot Model Loading
 loader.load(
-  "/src/assets/robot/scene.gltf",
+  "/assets/robot/scene.gltf",
   (gltf) => {
     const model = gltf.scene;
     model.castShadow = true;
