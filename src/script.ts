@@ -6,6 +6,12 @@ import gsap from "gsap";
 // Animation Mixer
 let mixer: THREE.AnimationMixer;
 
+// Texture Loader
+const textureLoader = new THREE.TextureLoader();
+const robotTexture = textureLoader.load(
+  "/assets/robot/textures/lambert6_diffuse.jpeg"
+);
+
 // Viewport Sizes
 const sizes = {
   width: window.innerWidth,
@@ -24,16 +30,18 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 5);
 scene.add(ambientLight);
 
 // Add a directional light (acts like sunlight)
-const directionalLight = new THREE.DirectionalLight(0xffffff, 15); // Color: White, Intensity: 4
-directionalLight.position.set(0, 5, 0); // Position above the scene
+const directionalLight = new THREE.DirectionalLight("white", 12);
+directionalLight.position.set(0, 7.5, 0);
+directionalLight.castShadow = true;
 scene.add(directionalLight);
 
 // Add a point light (acts like a lamp)
-const pointLight = new THREE.PointLight("red", 200, 0); // Color: White, Intensity: 10, Distance: 50
-pointLight.position.set(0, -2.25, 0); // Adjust position as needed
+const pointLight = new THREE.PointLight("red", 200, 0);
+pointLight.position.set(0, 4, 0);
+pointLight.castShadow = true;
 scene.add(pointLight);
 
-const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.5);
+// const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.5);
 // scene.add(pointLightHelper);
 
 // Geometry
@@ -76,6 +84,7 @@ const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
 });
 
+renderer.shadowMap.enabled = true;
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
 renderer.render(scene, camera);
@@ -120,10 +129,14 @@ loader.load(
   "/src/assets/warehouse/scene.gltf",
   (gltf) => {
     const model = gltf.scene;
+    model.castShadow = true;
+    model.receiveShadow = true;
     scene.add(model);
+    console.log("Model: ", model);
 
     // Compute the bounding box
     const boundingBox = new THREE.Box3().setFromObject(model);
+    // console.log("Bounding Box: ", boundingBox);
 
     // Get size (width, height, depth)
     const size = new THREE.Vector3();
@@ -139,14 +152,14 @@ loader.load(
     model.position.sub(center);
 
     // Move the model slightly above the ground
-    // model.position.y += size.y / 2;
+    model.position.y += size.y / 2;
 
     // Adjust camera position to fit model
-    camera.position.set(0, 8, 30);
+    camera.position.set(0, 10.5, 30);
     // camera.lookAt(0, 0, 0);
   },
   (xhr) => {
-    console.log(`Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`);
+    // console.log(`Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`);
   },
   (error) => {
     console.error("Error loading model:", error);
@@ -158,7 +171,10 @@ loader.load(
   "/src/assets/robot/scene.gltf",
   (gltf) => {
     const model = gltf.scene;
+    model.castShadow = true;
+    model.receiveShadow = true;
     scene.add(model);
+    // console.log("Model: ", model);
 
     // Initialize Animation Mixer
     mixer = new THREE.AnimationMixer(model);
@@ -168,35 +184,76 @@ loader.load(
       const action = mixer.clipAction(clip);
       action.play(); // Start playing the animation
     });
-    console.log(gltf);
-    model.position.set(-7, -2, 22);
+    // console.log(gltf);
+    model.position.set(-7, 0.52, 22);
     model.scale.set(0.06, 0.06, 0.06);
+
+    // Updating texture of all the child objects
+    model.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        if (Array.isArray(child.material)) {
+          child.material.forEach((material) => {
+            if (material instanceof THREE.MeshStandardMaterial) {
+              material.map = robotTexture;
+              material.needsUpdate = true;
+              material.roughness = 0.5;
+              material.metalness = 0.5;
+            }
+          });
+        } else {
+          if (child.material instanceof THREE.MeshStandardMaterial) {
+            child.material.map = robotTexture;
+            child.material.needsUpdate = true;
+            child.material.roughness = 0.5;
+            child.material.metalness = 0.5;
+          }
+        }
+      }
+    });
 
     if (model) {
       timeline
-        .to(model.position, { z: 0, duration: 10, ease: "power2.inOut" })
+        .to(model.position, { z: 0, duration: 30, ease: "none" })
         .to(model.rotation, {
           y: Math.PI / 2,
-          duration: 2,
-          ease: "power2.inOut",
+          duration: 5,
+          ease: "none",
+          onStart: () => {
+            if (mixer) mixer.timeScale = 0;
+          },
+          onComplete: () => {
+            if (mixer) mixer.timeScale = 1;
+          },
         })
-        .to(model.position, { x: 0, duration: 5, ease: "power2.inOut" })
+        .to(model.position, { x: 0, duration: 15, ease: "none" })
         .to(model.rotation, {
           y: Math.PI,
-          duration: 2,
-          ease: "power2.inOut",
+          duration: 5,
+          ease: "none",
+          onStart: () => {
+            if (mixer) mixer.timeScale = 0;
+          },
+          onComplete: () => {
+            if (mixer) mixer.timeScale = 1;
+          },
         })
-        .to(model.position, { z: -22, duration: 10, ease: "power2.inOut" })
+        .to(model.position, { z: -22, duration: 30, ease: "none" })
         .to(model.rotation, {
           y: Math.PI / 2,
-          duration: 2,
-          ease: "power2.inOut",
+          duration: 5,
+          ease: "none",
+          onStart: () => {
+            if (mixer) mixer.timeScale = 0;
+          },
+          onComplete: () => {
+            if (mixer) mixer.timeScale = 1;
+          },
         })
-        .to(model.position, { x: 7, duration: 5, ease: "power2.inOut" });
+        .to(model.position, { x: 7, duration: 15, ease: "none" });
     }
   },
   (xhr) => {
-    console.log(`Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`);
+    // console.log(`Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`);
   },
   (error) => {
     console.error("Error loading model:", error);
