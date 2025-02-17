@@ -159,7 +159,7 @@ loader.load(
     // camera.lookAt(0, 0, 0);
   },
   (xhr) => {
-    // console.log(`Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`);
+    console.log(`Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`);
   },
   (error) => {
     console.error("Error loading model:", error);
@@ -253,7 +253,7 @@ loader.load(
     }
   },
   (xhr) => {
-    // console.log(`Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`);
+    console.log(`Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`);
   },
   (error) => {
     console.error("Error loading model:", error);
