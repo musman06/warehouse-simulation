@@ -5,13 +5,9 @@
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
-    "baseUrl": "./src",
-    "paths": {
-      "*": ["./*"]
-    },
 
     /* Bundler mode */
-    "moduleResolution": "node10",
+    "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",

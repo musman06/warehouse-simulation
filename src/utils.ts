@@ -48,7 +48,6 @@ function stopModelAnimation(model: Model3D, collisionFlag: boolean) {
       collisionFlag = false;
       // console.log(`${model.name} animation resumed`);
     }, 5000);
-    collisionFlag = false;
   }
 }
 
