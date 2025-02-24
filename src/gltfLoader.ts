@@ -207,62 +207,68 @@ gltfLoader.load(
 );
 
 // Robot Model 3 Loading
-gltfLoader.load(
-  "/assets/robot/scene.gltf",
-  (gltf) => {
-    robotModel3 = new Model3D("Robot Model 3", gltf.scene, 2, 5);
-    robotModel3.model.castShadow = true;
-    robotModel3.model.receiveShadow = true;
-    robotModel3.model.position.set(10, 0.52, 22);
-    robotModel3.model.scale.set(0.06, 0.06, 0.06);
+setTimeout(() => {
+  gltfLoader.load(
+    "/assets/robot/scene.gltf",
+    (gltf) => {
+      robotModel3 = new Model3D("Robot Model 3", gltf.scene, 2, 5);
+      robotModel3.model.castShadow = true;
+      robotModel3.model.receiveShadow = true;
+      robotModel3.model.position.set(10, 0.52, 22);
+      robotModel3.model.scale.set(0.06, 0.06, 0.06);
 
-    // Compute the bounding box
-    robotModel3.boundingBox = new THREE.Box3().setFromObject(robotModel3.model);
+      // Compute the bounding box
+      robotModel3.boundingBox = new THREE.Box3().setFromObject(
+        robotModel3.model
+      );
 
-    // Play all available animations
-    gltf.animations.forEach((clip) => {
-      const action = robotModel3?.mixer.clipAction(clip);
-      action!.play();
-    });
+      // Play all available animations
+      gltf.animations.forEach((clip) => {
+        const action = robotModel3?.mixer.clipAction(clip);
+        action!.play();
+      });
 
-    // Updating texture of all the child objects
-    robotModel3.model.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-        if (Array.isArray(child.material)) {
-          child.material.forEach((material) => {
-            if (material instanceof THREE.MeshStandardMaterial) {
-              material.map = robotTexture;
-              material.needsUpdate = true;
+      // Updating texture of all the child objects
+      robotModel3.model.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+          if (Array.isArray(child.material)) {
+            child.material.forEach((material) => {
+              if (material instanceof THREE.MeshStandardMaterial) {
+                material.map = robotTexture;
+                material.needsUpdate = true;
+              }
+            });
+          } else {
+            if (child.material instanceof THREE.MeshStandardMaterial) {
+              child.material.map = robotTexture;
+              child.material.needsUpdate = true;
             }
-          });
-        } else {
-          if (child.material instanceof THREE.MeshStandardMaterial) {
-            child.material.map = robotTexture;
-            child.material.needsUpdate = true;
           }
         }
+      });
+
+      if (robotModel3) {
+        robotCustomAnimation3(robotModel3, 5);
       }
-    });
-
-    if (robotModel3) {
-      robotCustomAnimation3(robotModel3, 5);
+    },
+    (xhr) => {
+      console.log(
+        `Robot3 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
+      );
+    },
+    (error) => {
+      console.error("Error loading model:", error);
     }
-  },
-  (xhr) => {
-    console.log(
-      `Robot3 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
-    );
-  },
-  (error) => {
-    console.error("Error loading model:", error);
-  }
-);
+  );
+}, 2000);
 
+// Fork Lift Model 1
 gltfLoader.load(
   "/assets/forklift/scene.gltf",
   (gltf) => {
+    // Initializing & setting basic properties
     forkliftModel1 = new Model3D("Fork Lift Model 1", gltf.scene, 1, 1);
     forkliftModel1.model.castShadow = true;
     forkliftModel1.model.receiveShadow = true;
@@ -270,12 +276,13 @@ gltfLoader.load(
     forkliftModel1.model.scale.set(9, 9, 9);
     forkliftModel1.model.rotateY(-Math.PI / 2);
 
-    // Compute the bounding box
+    // Computing the bounding box
     forkliftModel1.boundingBox = new THREE.Box3().setFromObject(
       forkliftModel1.model
     );
     console.log(forkliftModel1.boundingBox);
 
+    // Adding shadows to child meshes of fork lift
     forkliftModel1.model.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
@@ -297,6 +304,7 @@ gltfLoader.load(
   }
 );
 
+// Fork Lift Model 2
 setTimeout(() => {
   gltfLoader.load(
     "/assets/forklift/scene.gltf",
@@ -333,7 +341,7 @@ setTimeout(() => {
       console.error("Error loading model:", error);
     }
   );
-}, 5000);
+}, 1000);
 
 export {
   warehouseModel,

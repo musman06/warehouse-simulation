@@ -11,6 +11,35 @@ import {
 import { line1, line2, line3, line4, line5 } from "./LineAnimation";
 import { handleCollisions } from "./Utils";
 import { Model3D } from "./Model3DClass";
+import maplibregl from "maplibre-gl";
+
+// Initialize the map
+const map = new maplibregl.Map({
+  container: "map", // ID of the HTML div
+  style: "https://demotiles.maplibre.org/style.json", // Open-source map style
+  center: [0, 0], // Longitude, Latitude
+  zoom: 16, // Zoom level
+  pitch: 60, // Tilt to make it feel 3D
+  bearing: 0,
+});
+
+// Add navigation controls
+map.addControl(new maplibregl.NavigationControl());
+
+map.on("render", () => {
+  const { lng, lat } = map.getCenter();
+  const altitude = 50; // Adjust altitude to fit the scene
+
+  // Convert MapLibre lat/lon to Three.js world coordinates
+  const mercator = maplibregl.MercatorCoordinate.fromLngLat(
+    { lng, lat },
+    altitude
+  );
+  camera.position.set(mercator.x, mercator.y, altitude);
+  camera.lookAt(mercator.x, mercator.y, 0); // Look at the ground
+
+  renderer.render(scene, camera);
+});
 
 // Function to check and add models once they are loaded
 const checkAndAddModels = () => {
@@ -135,7 +164,7 @@ scene.add(pointLight3);
 const camera = new THREE.PerspectiveCamera(
   75,
   sizes.width / sizes.height,
-  1,
+  0.1,
   1000
 );
 camera.position.set(0, 10.5, 30);
@@ -147,12 +176,15 @@ controls.enableDamping = true;
 // Renderer
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
+  alpha: true, // Enable transparency
+  antialias: true,
 });
 
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
+document.getElementById("map")!.appendChild(renderer.domElement);
 renderer.render(scene, camera);
 
 // Animation Loop
