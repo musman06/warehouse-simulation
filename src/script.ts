@@ -7,36 +7,35 @@ import {
   robotModel3,
   forkliftModel1,
   forkliftModel2,
-  mixer1,
-  mixer2,
-  mixer3,
-} from "./gltfLoader";
-import { line1, line2, line3, line4, line5 } from "./lineAnimation";
+} from "./GLTFLoader";
+import { line1, line2, line3, line4, line5 } from "./LineAnimation";
+import { handleCollisions } from "./Utils";
+import { Model3D } from "./Model3DClass";
 
 // Function to check and add models once they are loaded
 const checkAndAddModels = () => {
-  if (warehouseModel) {
-    scene.add(warehouseModel);
+  if (warehouseModel?.model) {
+    scene.add(warehouseModel.model);
   }
 
-  if (robotModel1) {
-    scene.add(robotModel1);
+  if (robotModel1?.model) {
+    scene.add(robotModel1!.model);
   }
 
-  if (robotModel2) {
-    scene.add(robotModel2);
+  if (robotModel2?.model) {
+    scene.add(robotModel2.model);
   }
 
-  if (robotModel3) {
-    scene.add(robotModel3);
+  if (robotModel3?.model) {
+    scene.add(robotModel3!.model);
   }
 
-  if (forkliftModel1) {
-    scene.add(forkliftModel1);
+  if (forkliftModel1?.model) {
+    scene.add(forkliftModel1!.model);
   }
 
-  if (forkliftModel2) {
-    scene.add(forkliftModel2);
+  if (forkliftModel2?.model) {
+    scene.add(forkliftModel2!.model);
   }
 
   if (line1) {
@@ -60,16 +59,19 @@ const checkAndAddModels = () => {
 };
 
 // Keep checking every 0.5s until models are available
+let rows: number;
+let columns: number;
+const cellSize: number = 5;
 const waitForModels = setInterval(() => {
   checkAndAddModels();
 
   if (
-    warehouseModel &&
-    robotModel1 &&
-    robotModel2 &&
-    robotModel3 &&
-    forkliftModel1 &&
-    forkliftModel2 &&
+    warehouseModel?.model &&
+    robotModel1?.model &&
+    robotModel2?.model &&
+    robotModel3?.model &&
+    forkliftModel1?.model &&
+    forkliftModel2?.model &&
     line1 &&
     line2 &&
     line3 &&
@@ -77,6 +79,14 @@ const waitForModels = setInterval(() => {
     line5
   ) {
     clearInterval(waitForModels);
+    startAnimationLoop();
+
+    // Calculating Rows & Columns Based On Warehouse Floor
+    const size = new THREE.Vector3();
+    warehouseModel?.boundingBox.getSize(size);
+    rows = Math.floor(size.x / cellSize) + 1;
+    columns = Math.floor(size.z / cellSize) + 1;
+    console.log(rows, columns);
   }
 }, 500);
 
@@ -98,13 +108,15 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 5);
 scene.add(ambientLight);
 
 // // Directional Light
-const directionalLight = new THREE.DirectionalLight("white", 12);
-directionalLight.position.set(15, 12, 30);
+const directionalLight = new THREE.DirectionalLight("white", 1);
+directionalLight.position.set(45, 15, 45);
 directionalLight.castShadow = true;
+directionalLight.shadow.mapSize.x = 1024;
+directionalLight.shadow.mapSize.y = 1024;
 scene.add(directionalLight);
 
 // // Point Light
-const pointLight1 = new THREE.PointLight("red", 100, 0);
+const pointLight1 = new THREE.PointLight("red", 400, 0);
 pointLight1.position.set(0, 7, 17.25);
 pointLight1.castShadow = true;
 scene.add(pointLight1);
@@ -114,7 +126,7 @@ pointLight2.position.set(0, 7, 0);
 pointLight2.castShadow = true;
 scene.add(pointLight2);
 
-const pointLight3 = new THREE.PointLight("red", 100, 0);
+const pointLight3 = new THREE.PointLight("red", 400, 0);
 pointLight3.position.set(0, 7, -17.25);
 pointLight3.castShadow = true;
 scene.add(pointLight3);
@@ -138,6 +150,7 @@ const renderer = new THREE.WebGLRenderer({
 });
 
 renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
 renderer.render(scene, camera);
@@ -149,20 +162,41 @@ const tick = () => {
   // Update controls
   controls.update();
 
+  const delta = clock.getDelta();
+
+  // Compute the bounding boxes of all the models
+  robotModel1!.boundingBox = new THREE.Box3().setFromObject(robotModel1!.model);
+  robotModel2!.boundingBox = new THREE.Box3().setFromObject(robotModel2!.model);
+  robotModel3!.boundingBox = new THREE.Box3().setFromObject(robotModel3!.model);
+  forkliftModel1!.boundingBox = new THREE.Box3().setFromObject(
+    forkliftModel1!.model
+  );
+  forkliftModel2!.boundingBox = new THREE.Box3().setFromObject(
+    forkliftModel2!.model
+  );
+
+  // Calls the Function for Collision Detection
+  const modelsArray: Model3D[] = [
+    robotModel1!,
+    robotModel2!,
+    robotModel3!,
+    forkliftModel1!,
+    forkliftModel2!,
+  ];
+
+  handleCollisions(modelsArray, cellSize);
+
   // Update animation mixer (if available)
-  if (mixer1) {
-    const delta = clock.getDelta();
-    mixer1.update(delta);
+  if (robotModel1!.mixer) {
+    robotModel1!.mixer.update(delta);
   }
 
-  if (mixer2) {
-    const delta = clock.getDelta();
-    mixer2.update(delta);
+  if (robotModel2!.mixer) {
+    robotModel2!.mixer.update(delta);
   }
 
-  if (mixer3) {
-    const delta = clock.getDelta();
-    mixer3.update(delta);
+  if (robotModel3!.mixer) {
+    robotModel3!.mixer.update(delta);
   }
 
   renderer.render(scene, camera);
@@ -170,7 +204,9 @@ const tick = () => {
   window.requestAnimationFrame(tick);
 };
 
-tick();
+function startAnimationLoop() {
+  tick();
+}
 
 // Viewport Resize
 window.addEventListener("resize", () => {

@@ -1,27 +1,28 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
-import { robotTexture } from "./textureLoader";
+import { robotTexture } from "./TextureLoader";
 import {
   robotCustomAnimation1,
   robotCustomAnimation2,
   robotCustomAnimation3,
   forkLiftCustomAnimation1,
   forkLiftCustomAnimation2,
-} from "./robotGSAPAnimation";
-import { degreesToRadians } from "./utils";
+} from "./RobotGSAPAnimation";
+import { degreesToRadians } from "./Utils";
+import { Model3D } from "./Model3DClass";
 
 // Animation Mixer
-let mixer1: THREE.AnimationMixer;
-let mixer2: THREE.AnimationMixer;
-let mixer3: THREE.AnimationMixer;
+// let mixer1: THREE.AnimationMixer;
+// let mixer2: THREE.AnimationMixer;
+// let mixer3: THREE.AnimationMixer;
 
 // 3D Models Placeholder
-let warehouseModel: THREE.Group | null = null;
-let robotModel1: THREE.Group | null = null;
-let robotModel2: THREE.Group | null = null;
-let robotModel3: THREE.Group | null = null;
-let forkliftModel1: THREE.Group | null = null;
-let forkliftModel2: THREE.Group | null = null;
+let warehouseModel: Model3D | null = null;
+let robotModel1: Model3D | null = null;
+let robotModel2: Model3D | null = null;
+let robotModel3: Model3D | null = null;
+let forkliftModel1: Model3D | null = null;
+let forkliftModel2: Model3D | null = null;
 
 // 3D Model Loader
 const gltfLoader = new GLTFLoader();
@@ -30,20 +31,24 @@ const gltfLoader = new GLTFLoader();
 gltfLoader.load(
   "/assets/warehouse/scene.gltf",
   (gltf) => {
-    warehouseModel = gltf.scene;
-    warehouseModel.castShadow = true;
-    warehouseModel.receiveShadow = true;
-    warehouseModel.scale.set(1.5, 1.5, 1);
-    console.log(warehouseModel);
+    // const mixer: THREE.AnimationMixer | null = new THREE.AnimationMixer(
+    //   gltf.scene
+    // );
+    warehouseModel = new Model3D("Warehouse Model", gltf.scene, 0, 0);
+    warehouseModel.model.castShadow = true;
+    warehouseModel.model.receiveShadow = true;
+    warehouseModel.model.scale.set(1.5, 1.5, 1);
+    // console.log(warehouseModel);
 
     // Compute the bounding box
-    const boundingBox = new THREE.Box3().setFromObject(warehouseModel);
-    // console.log(boundingBox);
+    const boundingBox = new THREE.Box3().setFromObject(warehouseModel.model);
+    warehouseModel.boundingBox = boundingBox;
+    // console.log(warehouseModel);
 
     // Get size (width, height, depth)
     const size = new THREE.Vector3();
     boundingBox.getSize(size);
-    // console.log(size);
+    console.log(size);
 
     // Get center position
     const center = new THREE.Vector3();
@@ -51,25 +56,31 @@ gltfLoader.load(
     // console.log(center);
 
     // Reposition the model so that it's centered at (0, 0, 0)
-    warehouseModel.position.sub(center);
+    warehouseModel.model.position.sub(center);
 
     // Move the model slightly above the ground
-    warehouseModel.position.y += size.y / 2;
+    warehouseModel.model.position.y += size.y / 2;
 
-    warehouseModel.traverse((child) => {
+    warehouseModel.model.traverse((child) => {
       if (child instanceof THREE.Mesh) {
+        console.log(child);
         child.castShadow = true;
         child.receiveShadow = true;
         if (Array.isArray(child.material)) {
           child.material.forEach((material) => {
             if (material instanceof THREE.MeshStandardMaterial) {
-              material.map = robotTexture;
+              // material.map = robotTexture;
+              if (child.name === "NurbsPath005_Metal_0")
+                material.color = new THREE.Color("blue");
               material.needsUpdate = true;
             }
           });
         } else {
           if (child.material instanceof THREE.MeshStandardMaterial) {
-            child.material.map = robotTexture;
+            // child.material.map = robotTexture;
+            if (child.name === "NurbsPath005_Metal_0")
+              child.material.color = new THREE.Color("beige");
+
             child.material.needsUpdate = true;
           }
         }
@@ -90,23 +101,24 @@ gltfLoader.load(
 gltfLoader.load(
   "/assets/robot/scene.gltf",
   (gltf) => {
-    robotModel1 = gltf.scene;
-    robotModel1.castShadow = true;
-    robotModel1.receiveShadow = true;
-    robotModel1.position.set(-7, 0.5, 22);
-    robotModel1.scale.set(0.06, 0.06, 0.06);
+    robotModel1 = new Model3D("Robot Model 1", gltf.scene, 2, 3);
+    robotModel1.model.castShadow = true;
+    robotModel1.model.receiveShadow = true;
+    robotModel1.model.position.set(-7, 0.5, 22);
+    robotModel1.model.scale.set(0.06, 0.06, 0.06);
 
-    // Initialize Animation Mixer
-    mixer1 = new THREE.AnimationMixer(robotModel1);
+    // Compute the bounding box
+    robotModel1.boundingBox = new THREE.Box3().setFromObject(robotModel1.model);
+    console.log(robotModel1.boundingBox);
 
     // Play all available animations
     gltf.animations.forEach((clip) => {
-      const action = mixer1.clipAction(clip);
-      action.play();
+      const action = robotModel1?.mixer.clipAction(clip);
+      action!.play();
     });
 
     // Updating texture of all the child objects
-    robotModel1.traverse((child) => {
+    robotModel1.model.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
@@ -126,8 +138,8 @@ gltfLoader.load(
       }
     });
 
-    if (robotModel1) {
-      robotCustomAnimation1(robotModel1, mixer1);
+    if (robotModel1.model) {
+      robotCustomAnimation1(robotModel1, 5);
     }
   },
   (xhr) => {
@@ -144,23 +156,23 @@ gltfLoader.load(
 gltfLoader.load(
   "/assets/robot/scene.gltf",
   (gltf) => {
-    robotModel2 = gltf.scene;
-    robotModel2.castShadow = true;
-    robotModel2.receiveShadow = true;
-    robotModel2.position.set(-11, 0.5, 22);
-    robotModel2.scale.set(0.06, 0.06, 0.06);
+    robotModel2 = new Model3D("Robot Model 2", gltf.scene, 2, 4);
+    robotModel2.model.castShadow = true;
+    robotModel2.model.receiveShadow = true;
+    robotModel2.model.position.set(-11, 0.5, 22);
+    robotModel2.model.scale.set(0.06, 0.06, 0.06);
 
-    // Initialize Animation Mixer
-    mixer2 = new THREE.AnimationMixer(robotModel2);
+    // Compute the bounding box
+    robotModel2.boundingBox = new THREE.Box3().setFromObject(robotModel2.model);
 
     // Play all available animations
     gltf.animations.forEach((clip) => {
-      const action = mixer2.clipAction(clip);
-      action.play();
+      const action = robotModel2?.mixer.clipAction(clip);
+      action!.play();
     });
 
     // Updating texture of all the child objects
-    robotModel2.traverse((child) => {
+    robotModel2.model.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
@@ -180,8 +192,8 @@ gltfLoader.load(
       }
     });
 
-    if (robotModel2) {
-      robotCustomAnimation2(robotModel2, mixer2);
+    if (robotModel2.model) {
+      robotCustomAnimation2(robotModel2, 5);
     }
   },
   (xhr) => {
@@ -198,23 +210,23 @@ gltfLoader.load(
 gltfLoader.load(
   "/assets/robot/scene.gltf",
   (gltf) => {
-    robotModel3 = gltf.scene;
-    robotModel3.castShadow = true;
-    robotModel3.receiveShadow = true;
-    robotModel3.position.set(10, 0.52, 22);
-    robotModel3.scale.set(0.06, 0.06, 0.06);
+    robotModel3 = new Model3D("Robot Model 3", gltf.scene, 2, 5);
+    robotModel3.model.castShadow = true;
+    robotModel3.model.receiveShadow = true;
+    robotModel3.model.position.set(10, 0.52, 22);
+    robotModel3.model.scale.set(0.06, 0.06, 0.06);
 
-    // Initialize Animation Mixer
-    mixer3 = new THREE.AnimationMixer(robotModel3);
+    // Compute the bounding box
+    robotModel3.boundingBox = new THREE.Box3().setFromObject(robotModel3.model);
 
     // Play all available animations
     gltf.animations.forEach((clip) => {
-      const action = mixer3.clipAction(clip);
-      action.play();
+      const action = robotModel3?.mixer.clipAction(clip);
+      action!.play();
     });
 
     // Updating texture of all the child objects
-    robotModel3.traverse((child) => {
+    robotModel3.model.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
@@ -235,7 +247,7 @@ gltfLoader.load(
     });
 
     if (robotModel3) {
-      robotCustomAnimation3(robotModel3, mixer3);
+      robotCustomAnimation3(robotModel3, 5);
     }
   },
   (xhr) => {
@@ -251,22 +263,28 @@ gltfLoader.load(
 gltfLoader.load(
   "/assets/forklift/scene.gltf",
   (gltf) => {
-    forkliftModel1 = gltf.scene;
-    forkliftModel1.castShadow = true;
-    forkliftModel1.receiveShadow = true;
-    forkliftModel1.position.set(0, 0.1, 20);
-    forkliftModel1.scale.set(9, 9, 9);
-    forkliftModel1.rotateY(-Math.PI / 2);
+    forkliftModel1 = new Model3D("Fork Lift Model 1", gltf.scene, 1, 1);
+    forkliftModel1.model.castShadow = true;
+    forkliftModel1.model.receiveShadow = true;
+    forkliftModel1.model.position.set(0, 0.1, 20);
+    forkliftModel1.model.scale.set(9, 9, 9);
+    forkliftModel1.model.rotateY(-Math.PI / 2);
 
-    forkliftModel1.traverse((child) => {
+    // Compute the bounding box
+    forkliftModel1.boundingBox = new THREE.Box3().setFromObject(
+      forkliftModel1.model
+    );
+    console.log(forkliftModel1.boundingBox);
+
+    forkliftModel1.model.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
       }
     });
 
-    if (forkliftModel1) {
-      forkLiftCustomAnimation1(forkliftModel1);
+    if (forkliftModel1.model) {
+      forkLiftCustomAnimation1(forkliftModel1, 5);
     }
   },
   (xhr) => {
@@ -283,22 +301,27 @@ setTimeout(() => {
   gltfLoader.load(
     "/assets/forklift/scene.gltf",
     (gltf) => {
-      forkliftModel2 = gltf.scene;
-      forkliftModel2.castShadow = true;
-      forkliftModel2.receiveShadow = true;
-      forkliftModel2.position.set(0, 0.1, 20);
-      forkliftModel2.scale.set(9, 9, 9);
-      forkliftModel2.rotateY(degreesToRadians(-120));
+      forkliftModel2 = new Model3D("Fork Lift Model 2", gltf.scene, 1, 2);
+      forkliftModel2.model.castShadow = true;
+      forkliftModel2.model.receiveShadow = true;
+      forkliftModel2.model.position.set(0, 0.1, 20);
+      forkliftModel2.model.scale.set(9, 9, 9);
+      forkliftModel2.model.rotateY(degreesToRadians(-120));
 
-      forkliftModel2.traverse((child) => {
+      // Compute the bounding box
+      forkliftModel2.boundingBox = new THREE.Box3().setFromObject(
+        forkliftModel2.model
+      );
+
+      forkliftModel2.model.traverse((child) => {
         if (child instanceof THREE.Mesh) {
           child.castShadow = true;
           child.receiveShadow = true;
         }
       });
 
-      if (forkliftModel2) {
-        forkLiftCustomAnimation2(forkliftModel2);
+      if (forkliftModel2.model) {
+        forkLiftCustomAnimation2(forkliftModel2, 5);
       }
     },
     (xhr) => {
@@ -319,7 +342,4 @@ export {
   robotModel3,
   forkliftModel1,
   forkliftModel2,
-  mixer1,
-  mixer2,
-  mixer3,
 };
