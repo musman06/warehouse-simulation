@@ -19,7 +19,7 @@ function boundingBoxFlooring(coordinate: number, cellSize: number) {
 }
 
 // Function to stop model animation for 2.5 seconds
-function stopModelAnimation(model: Model3D, collisionFlag: boolean) {
+function stopModelAnimation(model: Model3D, collisionState: { flag: boolean }) {
   if (model.mixer) {
     model.mixer.timeScale = 0;
     model.name === "Robot Model 1"
@@ -45,7 +45,7 @@ function stopModelAnimation(model: Model3D, collisionFlag: boolean) {
       !timeline3.isActive() ? timeline3.resume() : null;
       !timeline4.isActive() ? timeline4.resume() : null;
       !timeline5.isActive() ? timeline5.resume() : null;
-      collisionFlag = false;
+      collisionState.flag = true;
       // console.log(`${model.name} animation resumed`);
     }, 5000);
   }
@@ -55,22 +55,22 @@ function stopModelAnimation(model: Model3D, collisionFlag: boolean) {
 function resolveCollision(
   model1: Model3D,
   model2: Model3D,
-  collisionFlag: boolean
+  collisionState: { flag: boolean }
 ) {
   // Checking Priorities
   if (model1.modelTypePriority < model2.modelPriority) {
     console.log("Called from here 1", model1, model2);
-    stopModelAnimation(model2, collisionFlag);
+    stopModelAnimation(model2, collisionState);
   } else if (model2.modelTypePriority < model1.modelPriority) {
     console.log("Called from here 2", model1, model2);
-    stopModelAnimation(model1, collisionFlag);
+    stopModelAnimation(model1, collisionState);
   } else if (model1.modelTypePriority === model2.modelTypePriority) {
     if (model1.modelPriority < model2.modelPriority) {
       console.log("Called from here 3", model1, model2);
-      stopModelAnimation(model2, collisionFlag);
+      stopModelAnimation(model2, collisionState);
     } else {
       console.log("Called from here 4", model1, model2);
-      stopModelAnimation(model1, collisionFlag);
+      stopModelAnimation(model1, collisionState);
     }
   }
 }
@@ -78,9 +78,9 @@ function resolveCollision(
 // Checking For Collions Between Models
 function checkForCollisions(modelsArray: Model3D[]) {
   for (const model of modelsArray) {
-    let collisionFlag = false;
+    let collisionState = { flag: false };
     for (let i = 0; i < modelsArray.length; i++) {
-      collisionFlag = false;
+      collisionState.flag = false;
       if (model.name === modelsArray[i].name) continue;
       if (
         (model.occupiedCells.nextCell.x ===
@@ -97,9 +97,9 @@ function checkForCollisions(modelsArray: Model3D[]) {
             modelsArray[i].occupiedCells.nextCell.z)
       ) {
         // console.log("I have been called");
-        collisionFlag = true;
+        collisionState.flag = false;
 
-        resolveCollision(model, modelsArray[i], collisionFlag);
+        resolveCollision(model, modelsArray[i], collisionState);
       }
     }
   }
