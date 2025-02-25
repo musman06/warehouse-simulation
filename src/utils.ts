@@ -1,12 +1,12 @@
 import * as THREE from "three";
-import { Model3D } from "./Model3DClass";
+import { Model3D } from "./model3DClass";
 import {
   timeline1,
   timeline2,
   timeline3,
   timeline4,
   timeline5,
-} from "./RobotGSAPAnimation";
+} from "./robotgsapanimation";
 
 // Degrees To Radians function
 function degreesToRadians(degrees: number): number {

@@ -1,15 +1,15 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
-import { robotTexture } from "./TextureLoader";
+import { robotTexture } from "./textureloader";
 import {
   robotCustomAnimation1,
   robotCustomAnimation2,
   robotCustomAnimation3,
   forkLiftCustomAnimation1,
   forkLiftCustomAnimation2,
-} from "./RobotGSAPAnimation";
-import { degreesToRadians } from "./Utils";
-import { Model3D } from "./Model3DClass";
+} from "./robotgsapanimation";
+import { degreesToRadians } from "./utils";
+import { Model3D } from "./model3DClass";
 
 // Animation Mixer
 // let mixer1: THREE.AnimationMixer;

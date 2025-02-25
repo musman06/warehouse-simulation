@@ -7,10 +7,10 @@ import {
   robotModel3,
   forkliftModel1,
   forkliftModel2,
-} from "./GLTFLoader";
-import { line1, line2, line3, line4, line5 } from "./LineAnimation";
-import { handleCollisions } from "./Utils";
-import { Model3D } from "./Model3DClass";
+} from "./gltfloader";
+import { line1, line2, line3, line4, line5 } from "./lineanimation";
+import { handleCollisions } from "./utils";
+import { Model3D } from "./model3DClass";
 import maplibregl from "maplibre-gl";
 
 // Initialize the map

@@ -1,7 +1,7 @@
 import * as THREE from "three";
-import { degreesToRadians, boundingBoxFlooring } from "./Utils";
+import { degreesToRadians, boundingBoxFlooring } from "./utils";
 import gsap from "gsap";
-import { Model3D } from "./Model3DClass";
+import { Model3D } from "./model3DClass";
 
 // Geometry Animation
 const timeline1 = gsap.timeline({
