@@ -10,6 +10,7 @@ import {
 } from "./robotgsapanimation";
 import { degreesToRadians } from "./utils";
 import { Model3D } from "./model3DClass";
+import maplibregl from "maplibre-gl";
 
 // Animation Mixer
 // let mixer1: THREE.AnimationMixer;

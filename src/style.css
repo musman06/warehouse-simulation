@@ -8,14 +8,21 @@
   top: 0;
   left: 0;
   outline: none;
+  /* z-index: 2; */
+  /* pointer-events: none; / */
 }
 
 html,
 body {
   overflow: hidden;
+  height: 100%;
 }
 
 #map {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
+  /* z-index: 2; */
 }
