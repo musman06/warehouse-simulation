@@ -10,12 +10,6 @@ import {
 } from "./robotgsapanimation";
 import { degreesToRadians } from "./utils";
 import { Model3D } from "./model3DClass";
-import maplibregl from "maplibre-gl";
-
-// Animation Mixer
-// let mixer1: THREE.AnimationMixer;
-// let mixer2: THREE.AnimationMixer;
-// let mixer3: THREE.AnimationMixer;
 
 // 3D Models Placeholder
 let warehouseModel: Model3D | null = null;
@@ -28,23 +22,31 @@ let forkliftModel2: Model3D | null = null;
 // 3D Model Loader
 const gltfLoader = new GLTFLoader();
 
+// Group to hold all the models
+const warehouseGroup = new THREE.Group();
+let boundingBoxHelper: THREE.Box3Helper;
+
 // Warehouse Model Loading
 gltfLoader.load(
   "/assets/warehouse/scene.gltf",
   (gltf) => {
-    // const mixer: THREE.AnimationMixer | null = new THREE.AnimationMixer(
-    //   gltf.scene
-    // );
     warehouseModel = new Model3D("Warehouse Model", gltf.scene, 0, 0);
     warehouseModel.model.castShadow = true;
     warehouseModel.model.receiveShadow = true;
     warehouseModel.model.scale.set(1.5, 1.5, 1);
+    warehouseGroup.add(warehouseModel.model);
     // console.log(warehouseModel);
 
     // Compute the bounding box
     const boundingBox = new THREE.Box3().setFromObject(warehouseModel.model);
     warehouseModel.boundingBox = boundingBox;
-    // console.log(warehouseModel);
+
+    // Create a BoxHelper to visualize the bounding box
+    boundingBoxHelper = new THREE.Box3Helper(
+      boundingBox,
+      new THREE.Color(0xff0000)
+    ); // Red color
+    console.log(boundingBox);
 
     // Get size (width, height, depth)
     const size = new THREE.Vector3();
@@ -52,9 +54,9 @@ gltfLoader.load(
     console.log(size);
 
     // Get center position
-    const center = new THREE.Vector3();
+    const center: any = new THREE.Vector3();
     boundingBox.getCenter(center);
-    // console.log(center);
+    console.log("Center: ", center);
 
     // Reposition the model so that it's centered at (0, 0, 0)
     warehouseModel.model.position.sub(center);
@@ -107,6 +109,7 @@ gltfLoader.load(
     robotModel1.model.receiveShadow = true;
     robotModel1.model.position.set(-7, 0.5, 22);
     robotModel1.model.scale.set(0.06, 0.06, 0.06);
+    warehouseGroup.add(robotModel1.model);
 
     // Compute the bounding box
     robotModel1.boundingBox = new THREE.Box3().setFromObject(robotModel1.model);
@@ -162,6 +165,7 @@ gltfLoader.load(
     robotModel2.model.receiveShadow = true;
     robotModel2.model.position.set(-11, 0.5, 22);
     robotModel2.model.scale.set(0.06, 0.06, 0.06);
+    warehouseGroup.add(robotModel2.model);
 
     // Compute the bounding box
     robotModel2.boundingBox = new THREE.Box3().setFromObject(robotModel2.model);
@@ -217,6 +221,7 @@ setTimeout(() => {
       robotModel3.model.receiveShadow = true;
       robotModel3.model.position.set(10, 0.52, 22);
       robotModel3.model.scale.set(0.06, 0.06, 0.06);
+      warehouseGroup.add(robotModel3.model);
 
       // Compute the bounding box
       robotModel3.boundingBox = new THREE.Box3().setFromObject(
@@ -276,6 +281,7 @@ gltfLoader.load(
     forkliftModel1.model.position.set(0, 0.1, 20);
     forkliftModel1.model.scale.set(9, 9, 9);
     forkliftModel1.model.rotateY(-Math.PI / 2);
+    warehouseGroup.add(forkliftModel1.model);
 
     // Computing the bounding box
     forkliftModel1.boundingBox = new THREE.Box3().setFromObject(
@@ -316,6 +322,7 @@ setTimeout(() => {
       forkliftModel2.model.position.set(0, 0.1, 20);
       forkliftModel2.model.scale.set(9, 9, 9);
       forkliftModel2.model.rotateY(degreesToRadians(-120));
+      warehouseGroup.add(forkliftModel2.model);
 
       // Compute the bounding box
       forkliftModel2.boundingBox = new THREE.Box3().setFromObject(
@@ -345,6 +352,8 @@ setTimeout(() => {
 }, 1000);
 
 export {
+  boundingBoxHelper,
+  warehouseGroup,
   warehouseModel,
   robotModel1,
   robotModel2,
