@@ -216,7 +216,7 @@ const customLayer = {
       }
     });
   },
-  render(gl: WebGLRenderingContext, args: any) {
+  render(_gl: WebGLRenderingContext, args: any) {
     if (!this.renderer || !this.map) return;
 
     const m = new THREE.Matrix4().fromArray(
