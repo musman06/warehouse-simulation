@@ -7,4 +7,9 @@ const robotTexture = textureLoader.load(
 );
 robotTexture.colorSpace = THREE.SRGBColorSpace;
 
-export { robotTexture };
+const forkliftTexture = textureLoader.load(
+  "/assets/forkliftGLTF/textures/T_Forklift_A1_Albedo.1001.png"
+);
+forkliftTexture.colorSpace = THREE.SRGBColorSpace;
+
+export { robotTexture, forkliftTexture };

@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import {
-  boundingBoxHelper,
   warehouseGroup,
   warehouseModel,
   robotModel1,
@@ -16,7 +15,7 @@ import maplibregl from "maplibre-gl";
 
 // Converting 3D spherical earth coordinates into flat 2D map coordinates
 const modelRenderOrigin: [number, number] = [
-  -111.77057205058945, 32.86684249587934,
+  -111.77060200008945, 32.86684249587934,
 ];
 const modelRenderAltitude = 0;
 const modelRenderAsMercatorCoordinate =
@@ -99,9 +98,8 @@ const waitForModels = setInterval(() => {
     line4 &&
     line5
   ) {
-    warehouseGroup.scale.set(5, 5, 6.3);
+    warehouseGroup.scale.set(5, 5, 6.45);
     scene.add(warehouseGroup);
-    scene.add(boundingBoxHelper);
     clearInterval(waitForModels);
 
     // Calculating Rows & Columns Based On Warehouse Floor
@@ -121,9 +119,6 @@ const sizes = {
 
 // Scene
 const scene = new THREE.Scene();
-// warehouseGroup.scale.set(5, 5, 7);
-// scene.add(warehouseGroup);
-// scene.add(boundingBoxHelper);
 
 // Lights
 // // AmbientLight
@@ -159,7 +154,7 @@ const map = new maplibregl.Map({
   container: "map", // ID of the HTML div
   style:
     "https://api.maptiler.com/maps/basic-v2/style.json?key=7dFQzHIS1xcksIlnhtW4", // Open-source map style
-  center: [-111.77060960151154, 32.86688980631886], // Longitude, Latitude
+  center: [-111.77060200008945, 32.86688980631886], // Longitude, Latitude
   zoom: 17, // Zoom level
   maxZoom: 24,
   pitch: 30, // Vertical tilting of the map

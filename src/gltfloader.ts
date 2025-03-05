@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
-import { robotTexture } from "./textureloader";
+import { robotTexture, forkliftTexture } from "./textureloader";
 import {
   robotCustomAnimation1,
   robotCustomAnimation2,
@@ -272,15 +272,15 @@ setTimeout(() => {
 
 // Fork Lift Model 1
 gltfLoader.load(
-  "/assets/forklift/scene.gltf",
+  "/assets/forkliftGLTF/Forklift_A01_PR_V_NVD_01.gltf",
   (gltf) => {
     // Initializing & setting basic properties
     forkliftModel1 = new Model3D("Fork Lift Model 1", gltf.scene, 1, 1);
     forkliftModel1.model.castShadow = true;
     forkliftModel1.model.receiveShadow = true;
     forkliftModel1.model.position.set(0, 0.1, 20);
-    forkliftModel1.model.scale.set(9, 9, 9);
-    forkliftModel1.model.rotateY(-Math.PI / 2);
+    forkliftModel1.model.scale.set(0.01, 0.01, 0.01);
+    // forkliftModel1.model.rotateY(-Math.PI / 2);
     warehouseGroup.add(forkliftModel1.model);
 
     // Computing the bounding box
@@ -294,6 +294,19 @@ gltfLoader.load(
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
+        if (Array.isArray(child.material)) {
+          child.material.forEach((material) => {
+            if (material instanceof THREE.MeshStandardMaterial) {
+              material.map = forkliftTexture;
+              material.needsUpdate = true;
+            }
+          });
+        } else {
+          if (child.material instanceof THREE.MeshStandardMaterial) {
+            child.material.map = forkliftTexture;
+            child.material.needsUpdate = true;
+          }
+        }
       }
     });
 
@@ -314,13 +327,13 @@ gltfLoader.load(
 // Fork Lift Model 2
 setTimeout(() => {
   gltfLoader.load(
-    "/assets/forklift/scene.gltf",
+    "/assets/forkliftGLTF/Forklift_A01_PR_V_NVD_01.gltf",
     (gltf) => {
       forkliftModel2 = new Model3D("Fork Lift Model 2", gltf.scene, 1, 2);
       forkliftModel2.model.castShadow = true;
       forkliftModel2.model.receiveShadow = true;
       forkliftModel2.model.position.set(0, 0.1, 20);
-      forkliftModel2.model.scale.set(9, 9, 9);
+      forkliftModel2.model.scale.set(0.01, 0.01, 0.01);
       forkliftModel2.model.rotateY(degreesToRadians(-120));
       warehouseGroup.add(forkliftModel2.model);
 
@@ -333,6 +346,19 @@ setTimeout(() => {
         if (child instanceof THREE.Mesh) {
           child.castShadow = true;
           child.receiveShadow = true;
+          if (Array.isArray(child.material)) {
+            child.material.forEach((material) => {
+              if (material instanceof THREE.MeshStandardMaterial) {
+                material.map = forkliftTexture;
+                material.needsUpdate = true;
+              }
+            });
+          } else {
+            if (child.material instanceof THREE.MeshStandardMaterial) {
+              child.material.map = forkliftTexture;
+              child.material.needsUpdate = true;
+            }
+          }
         }
       });
 
