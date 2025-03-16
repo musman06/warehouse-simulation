@@ -13,6 +13,7 @@ import { Model3D } from "./model3DClass";
 
 // 3D Models Placeholder
 let warehouseModel: Model3D | null = null;
+let warehouseModelFloor: THREE.Mesh | null = null;
 let robotModel1: Model3D | null = null;
 let robotModel2: Model3D | null = null;
 let robotModel3: Model3D | null = null;
@@ -24,7 +25,6 @@ const gltfLoader = new GLTFLoader();
 
 // Group to hold all the models
 const warehouseGroup = new THREE.Group();
-let boundingBoxHelper: THREE.Box3Helper;
 
 // Warehouse Model Loading
 gltfLoader.load(
@@ -41,22 +41,15 @@ gltfLoader.load(
     const boundingBox = new THREE.Box3().setFromObject(warehouseModel.model);
     warehouseModel.boundingBox = boundingBox;
 
-    // Create a BoxHelper to visualize the bounding box
-    boundingBoxHelper = new THREE.Box3Helper(
-      boundingBox,
-      new THREE.Color(0xff0000)
-    ); // Red color
-    console.log(boundingBox);
-
     // Get size (width, height, depth)
     const size = new THREE.Vector3();
     boundingBox.getSize(size);
-    console.log(size);
+    // console.log(size);
 
     // Get center position
     const center: any = new THREE.Vector3();
     boundingBox.getCenter(center);
-    console.log("Center: ", center);
+    // console.log("Center: ", center);
 
     // Reposition the model so that it's centered at (0, 0, 0)
     warehouseModel.model.position.sub(center);
@@ -66,13 +59,14 @@ gltfLoader.load(
 
     warehouseModel.model.traverse((child) => {
       if (child instanceof THREE.Mesh) {
-        console.log(child);
+        if (child.userData.name === "NurbsPath.005_WetConcrete_0") {
+          warehouseModelFloor = child;
+        }
         child.castShadow = true;
         child.receiveShadow = true;
         if (Array.isArray(child.material)) {
           child.material.forEach((material) => {
             if (material instanceof THREE.MeshStandardMaterial) {
-              // material.map = robotTexture;
               if (child.name === "NurbsPath005_Metal_0")
                 material.color = new THREE.Color("blue");
               material.needsUpdate = true;
@@ -80,7 +74,6 @@ gltfLoader.load(
           });
         } else {
           if (child.material instanceof THREE.MeshStandardMaterial) {
-            // child.material.map = robotTexture;
             if (child.name === "NurbsPath005_Metal_0")
               child.material.color = new THREE.Color("beige");
 
@@ -91,12 +84,13 @@ gltfLoader.load(
     });
   },
   (xhr) => {
-    console.log(
-      `Warehouse Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
-    );
+    console
+      .log
+      // `Warehouse Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
+      ();
   },
   (error) => {
-    console.error("Error loading model:", error);
+    // console.error("Error loading model:", error);
   }
 );
 
@@ -113,7 +107,7 @@ gltfLoader.load(
 
     // Compute the bounding box
     robotModel1.boundingBox = new THREE.Box3().setFromObject(robotModel1.model);
-    console.log(robotModel1.boundingBox);
+    // console.log(robotModel1.boundingBox);
 
     // Play all available animations
     gltf.animations.forEach((clip) => {
@@ -147,12 +141,13 @@ gltfLoader.load(
     }
   },
   (xhr) => {
-    console.log(
-      `Robot1 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
-    );
+    console
+      .log
+      // `Robot1 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
+      ();
   },
   (error) => {
-    console.error("Error loading model:", error);
+    // console.error("Error loading model:", error);
   }
 );
 
@@ -202,12 +197,13 @@ gltfLoader.load(
     }
   },
   (xhr) => {
-    console.log(
-      `Robot2 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
-    );
+    console
+      .log
+      // `Robot2 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
+      ();
   },
   (error) => {
-    console.error("Error loading model:", error);
+    // console.error("Error loading model:", error);
   }
 );
 
@@ -260,12 +256,13 @@ setTimeout(() => {
       }
     },
     (xhr) => {
-      console.log(
-        `Robot3 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
-      );
+      console
+        .log
+        // `Robot3 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
+        ();
     },
     (error) => {
-      console.error("Error loading model:", error);
+      // console.error("Error loading model:", error);
     }
   );
 }, 2000);
@@ -287,7 +284,7 @@ gltfLoader.load(
     forkliftModel1.boundingBox = new THREE.Box3().setFromObject(
       forkliftModel1.model
     );
-    console.log(forkliftModel1.boundingBox);
+    // console.log(forkliftModel1.boundingBox);
 
     // Adding shadows to child meshes of fork lift
     forkliftModel1.model.traverse((child) => {
@@ -315,12 +312,13 @@ gltfLoader.load(
     }
   },
   (xhr) => {
-    console.log(
-      `Forklift1 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
-    );
+    console
+      .log
+      // `Forklift1 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
+      ();
   },
   (error) => {
-    console.error("Error loading model:", error);
+    // console.error("Error loading model:", error);
   }
 );
 
@@ -367,20 +365,21 @@ setTimeout(() => {
       }
     },
     (xhr) => {
-      console.log(
-        `Forklift2 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
-      );
+      console
+        .log
+        // `Forklift2 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
+        ();
     },
     (error) => {
-      console.error("Error loading model:", error);
+      // console.error("Error loading model:", error);
     }
   );
 }, 1000);
 
 export {
-  boundingBoxHelper,
   warehouseGroup,
   warehouseModel,
+  warehouseModelFloor,
   robotModel1,
   robotModel2,
   robotModel3,
