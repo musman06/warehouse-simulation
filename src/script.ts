@@ -667,10 +667,10 @@ function locationsControls(map: maplibregl.Map): maplibregl.IControl {
   currentPositionContainer.appendChild(dropdown);
 
   return {
-    onAdd: function (map: maplibregl.Map): HTMLElement {
+    onAdd: function (): HTMLElement {
       return currentPositionContainer;
     },
-    onRemove: function (map: maplibregl.Map) {
+    onRemove: function () {
       currentPositionContainer.remove();
     },
   };
@@ -818,7 +818,7 @@ function warehouseControls(map: maplibregl.Map): maplibregl.IControl {
   warehouseInsideViewContainer.appendChild(warehouseInsideViewButton);
 
   return {
-    onAdd: function (map: maplibregl.Map): HTMLElement {
+    onAdd: function (): HTMLElement {
       return warehouseInsideViewContainer;
     },
     onRemove: function (map: maplibregl.Map) {

@@ -84,13 +84,12 @@ gltfLoader.load(
     });
   },
   (xhr) => {
-    console
-      .log
-      // `Warehouse Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
-      ();
+    console.log(
+      `Warehouse Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
+    );
   },
   (error) => {
-    // console.error("Error loading model:", error);
+    console.error("Error loading model:", error);
   }
 );
 
@@ -141,13 +140,12 @@ gltfLoader.load(
     }
   },
   (xhr) => {
-    console
-      .log
-      // `Robot1 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
-      ();
+    console.log(
+      `Robot1 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
+    );
   },
   (error) => {
-    // console.error("Error loading model:", error);
+    console.error("Error loading model:", error);
   }
 );
 
@@ -197,13 +195,12 @@ gltfLoader.load(
     }
   },
   (xhr) => {
-    console
-      .log
-      // `Robot2 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
-      ();
+    console.log(
+      `Robot2 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
+    );
   },
   (error) => {
-    // console.error("Error loading model:", error);
+    console.error("Error loading model:", error);
   }
 );
 
@@ -256,13 +253,12 @@ setTimeout(() => {
       }
     },
     (xhr) => {
-      console
-        .log
-        // `Robot3 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
-        ();
+      console.log(
+        `Robot3 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
+      );
     },
     (error) => {
-      // console.error("Error loading model:", error);
+      console.error("Error loading model:", error);
     }
   );
 }, 2000);
@@ -312,13 +308,12 @@ gltfLoader.load(
     }
   },
   (xhr) => {
-    console
-      .log
-      // `Forklift1 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
-      ();
+    console.log(
+      `Forklift1 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
+    );
   },
   (error) => {
-    // console.error("Error loading model:", error);
+    console.error("Error loading model:", error);
   }
 );
 
@@ -365,13 +360,12 @@ setTimeout(() => {
       }
     },
     (xhr) => {
-      console
-        .log
-        // `Forklift2 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
-        ();
+      console.log(
+        `Forklift2 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
+      );
     },
     (error) => {
-      // console.error("Error loading model:", error);
+      console.error("Error loading model:", error);
     }
   );
 }, 1000);
