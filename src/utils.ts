@@ -1,12 +1,15 @@
-import * as THREE from "three";
 import { Model3D } from "./model3DClass";
-import {
-  timeline1,
-  timeline2,
-  timeline3,
-  timeline4,
-  timeline5,
-} from "./robotgsapanimation";
+import { timelineRobot1 } from "./ModelAnimation/robotmodel1animation";
+import { timelineRobot2 } from "./ModelAnimation/robotmodel2Animation";
+import { timelineRobot3 } from "./ModelAnimation/robotmodel3animation";
+import { timelineForklift1 } from "./ModelAnimation/forkliftmodel1animation";
+import { timelineForklift2 } from "./ModelAnimation/forkliftmodel2animation";
+
+// time taken by robot to rotate
+export const rotationDurationRobot = 4;
+
+// time taken by forklift to rotate
+export const rotationDurationForklift = 2.5;
 
 // Degrees To Radians function
 function degreesToRadians(degrees: number): number {
@@ -20,18 +23,19 @@ function boundingBoxFlooring(coordinate: number, cellSize: number) {
 
 // Function to stop model animation for 2.5 seconds
 function stopModelAnimation(model: Model3D, collisionState: { flag: boolean }) {
+  // console.log("I am called: ", model.name);
   if (model.mixer) {
     model.mixer.timeScale = 0;
     model.name === "Robot Model 1"
-      ? timeline1.pause()
+      ? timelineRobot1.pause()
       : model.name === "Robot Model 2"
-      ? timeline2.pause()
+      ? timelineRobot2.pause()
       : model.name === "Robot Model 3"
-      ? timeline3.pause()
+      ? timelineRobot3.pause()
       : model.name === "Fork Lift Model 1"
-      ? timeline4.pause()
+      ? timelineForklift1.pause()
       : model.name === "Fork Lift Model 2"
-      ? timeline5.pause()
+      ? timelineForklift2.pause()
       : null;
     // timeline1.pause();
     // console.log(`${model.name} animation paused for 2.5 seconds`);
@@ -40,12 +44,12 @@ function stopModelAnimation(model: Model3D, collisionState: { flag: boolean }) {
     setTimeout(() => {
       model.mixer.timeScale = 1;
       // timeline1.resume();
-      !timeline1.isActive() ? timeline1.resume() : null;
-      !timeline2.isActive() ? timeline2.resume() : null;
-      !timeline3.isActive() ? timeline3.resume() : null;
-      !timeline4.isActive() ? timeline4.resume() : null;
-      !timeline5.isActive() ? timeline5.resume() : null;
-      collisionState.flag = true;
+      !timelineRobot1.isActive() ? timelineRobot1.resume() : null;
+      !timelineRobot2.isActive() ? timelineRobot2.resume() : null;
+      !timelineRobot3.isActive() ? timelineRobot3.resume() : null;
+      !timelineForklift1.isActive() ? timelineForklift1.resume() : null;
+      !timelineForklift2.isActive() ? timelineForklift2.resume() : null;
+      collisionState.flag = false;
       // console.log(`${model.name} animation resumed`);
     }, 5000);
   }
@@ -57,22 +61,28 @@ function resolveCollision(
   model2: Model3D,
   collisionState: { flag: boolean }
 ) {
+  model1.isStopped
+    ? stopModelAnimation(model2, collisionState)
+    : model2.isStopped
+    ? stopModelAnimation(model1, collisionState)
+    : stopModelAnimation(model2, collisionState);
+
   // Checking Priorities
-  if (model1.modelTypePriority < model2.modelPriority) {
-    console.log("Called from here 1", model1, model2);
-    stopModelAnimation(model2, collisionState);
-  } else if (model2.modelTypePriority < model1.modelPriority) {
-    console.log("Called from here 2", model1, model2);
-    stopModelAnimation(model1, collisionState);
-  } else if (model1.modelTypePriority === model2.modelTypePriority) {
-    if (model1.modelPriority < model2.modelPriority) {
-      console.log("Called from here 3", model1, model2);
-      stopModelAnimation(model2, collisionState);
-    } else {
-      console.log("Called from here 4", model1, model2);
-      stopModelAnimation(model1, collisionState);
-    }
-  }
+  // if (model1.modelTypePriority < model2.modelPriority) {
+  //   console.log("Called from here 1", model1, model2);
+  //   stopModelAnimation(model2, collisionState);
+  // } else if (model2.modelTypePriority < model1.modelPriority) {
+  //   console.log("Called from here 2", model1, model2);
+  //   stopModelAnimation(model1, collisionState);
+  // } else if (model1.modelTypePriority === model2.modelTypePriority) {
+  //   if (model1.modelPriority < model2.modelPriority) {
+  //     console.log("Called from here 3", model1, model2);
+  //     stopModelAnimation(model2, collisionState);
+  //   } else {
+  //     console.log("Called from here 4", model1, model2);
+  //     stopModelAnimation(model1, collisionState);
+  //   }
+  // }
 }
 
 // Checking For Collions Between Models
@@ -108,10 +118,17 @@ function checkForCollisions(modelsArray: Model3D[]) {
 // Handling Collions Between Models
 function handleCollisions(modelsArray: Model3D[], cellSize: number) {
   for (const model of modelsArray) {
+    if (model.name === "Robot Model 1") {
+      // console.log(model.boundingBox);
+    }
     const minX = Math.floor(model.boundingBox.min.x);
     const maxX = Math.floor(model.boundingBox.max.x);
     const minZ = Math.floor(model.boundingBox.min.z);
     const maxZ = Math.floor(model.boundingBox.max.z);
+
+    if (model.name === "Robot Model 1") {
+      // console.log(minX, maxX, minZ, maxZ);
+    }
 
     model.occupiedCells.currentCell.x = boundingBoxFlooring(
       model.boundingBox.max.x,
@@ -121,6 +138,10 @@ function handleCollisions(modelsArray: Model3D[], cellSize: number) {
       model.boundingBox.max.z,
       cellSize
     );
+
+    if (model.name === "Robot Model 1") {
+      // console.log(model.occupiedCells.currentCell);
+    }
 
     if (minX !== maxX || minZ !== maxZ) {
       if (minX !== maxX && minZ !== maxZ) {

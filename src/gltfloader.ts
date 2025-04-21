@@ -1,24 +1,25 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
 import { robotTexture, forkliftTexture } from "./textureloader";
-import {
-  robotCustomAnimation1,
-  robotCustomAnimation2,
-  robotCustomAnimation3,
-  forkLiftCustomAnimation1,
-  forkLiftCustomAnimation2,
-} from "./robotgsapanimation";
+import { robotCustomAnimation1 } from "./ModelAnimation/robotmodel1animation";
+import { robotCustomAnimation2 } from "./ModelAnimation/robotmodel2Animation";
+import { robotCustomAnimation3 } from "./ModelAnimation/robotmodel3animation";
+import { forkLiftCustomAnimation1 } from "./ModelAnimation/forkliftmodel1animation";
+import { forkLiftCustomAnimation2 } from "./ModelAnimation/forkliftmodel2animation";
 import { degreesToRadians } from "./utils";
 import { Model3D } from "./model3DClass";
+import drawStartPointCircle from "./NavigationPathRendering/startpointcircle";
 
 // 3D Models Placeholder
 let warehouseModel: Model3D | null = null;
-let warehouseModelFloor: THREE.Mesh | null = null;
+// let clonedStorageRackModel: Model3D | null = null;
 let robotModel1: Model3D | null = null;
 let robotModel2: Model3D | null = null;
 let robotModel3: Model3D | null = null;
 let forkliftModel1: Model3D | null = null;
 let forkliftModel2: Model3D | null = null;
+let robotsStartingPointMesh: THREE.Mesh | null = null;
+let forkliftsStartingPointMesh: THREE.Mesh | null = null;
 
 // 3D Model Loader
 const gltfLoader = new GLTFLoader();
@@ -44,7 +45,7 @@ gltfLoader.load(
     // Get size (width, height, depth)
     const size = new THREE.Vector3();
     boundingBox.getSize(size);
-    // console.log(size);
+    console.log("boundingBox: ", boundingBox);
 
     // Get center position
     const center: any = new THREE.Vector3();
@@ -59,37 +60,112 @@ gltfLoader.load(
 
     warehouseModel.model.traverse((child) => {
       if (child instanceof THREE.Mesh) {
-        if (child.userData.name === "NurbsPath.005_WetConcrete_0") {
-          warehouseModelFloor = child;
+        if (child.userData.name !== "NurbsPath.005_WetConcrete_0") {
+          // Remove the unwanted mesh from its parent
+          if (child.parent) {
+            child.parent.remove(child);
+          }
         }
         child.castShadow = true;
         child.receiveShadow = true;
         if (Array.isArray(child.material)) {
           child.material.forEach((material) => {
             if (material instanceof THREE.MeshStandardMaterial) {
-              if (child.name === "NurbsPath005_Metal_0")
-                material.color = new THREE.Color("blue");
-              material.needsUpdate = true;
+              // material.needsUpdate = true;
             }
           });
         } else {
           if (child.material instanceof THREE.MeshStandardMaterial) {
-            if (child.name === "NurbsPath005_Metal_0")
-              child.material.color = new THREE.Color("beige");
-
-            child.material.needsUpdate = true;
+            // child.material.needsUpdate = true;
           }
         }
       }
     });
   },
   (xhr) => {
-    console.log(
-      `Warehouse Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
-    );
+    console
+      .log
+      // `Warehouse Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
+      ();
   },
   (error) => {
     console.error("Error loading model:", error);
+  }
+);
+
+// Storage Racks Model loading
+gltfLoader.load(
+  "./assets/storageRacks/scene.gltf",
+  (gltf) => {
+    // rack to be cloned
+    const originalStorageRackModel = gltf.scene;
+    originalStorageRackModel.scale.set(0.03, 0.03, 0.03);
+    originalStorageRackModel.rotateY(Math.PI / 2);
+
+    // enabling shadows in child meshes
+    originalStorageRackModel.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        // child.castShadow = true;
+        // child.receiveShadow = true;
+        if (Array.isArray(child.material)) {
+          child.material.forEach((material) => {
+            if (material instanceof THREE.MeshStandardMaterial) {
+              // console.log("hahaha 1");
+              material.needsUpdate = true;
+            }
+          });
+        } else {
+          if (child.material instanceof THREE.MeshStandardMaterial) {
+            // console.log("hahaha 2");
+            child.material.needsUpdate = true;
+          }
+        }
+      }
+    });
+
+    // multiple clones of original rack at different positions
+    const rackPositions = [
+      [-7.2, 0, -16.7], // row 1
+      [-2.2, 0, -16.7],
+      [2.8, 0, -16.7],
+      [7.8, 0, -16.7],
+      [-7.2, 0, -8.3], // row 2
+      [-2.2, 0, -8.3],
+      [2.8, 0, -8.3],
+      [7.8, 0, -8.3],
+      [-7.2, 0, 0.1], // row 3
+      [-2.2, 0, 0.1],
+      [2.8, 0, 0.1],
+      [7.8, 0, 0.1],
+    ];
+
+    for (let i = 0; i < rackPositions.length; i++) {
+      const [x, y, z] = rackPositions[i];
+
+      // cloning original rack to place on different positions
+      const clonedStorageRackModel = originalStorageRackModel.clone(true); // deep clone
+      clonedStorageRackModel.position.set(x, y, z);
+
+      //  wrap this clone into your Model3D class
+      const rackModel = new Model3D(
+        `Storage Rack ${i}`,
+        clonedStorageRackModel,
+        0,
+        0
+      );
+
+      // add the cloned rack in the warehouseGroup
+      warehouseGroup.add(rackModel.model);
+    }
+  },
+  (xhr) => {
+    console
+      .log
+      // `Storage Rack ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
+      ();
+  },
+  (error) => {
+    console.error("Error loading Storage Rack:", error);
   }
 );
 
@@ -100,8 +176,9 @@ gltfLoader.load(
     robotModel1 = new Model3D("Robot Model 1", gltf.scene, 2, 3);
     robotModel1.model.castShadow = true;
     robotModel1.model.receiveShadow = true;
-    robotModel1.model.position.set(-7, 0.5, 22);
+    robotModel1.model.position.set(-6, 0.55, 21);
     robotModel1.model.scale.set(0.06, 0.06, 0.06);
+    robotModel1.model.rotateY(Math.PI);
     warehouseGroup.add(robotModel1.model);
 
     // Compute the bounding box
@@ -135,6 +212,16 @@ gltfLoader.load(
       }
     });
 
+    robotsStartingPointMesh = drawStartPointCircle(
+      0.8,
+      32,
+      "white",
+      -6,
+      0.05,
+      21
+    );
+    warehouseGroup.add(robotsStartingPointMesh);
+
     if (robotModel1.model) {
       robotCustomAnimation1(robotModel1, 5);
     }
@@ -156,8 +243,9 @@ gltfLoader.load(
     robotModel2 = new Model3D("Robot Model 2", gltf.scene, 2, 4);
     robotModel2.model.castShadow = true;
     robotModel2.model.receiveShadow = true;
-    robotModel2.model.position.set(-11, 0.5, 22);
+    robotModel2.model.position.set(-6, 0.55, 21);
     robotModel2.model.scale.set(0.06, 0.06, 0.06);
+    robotModel2.model.rotateY(-Math.PI / 2);
     warehouseGroup.add(robotModel2.model);
 
     // Compute the bounding box
@@ -190,8 +278,8 @@ gltfLoader.load(
       }
     });
 
-    if (robotModel2.model) {
-      robotCustomAnimation2(robotModel2, 5);
+    if (robotModel2!.model) {
+      robotCustomAnimation2(robotModel2!, 5);
     }
   },
   (xhr) => {
@@ -205,63 +293,60 @@ gltfLoader.load(
 );
 
 // Robot Model 3 Loading
-setTimeout(() => {
-  gltfLoader.load(
-    "/assets/robot/scene.gltf",
-    (gltf) => {
-      robotModel3 = new Model3D("Robot Model 3", gltf.scene, 2, 5);
-      robotModel3.model.castShadow = true;
-      robotModel3.model.receiveShadow = true;
-      robotModel3.model.position.set(10, 0.52, 22);
-      robotModel3.model.scale.set(0.06, 0.06, 0.06);
-      warehouseGroup.add(robotModel3.model);
+gltfLoader.load(
+  "/assets/robot/scene.gltf",
+  (gltf) => {
+    robotModel3 = new Model3D("Robot Model 3", gltf.scene, 2, 5);
+    robotModel3.model.castShadow = true;
+    robotModel3.model.receiveShadow = true;
+    robotModel3.model.position.set(-6, 0.55, 21);
+    robotModel3.model.scale.set(0.06, 0.06, 0.06);
+    robotModel3.model.rotateY(Math.PI);
+    warehouseGroup.add(robotModel3.model);
 
-      // Compute the bounding box
-      robotModel3.boundingBox = new THREE.Box3().setFromObject(
-        robotModel3.model
-      );
+    // Compute the bounding box
+    robotModel3.boundingBox = new THREE.Box3().setFromObject(robotModel3.model);
 
-      // Play all available animations
-      gltf.animations.forEach((clip) => {
-        const action = robotModel3?.mixer.clipAction(clip);
-        action!.play();
-      });
+    // Play all available animations
+    gltf.animations.forEach((clip) => {
+      const action = robotModel3?.mixer.clipAction(clip);
+      action!.play();
+    });
 
-      // Updating texture of all the child objects
-      robotModel3.model.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-          if (Array.isArray(child.material)) {
-            child.material.forEach((material) => {
-              if (material instanceof THREE.MeshStandardMaterial) {
-                material.map = robotTexture;
-                material.needsUpdate = true;
-              }
-            });
-          } else {
-            if (child.material instanceof THREE.MeshStandardMaterial) {
-              child.material.map = robotTexture;
-              child.material.needsUpdate = true;
+    // Updating texture of all the child objects
+    robotModel3.model.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+        if (Array.isArray(child.material)) {
+          child.material.forEach((material) => {
+            if (material instanceof THREE.MeshStandardMaterial) {
+              material.map = robotTexture;
+              material.needsUpdate = true;
             }
+          });
+        } else {
+          if (child.material instanceof THREE.MeshStandardMaterial) {
+            child.material.map = robotTexture;
+            child.material.needsUpdate = true;
           }
         }
-      });
-
-      if (robotModel3) {
-        robotCustomAnimation3(robotModel3, 5);
       }
-    },
-    (xhr) => {
-      console.log(
-        `Robot3 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
-      );
-    },
-    (error) => {
-      console.error("Error loading model:", error);
+    });
+
+    if (robotModel3!.model) {
+      robotCustomAnimation3(robotModel3!, 5);
     }
-  );
-}, 2000);
+  },
+  (xhr) => {
+    console.log(
+      `Robot3 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
+    );
+  },
+  (error) => {
+    console.error("Error loading model:", error);
+  }
+);
 
 // Fork Lift Model 1
 gltfLoader.load(
@@ -271,16 +356,16 @@ gltfLoader.load(
     forkliftModel1 = new Model3D("Fork Lift Model 1", gltf.scene, 1, 1);
     forkliftModel1.model.castShadow = true;
     forkliftModel1.model.receiveShadow = true;
-    forkliftModel1.model.position.set(0, 0.1, 20);
+    forkliftModel1.model.position.set(6, 0.1, 21);
     forkliftModel1.model.scale.set(0.01, 0.01, 0.01);
-    // forkliftModel1.model.rotateY(-Math.PI / 2);
+    forkliftModel1.model.rotateY(Math.PI);
     warehouseGroup.add(forkliftModel1.model);
 
     // Computing the bounding box
     forkliftModel1.boundingBox = new THREE.Box3().setFromObject(
       forkliftModel1.model
     );
-    // console.log(forkliftModel1.boundingBox);
+    console.log(forkliftModel1.boundingBox);
 
     // Adding shadows to child meshes of fork lift
     forkliftModel1.model.traverse((child) => {
@@ -303,6 +388,16 @@ gltfLoader.load(
       }
     });
 
+    forkliftsStartingPointMesh = drawStartPointCircle(
+      1,
+      32,
+      "yellow",
+      6,
+      0.05,
+      21
+    );
+    warehouseGroup.add(forkliftsStartingPointMesh);
+
     if (forkliftModel1.model) {
       forkLiftCustomAnimation1(forkliftModel1, 5);
     }
@@ -318,65 +413,64 @@ gltfLoader.load(
 );
 
 // Fork Lift Model 2
-setTimeout(() => {
-  gltfLoader.load(
-    "/assets/forkliftGLTF/Forklift_A01_PR_V_NVD_01.gltf",
-    (gltf) => {
-      forkliftModel2 = new Model3D("Fork Lift Model 2", gltf.scene, 1, 2);
-      forkliftModel2.model.castShadow = true;
-      forkliftModel2.model.receiveShadow = true;
-      forkliftModel2.model.position.set(0, 0.1, 20);
-      forkliftModel2.model.scale.set(0.01, 0.01, 0.01);
-      forkliftModel2.model.rotateY(degreesToRadians(-120));
-      warehouseGroup.add(forkliftModel2.model);
+gltfLoader.load(
+  "/assets/forkliftGLTF/Forklift_A01_PR_V_NVD_01.gltf",
+  (gltf) => {
+    forkliftModel2 = new Model3D("Fork Lift Model 2", gltf.scene, 1, 2);
+    forkliftModel2.model.castShadow = true;
+    forkliftModel2.model.receiveShadow = true;
+    forkliftModel2.model.position.set(6, 0.1, 21);
+    forkliftModel2.model.scale.set(0.01, 0.01, 0.01);
+    forkliftModel2.model.rotateY(degreesToRadians(-120));
+    warehouseGroup.add(forkliftModel2.model);
 
-      // Compute the bounding box
-      forkliftModel2.boundingBox = new THREE.Box3().setFromObject(
-        forkliftModel2.model
-      );
+    // Compute the bounding box
+    forkliftModel2.boundingBox = new THREE.Box3().setFromObject(
+      forkliftModel2.model
+    );
 
-      forkliftModel2.model.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-          if (Array.isArray(child.material)) {
-            child.material.forEach((material) => {
-              if (material instanceof THREE.MeshStandardMaterial) {
-                material.map = forkliftTexture;
-                material.needsUpdate = true;
-              }
-            });
-          } else {
-            if (child.material instanceof THREE.MeshStandardMaterial) {
-              child.material.map = forkliftTexture;
-              child.material.needsUpdate = true;
+    forkliftModel2.model.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+        if (Array.isArray(child.material)) {
+          child.material.forEach((material) => {
+            if (material instanceof THREE.MeshStandardMaterial) {
+              material.map = forkliftTexture;
+              material.needsUpdate = true;
             }
+          });
+        } else {
+          if (child.material instanceof THREE.MeshStandardMaterial) {
+            child.material.map = forkliftTexture;
+            child.material.needsUpdate = true;
           }
         }
-      });
-
-      if (forkliftModel2.model) {
-        forkLiftCustomAnimation2(forkliftModel2, 5);
       }
-    },
-    (xhr) => {
-      console.log(
-        `Forklift2 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
-      );
-    },
-    (error) => {
-      console.error("Error loading model:", error);
+    });
+
+    if (forkliftModel2!.model) {
+      forkLiftCustomAnimation2(forkliftModel2!, 5);
     }
-  );
-}, 1000);
+  },
+  (xhr) => {
+    console.log(
+      `Forklift2 Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
+    );
+  },
+  (error) => {
+    console.error("Error loading model:", error);
+  }
+);
 
 export {
   warehouseGroup,
   warehouseModel,
-  warehouseModelFloor,
   robotModel1,
   robotModel2,
   robotModel3,
   forkliftModel1,
   forkliftModel2,
+  robotsStartingPointMesh,
+  forkliftsStartingPointMesh,
 };

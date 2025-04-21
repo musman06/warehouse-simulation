@@ -2,23 +2,24 @@ import * as THREE from "three";
 import {
   warehouseGroup,
   warehouseModel,
-  warehouseModelFloor,
   robotModel1,
   robotModel2,
   robotModel3,
   forkliftModel1,
   forkliftModel2,
+  robotsStartingPointMesh,
+  forkliftsStartingPointMesh,
 } from "./gltfloader";
-import { line1, line2, line3, line4, line5 } from "./lineanimation";
+import {
+  line1,
+  line2,
+  line3,
+  line4,
+  line5,
+} from "./NavigationPathRendering/lineanimation";
 import { handleCollisions } from "./utils";
 import { Model3D } from "./model3DClass";
 import maplibregl from "maplibre-gl";
-import { GLTFLoader } from "three/examples/jsm/Addons.js";
-import * as YUKA from "yuka";
-import { createGraphHelper } from "./graphHelper";
-import { createConvexRegionHelper } from "./navmeshHelper";
-// import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter.js";
-// import { initNavigation } from "./navmesh";
 
 // Converting 3D spherical earth coordinates into flat 2D map coordinates
 const modelRenderOrigin: [number, number] = [
@@ -39,59 +40,13 @@ const cameraX = modelRenderAsMercatorCoordinate.x;
 const cameraY = modelRenderAsMercatorCoordinate.y + 5;
 const cameraZ = modelRenderAsMercatorCoordinate.z + 20;
 
-// Function to check and add models once they are loaded
-// const checkAndAddModels = () => {
-//   if (warehouseModel?.model) {
-//     scene.add(warehouseModel.model);
-//   }
-
-//   if (robotModel1?.model) {
-//     scene.add(robotModel1!.model);
-//   }
-
-//   if (robotModel2?.model) {
-//     scene.add(robotModel2.model);
-//   }
-
-//   if (robotModel3?.model) {
-//     scene.add(robotModel3!.model);
-//   }
-
-//   if (forkliftModel1?.model) {
-//     scene.add(forkliftModel1!.model);
-//   }
-
-//   if (forkliftModel2?.model) {
-//     scene.add(forkliftModel2!.model);
-//   }
-
-//   if (line1) {
-//     scene.add(line1);
-//   }
-//   if (line2) {
-//     scene.add(line2);
-//   }
-
-//   if (line3) {
-//     scene.add(line3);
-//   }
-
-//   if (line4) {
-//     scene.add(line4);
-//   }
-
-//   if (line5) {
-//     scene.add(line5);
-//   }
-// };
-
 // // Keep checking every 0.5s until models are available
-// let rows: number;
-// let columns: number;
-// const cellSize: number = 5;
-const waitForModels = setInterval(() => {
-  // checkAndAddModels();
+let rows: number;
+let columns: number;
+const cellSize: number = 5;
+let modelsLoaded: boolean = false;
 
+const waitForModels = setInterval(() => {
   if (
     warehouseModel?.model &&
     robotModel1?.model &&
@@ -99,6 +54,8 @@ const waitForModels = setInterval(() => {
     robotModel3?.model &&
     forkliftModel1?.model &&
     forkliftModel2?.model &&
+    robotsStartingPointMesh &&
+    forkliftsStartingPointMesh &&
     line1 &&
     line2 &&
     line3 &&
@@ -106,14 +63,15 @@ const waitForModels = setInterval(() => {
     line5
   ) {
     warehouseGroup.scale.set(5, 5, 6.45);
-    // scene.add(warehouseGroup);
+    scene.add(warehouseGroup);
+    modelsLoaded = true;
     clearInterval(waitForModels);
 
     // Calculating Rows & Columns Based On Warehouse Floor
-    // const size = new THREE.Vector3();
-    // warehouseModel?.boundingBox.getSize(size);
-    // rows = Math.floor(size.x / cellSize) + 1;
-    // columns = Math.floor(size.z / cellSize) + 1;
+    const size = new THREE.Vector3();
+    warehouseModel?.boundingBox.getSize(size);
+    rows = Math.floor(size.x / cellSize) + 1;
+    columns = Math.floor(size.z / cellSize) + 1;
     // console.log(rows, columns);
   }
 }, 500);
@@ -127,366 +85,17 @@ const sizes = {
 // Scene
 const scene = new THREE.Scene();
 
-// Vehicle
-const vehicleGeometry = new THREE.ConeGeometry(0.125, 0.5, 16);
-vehicleGeometry.rotateX(Math.PI * 0.5);
-vehicleGeometry.translate(0, 0.25, 0);
-
-const vehicleMaterial = new THREE.MeshNormalMaterial();
-
-const vehicleMesh = new THREE.Mesh(vehicleGeometry, vehicleMaterial);
-vehicleMesh.position.set(10, -6, 10);
-vehicleMesh.matrixAutoUpdate = false;
-scene.add(vehicleMesh);
-
-function sync(entity: any, renderComponent: any) {
-  renderComponent.matrix.copy(entity.worldMatrix);
-}
-
-const entityManager = new YUKA.EntityManager();
-const followPathBehavior = new YUKA.FollowPathBehavior();
-followPathBehavior.active = false;
-followPathBehavior.nextWaypointDistance = 0.5;
-
-const loader = new GLTFLoader();
-let model: any;
-
-loader.load("/assets/warehouseFloor/navmesh.glb", (glb) => {
-  model = glb.scene;
-  scene.add(model);
-});
-
-const navmeshLoader = new YUKA.NavMeshLoader();
-navmeshLoader
-  .load("/assets/warehouseFloor/navmesh.glb")
-  .then((navigationMesh) => {
-    const navMesh = navigationMesh;
-
-    const graph = navMesh.graph;
-    const graphHelper = createGraphHelper(graph, 0.2);
-    scene.add(graphHelper!);
-
-    const navMeshGroup = createConvexRegionHelper(navMesh);
-    console.log("NavMesh group:", navMeshGroup);
-    console.log("NavMesh children:", navMeshGroup.children.length);
-    console.log("NavMesh position:", navMeshGroup.position);
-
-    navMeshGroup.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
-        child.castShadow = true; // Not necessary for raycasting, but good practice
-        child.receiveShadow = true;
-        child.frustumCulled = false; // Ensure it's not removed from rendering
-        child.visible = true;
-        navMeshGroup.scale.set(1, 1, 1);
-        navMeshGroup.updateMatrixWorld(true);
-      }
-    });
-
-    const testChild = navMeshGroup.children[0];
-    if (testChild instanceof THREE.Mesh) {
-      console.log(
-        "First Child World Position:",
-        testChild.getWorldPosition(new THREE.Vector3())
-      );
-    }
-
-    scene.add(navMeshGroup);
-
-    const vehicle = new YUKA.Vehicle();
-    vehicle.position.set(9, 4, -40); // Set your desired position
-    vehicle.scale.set(1.5, 1.5, 1.5);
-
-    // Sync Three.js Mesh with Yuka Vehicle
-    vehicleMesh.position.set(
-      vehicle.position.x,
-      vehicle.position.y,
-      vehicle.position.z
-    );
-    vehicleMesh.scale.set(vehicle.scale.x, vehicle.scale.y, vehicle.scale.z);
-
-    // Update the transformation matrix
-    vehicleMesh.updateMatrix();
-    vehicle.setRenderComponent(vehicleMesh, sync);
-    entityManager.add(vehicle);
-    vehicle.steering.add(followPathBehavior);
-
-    const mousePosition = new THREE.Vector2();
-    const raycaster = new THREE.Raycaster();
-    raycaster.far = 1000;
-
-    const bbox = new THREE.BoxHelper(navMeshGroup, 0xff0000);
-    scene.add(bbox);
-
-    window.addEventListener("click", (e) => {
-      console.log("I am clicked");
-
-      mousePosition.x = (e.clientX / window.innerWidth) * 2 - 1;
-      mousePosition.y = -(e.clientY / window.innerHeight) * 2 + 1;
-
-      raycaster.setFromCamera(mousePosition, camera);
-
-      // Fix: Use `intersectObjects` if navMeshGroup is a Group
-      const intersects = raycaster.intersectObjects(
-        navMeshGroup.children,
-        true
-      );
-
-      console.log("Intersects length is:", intersects.length);
-      if (intersects.length === 0) {
-        const targetPosition = new THREE.Vector3(
-          mousePosition.x,
-          1,
-          mousePosition.y
-        );
-        console.log("Clicked Position:", targetPosition);
-        findPathTo(targetPosition);
-      } else {
-        console.warn("Raycast did not hit the NavMesh.");
-      }
-    });
-
-    function findPathTo(target: THREE.Vector3) {
-      const from = new YUKA.Vector3(
-        vehicle.position.x,
-        vehicle.position.y,
-        vehicle.position.z
-      );
-      const to = new YUKA.Vector3(target.x, target.y, target.z);
-
-      console.log("Finding Path From:", from, "To:", to);
-
-      const path = navMesh.findPath(from, to);
-
-      if (path.length > 0) {
-        console.log("Path Found:", path);
-
-        // Retrieve the existing behavior
-        const followPathBehavior = vehicle.steering.behaviors.find(
-          (behavior) => behavior instanceof YUKA.FollowPathBehavior
-        ) as YUKA.FollowPathBehavior;
-
-        if (followPathBehavior) {
-          followPathBehavior.active = true;
-          followPathBehavior.path.clear();
-
-          for (let point of path) {
-            followPathBehavior.path.add(point);
-          }
-
-          console.log("Path assigned to vehicle.");
-        } else {
-          console.warn("FollowPathBehavior not found.");
-        }
-      } else {
-        console.warn("No path found!");
-      }
-    }
-  });
-
-const time = new YUKA.Time();
-
-// loader.load(
-//   "/assets/warehouseFloor/navmesh.glb",
-//   (gltf) => {
-//     const navMesh = gltf.scene;
-//     scene.add(navMesh); // Add to the scene for visualization
-
-//     // Optional: Make the NavMesh semi-transparent
-//     navMesh.traverse((child) => {
-//       if (child instanceof THREE.Mesh) {
-//         child.material = new THREE.MeshBasicMaterial({
-//           color: 0x00ff00, // Green for visualization
-//           wireframe: true, // Wireframe for clear visualization
-//           transparent: true,
-//           opacity: 0.5,
-//         });
-//       }
-//     });
-
-//     console.log("NavMesh loaded:", navMesh);
-//   },
-//   undefined,
-//   (error) => {
-//     console.error("Error loading NavMesh:", error);
-//   }
-// );
-
-// loader.load("/assets/warehouseFloor/navmesh.glb", (gltf) => {
-//   const navMesh = gltf.scene;
-//   navMesh.scale.set(3.8, 3, 2.5);
-//   navMesh.rotateY(Math.PI / 2);
-//   navMesh.position.x = 51;
-//   navMesh.position.z = -110;
-//   // scene.add(navMesh);
-
-//   let yukaNavMesh;
-//   navMesh.traverse((child) => {
-//     if (child instanceof THREE.Mesh) {
-//       // Convert Three.js geometry to Yuka NavMesh
-//       const geometry = child.geometry;
-
-//       // Create Yuka NavMesh builder
-//       const navMeshBuilder = new YUKA.NavMeshBuilder();
-
-//       // Get vertices and indices from geometry
-//       const position = geometry.attributes.position;
-//       const index = geometry.index;
-
-//       // Get vertices and indices from geometry
-//       // const vertices = Array.from(geometry.attributes.position.array);
-//       // const indices = geometry.index ? Array.from(geometry.index.array) : [];
-
-//       // Create Yuka NavMesh
-//       yukaNavMesh = new YUKA.NavMesh();
-
-//       // Create polygons from geometry
-//       const polygons = [];
-
-//       if (index) {
-//         // For indexed geometry
-//         for (let i = 0; i < index.count; i += 3) {
-//           const a = index.getX(i);
-//           const b = index.getX(i + 1);
-//           const c = index.getX(i + 2);
-
-//           const va = new YUKA.Vector3(
-//             position.getX(a),
-//             position.getY(a),
-//             position.getZ(a)
-//           );
-
-//           const vb = new YUKA.Vector3(
-//             position.getX(b),
-//             position.getY(b),
-//             position.getZ(b)
-//           );
-
-//           const vc = new YUKA.Vector3(
-//             position.getX(c),
-//             position.getY(c),
-//             position.getZ(c)
-//           );
-
-//           // Create a polygon (triangle) for the navmesh
-//           const polygon = new YUKA.Polygon();
-//           polygon.addVertex(va);
-//           polygon.addVertex(vb);
-//           polygon.addVertex(vc);
-//           polygons.push(polygon);
-//         }
-//       } else {
-//         // For non-indexed geometry
-//         for (let i = 0; i < position.count; i += 3) {
-//           const va = new YUKA.Vector3(
-//             position.getX(i),
-//             position.getY(i),
-//             position.getZ(i)
-//           );
-
-//           const vb = new YUKA.Vector3(
-//             position.getX(i + 1),
-//             position.getY(i + 1),
-//             position.getZ(i + 1)
-//           );
-
-//           const vc = new YUKA.Vector3(
-//             position.getX(i + 2),
-//             position.getY(i + 2),
-//             position.getZ(i + 2)
-//           );
-
-//           const polygon = new YUKA.Polygon();
-//           polygon.addVertex(va);
-//           polygon.addVertex(vb);
-//           polygon.addVertex(vc);
-//           polygons.push(polygon);
-//         }
-//       }
-
-//       // Build the navmesh from polygons
-//       yukaNavMesh.fromPolygons(polygons);
-
-//       // Create spatial index with all 6 required parameters
-//       const bbox = yukaNavMesh.boundingBox;
-//       const spatialIndex = new YUKA.CellSpacePartitioning(
-//         bbox.min,
-//         bbox.max,
-//         10, // cellsX
-//         10, // cellsY
-//         10, // cellsZ
-//         yukaNavMesh.polygons // regions
-//       );
-//       yukaNavMesh.spatialIndex = spatialIndex;
-
-//       console.log("Yuka NavMesh created");
-
-//       // Create edges visualization
-//       const edges = new EdgesGeometry(child.geometry);
-//       const lineMaterial = new LineBasicMaterial({ color: 0xff0000 }); // Red edges
-//       const wireframe = new LineSegments(edges, lineMaterial);
-//       wireframe.scale.set(3.8, 3, 2.5);
-//       wireframe.rotateY(Math.PI / 2);
-//       wireframe.position.x = 51;
-//       wireframe.position.z = -110;
-//       // scene.add(wireframe);
-//     }
-//   });
-
-//   console.log("NavMesh loaded and visualized");
-
-//   console.log("NavMesh loaded and visualized");
-// });
-
-// const exporter = new GLTFExporter();
-setTimeout(() => {}, 5000);
-
-// function exportToGLB(mesh: THREE.Mesh) {
-//   const exporter = new GLTFExporter();
-
-//   // Export as a GLB (binary format)
-//   exporter.parse(
-//     mesh,
-//     (result) => {
-//       console.log("Export result:", result);
-
-//       if (result instanceof ArrayBuffer) {
-//         console.log("I am called");
-//         const blob = new Blob([result], { type: "model/gltf-binary" });
-//         const link = document.createElement("a");
-//         link.href = URL.createObjectURL(blob);
-//         link.download = "model.glb";
-//         document.body.appendChild(link);
-//         console.log("Link clicked");
-//         link.click();
-//         document.body.removeChild(link);
-//       } else if (typeof result === "object") {
-//         console.log("Converting JSON to GLB...");
-//         const json = JSON.stringify(result);
-//         const blob = new Blob([json], { type: "application/json" });
-//         const link = document.createElement("a");
-//         link.href = URL.createObjectURL(blob);
-//         link.download = "model.gltf";
-//         document.body.appendChild(link);
-//         link.click();
-//         document.body.removeChild(link);
-//         console.error("Export failed: Expected GLB but got JSON.");
-//       }
-//     },
-//     { binary: true } as any
-//   );
-// }
-
 // Camera
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.1,
-  4000
+  4000 //TODO
 );
 
 // Lights
 // // AmbientLight
-const ambientLight = new THREE.AmbientLight(0xffffff, 5);
+const ambientLight = new THREE.AmbientLight("white", 5);
 scene.add(ambientLight);
 
 // // Directional Light
@@ -498,18 +107,18 @@ directionalLight.shadow.mapSize.y = 1024;
 scene.add(directionalLight);
 
 // // Point Light
-const pointLight1 = new THREE.PointLight("red", 400, 0);
-pointLight1.position.set(0, 7, 17.25);
+const pointLight1 = new THREE.PointLight("red", 800, 0);
+pointLight1.position.set(0, 7, 130);
 pointLight1.castShadow = true;
 scene.add(pointLight1);
 
-const pointLight2 = new THREE.PointLight("red", 400, 0);
+const pointLight2 = new THREE.PointLight("red", 800, 0);
 pointLight2.position.set(0, 7, 0);
 pointLight2.castShadow = true;
 scene.add(pointLight2);
 
-const pointLight3 = new THREE.PointLight("red", 400, 0);
-pointLight3.position.set(0, 7, -17.25);
+const pointLight3 = new THREE.PointLight("red", 800, 0);
+pointLight3.position.set(0, 7, -130);
 pointLight3.castShadow = true;
 scene.add(pointLight3);
 
@@ -523,7 +132,7 @@ const map = new maplibregl.Map({
   maxZoom: 22,
   minZoom: 2,
   pitch: 30, // Vertical tilting of the map
-  bearing: -90, // rotatiting the map
+  bearing: -90, // rotating the map
   canvasContextAttributes: { antialias: true },
 });
 
@@ -644,7 +253,6 @@ function locationsControls(map: maplibregl.Map): maplibregl.IControl {
   // Toggle dropdown display on button click
   currentPositionButton.addEventListener("click", (e) => {
     e.stopPropagation();
-    // console.log("Locations button clicked");
     if (dropdown.style.display === "none") {
       dropdown.style.display = "block";
     } else {
@@ -717,10 +325,6 @@ function warehouseControls(map: maplibregl.Map): maplibregl.IControl {
   warehouseInsideViewButton.addEventListener("click", (e) => {
     e.stopPropagation();
     warehouseInsideViewFlag = !warehouseInsideViewFlag;
-    // console.log(
-    //   "Warehouse view button clicked, inside view:",
-    //   warehouseInsideViewFlag
-    // );
 
     if (warehouseInsideViewFlag) {
       // Set camera to inside view
@@ -836,6 +440,7 @@ function warehouseControls(map: maplibregl.Map): maplibregl.IControl {
 
 map.addControl(warehouseControls(map), "top-right");
 
+const clock = new THREE.Clock();
 // Custom MapLibre 3D Layer
 const customLayer = {
   id: "3D-models-loading",
@@ -861,8 +466,6 @@ const customLayer = {
     this.renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
     this.renderer.autoClear = false;
 
-    const clock = new THREE.Clock();
-
     // Handle window resize
     window.addEventListener("resize", () => {
       if (this.renderer) {
@@ -875,10 +478,6 @@ const customLayer = {
   },
   render(_gl: WebGLRenderingContext, args: any) {
     if (!this.renderer || !this.map) return;
-
-    // Update AI behavior (Yuka.js)
-    const delta = time.update().getDelta();
-    entityManager.update(delta);
 
     const m = new THREE.Matrix4().fromArray(
       args.defaultProjectionData.mainMatrix
@@ -896,48 +495,50 @@ const customLayer = {
       .multiply(rotationX)
       .multiply(rotationY);
 
-    // const delta = clock.getDelta();
+    const delta = clock.getDelta();
 
-    // // Compute the bounding boxes of all the models
-    // robotModel1!.boundingBox = new THREE.Box3().setFromObject(
-    //   robotModel1!.model
-    // );
-    // robotModel2!.boundingBox = new THREE.Box3().setFromObject(
-    //   robotModel2!.model
-    // );
-    // robotModel3!.boundingBox = new THREE.Box3().setFromObject(
-    //   robotModel3!.model
-    // );
-    // forkliftModel1!.boundingBox = new THREE.Box3().setFromObject(
-    //   forkliftModel1!.model
-    // );
-    // forkliftModel2!.boundingBox = new THREE.Box3().setFromObject(
-    //   forkliftModel2!.model
-    // );
+    if (modelsLoaded) {
+      // // Compute the bounding boxes of all the models
+      robotModel1!.boundingBox = new THREE.Box3().setFromObject(
+        robotModel1!.model
+      );
+      robotModel2!.boundingBox = new THREE.Box3().setFromObject(
+        robotModel2!.model
+      );
+      robotModel3!.boundingBox = new THREE.Box3().setFromObject(
+        robotModel3!.model
+      );
+      forkliftModel1!.boundingBox = new THREE.Box3().setFromObject(
+        forkliftModel1!.model
+      );
+      forkliftModel2!.boundingBox = new THREE.Box3().setFromObject(
+        forkliftModel2!.model
+      );
 
-    // // Calls the Function for Collision Detection
-    // const modelsArray: Model3D[] = [
-    //   robotModel1!,
-    //   robotModel2!,
-    //   robotModel3!,
-    //   forkliftModel1!,
-    //   forkliftModel2!,
-    // ];
+      // Calls the Function for Collision Detection
+      const modelsArray: Model3D[] = [
+        robotModel1!,
+        // robotModel2!,
+        // robotModel3!,
+        forkliftModel1!,
+        // forkliftModel2!,
+      ];
 
-    // handleCollisions(modelsArray, cellSize);
+      handleCollisions(modelsArray, cellSize);
 
-    // // Update animation mixer (if available)
-    // if (robotModel1!.mixer) {
-    //   robotModel1!.mixer.update(delta);
-    // }
+      // Update animation mixer (if available)
+      if (robotModel1!.mixer) {
+        robotModel1!.mixer.update(delta);
+      }
 
-    // if (robotModel2!.mixer) {
-    //   robotModel2!.mixer.update(delta);
-    // }
+      if (robotModel2!.mixer) {
+        robotModel2!.mixer.update(delta);
+      }
 
-    // if (robotModel3!.mixer) {
-    //   robotModel3!.mixer.update(delta);
-    // }
+      if (robotModel3!.mixer) {
+        robotModel3!.mixer.update(delta);
+      }
+    }
 
     camera!.projectionMatrix = m.multiply(l);
     this.renderer!.resetState();
@@ -950,49 +551,3 @@ const customLayer = {
 map.on("style.load", () => {
   map.addLayer(customLayer);
 });
-
-// Animation Loop
-const clock = new THREE.Clock();
-
-const tick = () => {
-  const delta = clock.getDelta();
-
-  // Compute the bounding boxes of all the models
-  robotModel1!.boundingBox = new THREE.Box3().setFromObject(robotModel1!.model);
-  robotModel2!.boundingBox = new THREE.Box3().setFromObject(robotModel2!.model);
-  robotModel3!.boundingBox = new THREE.Box3().setFromObject(robotModel3!.model);
-  forkliftModel1!.boundingBox = new THREE.Box3().setFromObject(
-    forkliftModel1!.model
-  );
-  forkliftModel2!.boundingBox = new THREE.Box3().setFromObject(
-    forkliftModel2!.model
-  );
-
-  // Calls the Function for Collision Detection
-  const modelsArray: Model3D[] = [
-    robotModel1!,
-    robotModel2!,
-    robotModel3!,
-    forkliftModel1!,
-    forkliftModel2!,
-  ];
-
-  // handleCollisions(modelsArray, cellSize);
-
-  // Update animation mixer (if available)
-  if (robotModel1!.mixer) {
-    robotModel1!.mixer.update(delta);
-  }
-
-  if (robotModel2!.mixer) {
-    robotModel2!.mixer.update(delta);
-  }
-
-  if (robotModel3!.mixer) {
-    robotModel3!.mixer.update(delta);
-  }
-
-  // renderer.render(scene, camera);
-
-  window.requestAnimationFrame(tick);
-};

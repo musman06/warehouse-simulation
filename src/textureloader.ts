@@ -8,7 +8,7 @@ const robotTexture = textureLoader.load(
 robotTexture.colorSpace = THREE.SRGBColorSpace;
 
 const forkliftTexture = textureLoader.load(
-  "/assets/forkliftGLTF/textures/T_Forklift_A1_Albedo.1001.png"
+  "/assets/forkliftGLTF/textures/Forklift_A01_PR_V_NVD_01.usd.png"
 );
 forkliftTexture.colorSpace = THREE.SRGBColorSpace;
 

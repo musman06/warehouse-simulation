@@ -7,6 +7,7 @@ export class Model3D {
   modelPriority: number;
   mixer: THREE.AnimationMixer;
   boundingBox: THREE.Box3;
+  isStopped: boolean;
   occupiedCells: {
     previousCell: {
       x: number;
@@ -34,6 +35,7 @@ export class Model3D {
     this.modelPriority = modelPriority;
     this.mixer = new THREE.AnimationMixer(model);
     this.boundingBox = new THREE.Box3();
+    this.isStopped = false;
     this.occupiedCells = {
       previousCell: { x: -1, z: -1 },
       currentCell: { x: -1, z: -1 },

@@ -11,7 +11,6 @@
   "devDependencies": {
     "@types/node": "^22.13.10",
     "@types/three": "^0.173.0",
-    "@types/yuka": "^0.7.4",
     "typescript": "~5.7.2",
     "vite": "^6.1.0"
   },
@@ -22,8 +21,6 @@
     "gsap": "^3.12.7",
     "mapbox-gl": "^3.10.0",
     "maplibre-gl": "^5.1.1",
-    "recast-detour": "^1.6.4",
-    "three": "^0.173.0",
-    "yuka": "^0.7.8"
+    "three": "^0.173.0"
   }
 }
