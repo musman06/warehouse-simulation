@@ -82,10 +82,9 @@ gltfLoader.load(
     });
   },
   (xhr) => {
-    console
-      .log
-      // `Warehouse Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
-      ();
+    console.log(
+      `Warehouse Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
+    );
   },
   (error) => {
     console.error("Error loading model:", error);
@@ -158,10 +157,9 @@ gltfLoader.load(
     }
   },
   (xhr) => {
-    console
-      .log
-      // `Storage Rack ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
-      ();
+    console.log(
+      `Storage Rack ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`
+    );
   },
   (error) => {
     console.error("Error loading Storage Rack:", error);
