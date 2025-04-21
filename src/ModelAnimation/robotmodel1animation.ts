@@ -29,7 +29,7 @@ function robotCustomAnimation1(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.rotation, {
-      y: Math.PI / 2,
+      y: degreesToRadians(90),
       duration: rotationDurationRobot,
       ease: "none",
       onStart: () => {
@@ -54,7 +54,7 @@ function robotCustomAnimation1(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.rotation, {
-      y: -Math.PI / 6,
+      y: degreesToRadians(0),
       duration: rotationDurationRobot,
       ease: "none",
       onStart: () => {
@@ -79,7 +79,7 @@ function robotCustomAnimation1(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.rotation, {
-      y: Math.PI / 2,
+      y: degreesToRadians(90),
       duration: rotationDurationRobot,
       ease: "none",
       onStart: () => {
@@ -104,7 +104,7 @@ function robotCustomAnimation1(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.rotation, {
-      y: -Math.PI / 4,
+      y: degreesToRadians(180),
       duration: rotationDurationRobot,
       ease: "none",
       onStart: () => {
@@ -118,7 +118,7 @@ function robotCustomAnimation1(robot: Model3D, cellSize: number) {
     })
     .to(robot.model.position, {
       z: -4.5,
-      duration: 10,
+      duration: 15,
       ease: "none",
       onUpdate: () => {
         robot.occupiedCells.nextCell.x = boundingBoxFlooring(
@@ -129,7 +129,7 @@ function robotCustomAnimation1(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.rotation, {
-      y: -Math.PI / 4,
+      y: degreesToRadians(270),
       duration: rotationDurationRobot,
       ease: "none",
       onStart: () => {
@@ -154,7 +154,7 @@ function robotCustomAnimation1(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.rotation, {
-      y: -Math.PI / 4,
+      y: degreesToRadians(180),
       duration: rotationDurationRobot,
       ease: "none",
       onStart: () => {
@@ -179,7 +179,7 @@ function robotCustomAnimation1(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.rotation, {
-      y: -Math.PI / 4,
+      y: degreesToRadians(270),
       duration: rotationDurationRobot,
       ease: "none",
       onStart: () => {

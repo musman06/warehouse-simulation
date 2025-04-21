@@ -31,7 +31,7 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.rotation, {
-      y: -Math.PI / 2,
+      y: degreesToRadians(90),
       duration: rotationDurationRobot,
       ease: "none",
       onStart: () => {
@@ -54,7 +54,7 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.rotation, {
-      y: -Math.PI / 2,
+      y: degreesToRadians(0),
       duration: rotationDurationRobot,
       ease: "none",
       onStart: () => {
@@ -66,7 +66,7 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
     })
     .to(robot.model.position, {
       z: -12.7,
-      duration: 12,
+      duration: 15,
       ease: "none",
       onUpdate: () => {
         robot.occupiedCells.nextCell.x = robot.occupiedCells.currentCell.x;
@@ -77,7 +77,7 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.rotation, {
-      y: -Math.PI * 1.5,
+      y: degreesToRadians(-90),
       duration: rotationDurationRobot,
       ease: "none",
       onStart: () => {
@@ -100,7 +100,7 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.rotation, {
-      y: -Math.PI * 1.5,
+      y: degreesToRadians(0),
       duration: rotationDurationRobot,
       ease: "none",
       onStart: () => {
@@ -123,7 +123,7 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.rotation, {
-      y: -Math.PI * 1.5,
+      y: degreesToRadians(-90),
       duration: rotationDurationRobot,
       ease: "none",
       onStart: () => {
@@ -146,7 +146,7 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.rotation, {
-      y: -Math.PI * 1.5,
+      y: degreesToRadians(-180),
       duration: rotationDurationRobot,
       ease: "none",
       onStart: () => {
@@ -169,7 +169,7 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.rotation, {
-      y: -Math.PI * 1.5,
+      y: degreesToRadians(-90),
       duration: rotationDurationRobot,
       ease: "none",
       onStart: () => {
@@ -192,7 +192,7 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.rotation, {
-      y: -Math.PI * 1.5,
+      y: degreesToRadians(-180),
       duration: rotationDurationRobot,
       ease: "none",
       onStart: () => {
@@ -215,7 +215,7 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.rotation, {
-      y: -Math.PI * 1.5,
+      y: degreesToRadians(-270),
       duration: rotationDurationRobot,
       ease: "none",
       onStart: () => {

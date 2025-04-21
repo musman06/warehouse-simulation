@@ -30,7 +30,7 @@ function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
       },
     })
     .to(forklift.model.rotation, {
-      y: -Math.PI,
+      y: degreesToRadians(90),
       duration: rotationDurationForklift,
       ease: "none",
       onStart: () => {
@@ -54,7 +54,7 @@ function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
       },
     })
     .to(forklift.model.rotation, {
-      y: -Math.PI * 1.5,
+      y: degreesToRadians(-0),
       duration: rotationDurationForklift,
       ease: "none",
       onStart: () => {
@@ -78,7 +78,7 @@ function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
       },
     })
     .to(forklift.model.rotation, {
-      y: -Math.PI * 2,
+      y: degreesToRadians(-90),
       duration: rotationDurationForklift,
       ease: "none",
       onStart: () => {
@@ -102,7 +102,7 @@ function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
       },
     })
     .to(forklift.model.rotation, {
-      y: -Math.PI / 2,
+      y: degreesToRadians(-180),
       duration: rotationDurationForklift,
       ease: "none",
       onStart: () => {
@@ -126,7 +126,7 @@ function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
       },
     })
     .to(forklift.model.rotation, {
-      y: -Math.PI / 2,
+      y: degreesToRadians(-270),
       duration: rotationDurationForklift,
       ease: "none",
       onStart: () => {
@@ -150,7 +150,7 @@ function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
       },
     })
     .to(forklift.model.rotation, {
-      y: -Math.PI / 2,
+      y: degreesToRadians(-180),
       duration: rotationDurationForklift,
       ease: "none",
       onStart: () => {

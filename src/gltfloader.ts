@@ -418,7 +418,7 @@ gltfLoader.load(
     forkliftModel2.model.receiveShadow = true;
     forkliftModel2.model.position.set(6, 0.1, 21);
     forkliftModel2.model.scale.set(0.01, 0.01, 0.01);
-    forkliftModel2.model.rotateY(degreesToRadians(-120));
+    forkliftModel2.model.rotateY(degreesToRadians(180));
     warehouseGroup.add(forkliftModel2.model);
 
     // Compute the bounding box

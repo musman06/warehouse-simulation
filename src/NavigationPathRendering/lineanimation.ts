@@ -13,7 +13,7 @@ const lineMaterial1 = new LineMaterial({
 
 let points1: number[] = [
   -5.9, 0.1, 21, -5.9, 0.1, 4.9, -4.65, 0.1, 4.9, -4.65, 0.1, -20.9, 10, 0.1,
-  -20.9, 10, 0.1, -4.5, 0.1, 0.1, -4.5, 0.1, 0.1, 21, -6, 0.1, 21,
+  -20.9, 10, 0.1, -4.5, 0.1, 0.1, -4.5, 0.1, 0.1, 21, -5.9, 0.1, 21,
 ];
 const lineGeometry1 = new LineGeometry();
 lineGeometry1.setPositions(points1);
