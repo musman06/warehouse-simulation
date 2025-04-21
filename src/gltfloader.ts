@@ -36,7 +36,6 @@ gltfLoader.load(
     warehouseModel.model.receiveShadow = true;
     warehouseModel.model.scale.set(1.5, 1.5, 1);
     warehouseGroup.add(warehouseModel.model);
-    // console.log(warehouseModel);
 
     // Compute the bounding box
     const boundingBox = new THREE.Box3().setFromObject(warehouseModel.model);
