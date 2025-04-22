@@ -20,6 +20,7 @@ import {
 import { handleCollisions } from "./utils";
 import { Model3D } from "./model3DClass";
 import maplibregl from "maplibre-gl";
+import SpriteText from "three-spritetext";
 
 // Converting 3D spherical earth coordinates into flat 2D map coordinates
 const modelRenderOrigin: [number, number] = [
@@ -43,7 +44,8 @@ const cameraZ = modelRenderAsMercatorCoordinate.z + 20;
 // // Keep checking every 0.5s until models are available
 let rows: number;
 let columns: number;
-const cellSize: number = 5;
+const cellSizeX: number = 1.8;
+const cellSizeZ: number = 2.2;
 let modelsLoaded: boolean = false;
 
 const waitForModels = setInterval(() => {
@@ -68,11 +70,53 @@ const waitForModels = setInterval(() => {
     clearInterval(waitForModels);
 
     // Calculating Rows & Columns Based On Warehouse Floor
-    const size = new THREE.Vector3();
-    warehouseModel?.boundingBox.getSize(size);
-    rows = Math.floor(size.x / cellSize) + 1;
-    columns = Math.floor(size.z / cellSize) + 1;
-    // console.log(rows, columns);
+    const sizeFloor = new THREE.Vector3();
+    warehouseModel?.boundingBox.getSize(sizeFloor);
+    rows = Math.floor(sizeFloor.x / cellSizeX);
+    columns = Math.floor(sizeFloor.z / cellSizeZ);
+
+    // Assume bottom-left corner as origin (could also use boundingBox.min if needed)
+    const startX = warehouseModel?.boundingBox.min.x ?? 0;
+    const startZ = warehouseModel?.boundingBox.min.z ?? 0;
+
+    // For storing cells if needed later
+    const gridCells: THREE.Mesh[][] = [];
+
+    const gridGroup = new THREE.Group();
+    warehouseGroup.add(gridGroup);
+
+    for (let i = 0; i < rows; i++) {
+      gridCells[i] = [];
+      for (let j = 0; j < columns; j++) {
+        const geometry = new THREE.PlaneGeometry(cellSizeX, cellSizeZ);
+        const material = new THREE.MeshBasicMaterial({
+          color: 0x00ff00, // green for free
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.3,
+          wireframe: true,
+        });
+
+        const cell = new THREE.Mesh(geometry, material);
+        cell.rotation.x = -Math.PI / 2; // make it horizontal (on floor)
+
+        // Positioning center of the cell
+        cell.position.x = startX + cellSizeX / 2 + i * cellSizeX;
+        cell.position.z = startZ + cellSizeZ / 2 + j * cellSizeZ;
+        cell.position.y = 0.5; // slightly above ground to avoid z-fighting
+
+        // Debug label
+        const label = new SpriteText(`${i},${j}`);
+        label.color = "white";
+        label.textHeight = 0.7;
+        label.position.set(cell.position.x, 1.5, cell.position.z); // above the cell
+        label.rotateX(Math.PI / 2);
+        gridGroup.add(label);
+
+        gridGroup.add(cell);
+        gridCells[i][j] = cell;
+      }
+    }
   }
 }, 500);
 
@@ -107,18 +151,18 @@ directionalLight.shadow.mapSize.y = 1024;
 scene.add(directionalLight);
 
 // // Point Light
-const pointLight1 = new THREE.PointLight("red", 800, 0);
-pointLight1.position.set(0, 7, 130);
+const pointLight1 = new THREE.PointLight("red", 8000, 0);
+pointLight1.position.set(0, 35, 130);
 pointLight1.castShadow = true;
 scene.add(pointLight1);
 
-const pointLight2 = new THREE.PointLight("red", 800, 0);
-pointLight2.position.set(0, 7, 0);
+const pointLight2 = new THREE.PointLight("red", 8000, 0);
+pointLight2.position.set(0, 35, 0);
 pointLight2.castShadow = true;
 scene.add(pointLight2);
 
-const pointLight3 = new THREE.PointLight("red", 800, 0);
-pointLight3.position.set(0, 7, -130);
+const pointLight3 = new THREE.PointLight("red", 8000, 0);
+pointLight3.position.set(0, 35, -130);
 pointLight3.castShadow = true;
 scene.add(pointLight3);
 
@@ -524,7 +568,7 @@ const customLayer = {
         // forkliftModel2!,
       ];
 
-      handleCollisions(modelsArray, cellSize);
+      // handleCollisions(modelsArray, cellSizeX);
 
       // Update animation mixer (if available)
       if (robotModel1!.mixer) {

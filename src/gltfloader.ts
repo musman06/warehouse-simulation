@@ -38,7 +38,7 @@ gltfLoader.load(
     warehouseGroup.add(warehouseModel.model);
 
     // Compute the bounding box
-    const boundingBox = new THREE.Box3().setFromObject(warehouseModel.model);
+    let boundingBox = new THREE.Box3().setFromObject(warehouseModel.model);
     warehouseModel.boundingBox = boundingBox;
 
     // Get size (width, height, depth)
@@ -57,7 +57,12 @@ gltfLoader.load(
     // Move the model slightly above the ground
     warehouseModel.model.position.y += size.y / 2;
 
+    boundingBox = new THREE.Box3().setFromObject(warehouseModel.model);
+    warehouseModel.boundingBox = boundingBox;
+
     warehouseModel.model.traverse((child) => {
+      child.castShadow = true;
+      child.receiveShadow = true;
       if (child instanceof THREE.Mesh) {
         if (child.userData.name !== "NurbsPath.005_WetConcrete_0") {
           // Remove the unwanted mesh from its parent
@@ -70,12 +75,12 @@ gltfLoader.load(
         if (Array.isArray(child.material)) {
           child.material.forEach((material) => {
             if (material instanceof THREE.MeshStandardMaterial) {
-              // material.needsUpdate = true;
+              material.needsUpdate = true;
             }
           });
         } else {
           if (child.material instanceof THREE.MeshStandardMaterial) {
-            // child.material.needsUpdate = true;
+            child.material.needsUpdate = true;
           }
         }
       }
@@ -99,12 +104,21 @@ gltfLoader.load(
     const originalStorageRackModel = gltf.scene;
     originalStorageRackModel.scale.set(0.03, 0.03, 0.03);
     originalStorageRackModel.rotateY(Math.PI / 2);
+    originalStorageRackModel.castShadow = true;
+    originalStorageRackModel.receiveShadow = true;
+
+    const boundingBox = new THREE.Box3().setFromObject(
+      originalStorageRackModel
+    );
+    console.log("boundingBox 111: ", boundingBox);
 
     // enabling shadows in child meshes
     originalStorageRackModel.traverse((child) => {
+      child.castShadow = true;
+      child.receiveShadow = true;
       if (child instanceof THREE.Mesh) {
-        // child.castShadow = true;
-        // child.receiveShadow = true;
+        child.castShadow = true;
+        child.receiveShadow = true;
         if (Array.isArray(child.material)) {
           child.material.forEach((material) => {
             if (material instanceof THREE.MeshStandardMaterial) {
@@ -190,6 +204,8 @@ gltfLoader.load(
 
     // Updating texture of all the child objects
     robotModel1.model.traverse((child) => {
+      child.castShadow = true;
+      child.receiveShadow = true;
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
@@ -256,6 +272,8 @@ gltfLoader.load(
 
     // Updating texture of all the child objects
     robotModel2.model.traverse((child) => {
+      child.castShadow = true;
+      child.receiveShadow = true;
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
@@ -312,6 +330,8 @@ gltfLoader.load(
 
     // Updating texture of all the child objects
     robotModel3.model.traverse((child) => {
+      child.castShadow = true;
+      child.receiveShadow = true;
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
@@ -362,10 +382,11 @@ gltfLoader.load(
     forkliftModel1.boundingBox = new THREE.Box3().setFromObject(
       forkliftModel1.model
     );
-    console.log(forkliftModel1.boundingBox);
 
     // Adding shadows to child meshes of fork lift
     forkliftModel1.model.traverse((child) => {
+      child.castShadow = true;
+      child.receiveShadow = true;
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
@@ -396,7 +417,7 @@ gltfLoader.load(
     warehouseGroup.add(forkliftsStartingPointMesh);
 
     if (forkliftModel1.model) {
-      forkLiftCustomAnimation1(forkliftModel1, 5);
+      // forkLiftCustomAnimation1(forkliftModel1, 5);
     }
   },
   (xhr) => {
@@ -419,7 +440,7 @@ gltfLoader.load(
     forkliftModel2.model.position.set(6, 0.1, 21);
     forkliftModel2.model.scale.set(0.01, 0.01, 0.01);
     forkliftModel2.model.rotateY(degreesToRadians(180));
-    warehouseGroup.add(forkliftModel2.model);
+    // warehouseGroup.add(forkliftModel2.model);
 
     // Compute the bounding box
     forkliftModel2.boundingBox = new THREE.Box3().setFromObject(
@@ -427,6 +448,8 @@ gltfLoader.load(
     );
 
     forkliftModel2.model.traverse((child) => {
+      child.castShadow = true;
+      child.receiveShadow = true;
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;

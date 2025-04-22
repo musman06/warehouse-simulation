@@ -19,7 +19,7 @@ const lineGeometry1 = new LineGeometry();
 lineGeometry1.setPositions(points1);
 
 const line1 = new Line2(lineGeometry1, lineMaterial1);
-warehouseGroup.add(line1);
+// warehouseGroup.add(line1);
 
 // // Line 2
 const lineMaterial2 = new LineMaterial({
@@ -36,7 +36,7 @@ const lineGeometry2 = new LineGeometry();
 lineGeometry2.setPositions(points2);
 
 const line2 = new Line2(lineGeometry2, lineMaterial2);
-warehouseGroup.add(line2);
+// warehouseGroup.add(line2);
 
 // // Line 3
 const lineMaterial3 = new LineMaterial({
@@ -54,7 +54,7 @@ const lineGeometry3 = new LineGeometry();
 lineGeometry3.setPositions(points3);
 
 const line3 = new Line2(lineGeometry3, lineMaterial3);
-warehouseGroup.add(line3);
+// warehouseGroup.add(line3);
 
 // // Line 4
 const lineMaterial4 = new LineMaterial({
@@ -68,7 +68,7 @@ let points4: number[] = [
   -9.9, 0.1, 5.2, 6, 0.1, 5.2,
 ];
 const lineGeometry4 = new LineGeometry();
-lineGeometry4.setPositions(points4);
+// lineGeometry4.setPositions(points4);
 
 const line4 = new Line2(lineGeometry4, lineMaterial4);
 warehouseGroup.add(line4);
@@ -85,7 +85,7 @@ let points5: number[] = [
   -12.6, -4.55, 0.1, 4.8, 2.65, 0.1, 4.8, 2.65, 0.1, 21, 5.9, 0.1, 21,
 ];
 const lineGeometry5 = new LineGeometry();
-lineGeometry5.setPositions(points5);
+// lineGeometry5.setPositions(points5);
 
 const line5 = new Line2(lineGeometry5, lineMaterial5);
 warehouseGroup.add(line5);
