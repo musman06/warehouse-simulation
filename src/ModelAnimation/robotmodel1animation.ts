@@ -17,7 +17,7 @@ const timelineRobot1 = gsap.timeline({
 function robotCustomAnimation1(robot: Model3D, cellSize: number) {
   timelineRobot1
     .to(robot.model.position, {
-      z: 5,
+      z: 4.3,
       duration: 16,
       ease: "none",
       onUpdate: () => {
@@ -42,7 +42,7 @@ function robotCustomAnimation1(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.position, {
-      x: -4.75,
+      x: -4.65,
       duration: 4,
       ease: "none",
       onUpdate: () => {
@@ -67,7 +67,7 @@ function robotCustomAnimation1(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.position, {
-      z: -21,
+      z: -19.9,
       duration: 20,
       ease: "none",
       onUpdate: () => {
@@ -92,7 +92,7 @@ function robotCustomAnimation1(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.position, {
-      x: 10,
+      x: 9.7,
       duration: 15,
       ease: "none",
       onUpdate: () => {
@@ -117,7 +117,7 @@ function robotCustomAnimation1(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.position, {
-      z: -4.5,
+      z: -4.3,
       duration: 15,
       ease: "none",
       onUpdate: () => {
@@ -142,7 +142,7 @@ function robotCustomAnimation1(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.position, {
-      x: 0,
+      x: 0.7,
       duration: 10,
       ease: "none",
       onUpdate: () => {
@@ -167,7 +167,7 @@ function robotCustomAnimation1(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.position, {
-      z: 21,
+      z: 19.8,
       duration: 25,
       ease: "none",
       onUpdate: () => {
@@ -192,7 +192,7 @@ function robotCustomAnimation1(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.position, {
-      x: -6,
+      x: -8.3,
       duration: 8,
       ease: "none",
       onUpdate: () => {

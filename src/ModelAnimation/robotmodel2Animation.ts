@@ -17,7 +17,7 @@ const timelineRobot2 = gsap.timeline({
 function robotCustomAnimation2(robot: Model3D, cellSize: number) {
   timelineRobot2
     .to(robot.model.position, {
-      x: -10,
+      x: -10.1,
       duration: 5,
       ease: "none",
       onUpdate: () => {
@@ -40,7 +40,7 @@ function robotCustomAnimation2(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.position, {
-      z: -21,
+      z: -19.9,
       duration: 50,
       ease: "none",
       onUpdate: () => {
@@ -63,7 +63,7 @@ function robotCustomAnimation2(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.position, {
-      x: -4.75,
+      x: -4.65,
       duration: 7,
       ease: "none",
       onUpdate: () => {
@@ -86,7 +86,7 @@ function robotCustomAnimation2(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.position, {
-      z: -12.7,
+      z: -13.1,
       duration: 12,
       ease: "none",
       onUpdate: () => {
@@ -109,7 +109,7 @@ function robotCustomAnimation2(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.position, {
-      x: 0,
+      x: 0.8,
       duration: 4,
       ease: "none",
       onUpdate: () => {
@@ -132,7 +132,7 @@ function robotCustomAnimation2(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.position, {
-      z: 5,
+      z: 4.5,
       duration: 15,
       ease: "none",
       onUpdate: () => {
@@ -155,7 +155,7 @@ function robotCustomAnimation2(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.position, {
-      x: -6,
+      x: -4.7,
       duration: 7,
       ease: "none",
       onUpdate: () => {
@@ -178,7 +178,30 @@ function robotCustomAnimation2(robot: Model3D, cellSize: number) {
       },
     })
     .to(robot.model.position, {
-      z: 21,
+      z: 19.8,
+      duration: 20,
+      ease: "none",
+      onUpdate: () => {
+        robot.occupiedCells.nextCell.x = boundingBoxFlooring(
+          robot.model.position.x - 5,
+          cellSize
+        );
+        robot.occupiedCells.nextCell.z = robot.occupiedCells.currentCell.z;
+      },
+    })
+    .to(robot.model.rotation, {
+      y: degreesToRadians(-450),
+      duration: rotationDurationRobot,
+      ease: "none",
+      onStart: () => {
+        if (robot.mixer) robot.mixer.timeScale = 0;
+      },
+      onComplete: () => {
+        if (robot.mixer) robot.mixer.timeScale = 1;
+      },
+    })
+    .to(robot.model.position, {
+      x: -8.3,
       duration: 20,
       ease: "none",
       onUpdate: () => {

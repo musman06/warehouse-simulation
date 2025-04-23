@@ -34,7 +34,7 @@ gltfLoader.load(
     warehouseModel = new Model3D("Warehouse Model", gltf.scene, 0, 0);
     warehouseModel.model.castShadow = true;
     warehouseModel.model.receiveShadow = true;
-    warehouseModel.model.scale.set(1.5, 1.5, 1);
+    warehouseModel.model.scale.set(1.6, 1.5, 1);
     warehouseGroup.add(warehouseModel.model);
 
     // Compute the bounding box
@@ -44,7 +44,7 @@ gltfLoader.load(
     // Get size (width, height, depth)
     const size = new THREE.Vector3();
     boundingBox.getSize(size);
-    console.log("boundingBox: ", boundingBox);
+    // console.log("boundingBox: ", boundingBox);
 
     // Get center position
     const center: any = new THREE.Vector3();
@@ -102,7 +102,7 @@ gltfLoader.load(
   (gltf) => {
     // rack to be cloned
     const originalStorageRackModel = gltf.scene;
-    originalStorageRackModel.scale.set(0.03, 0.03, 0.03);
+    originalStorageRackModel.scale.set(0.024, 0.03, 0.03);
     originalStorageRackModel.rotateY(Math.PI / 2);
     originalStorageRackModel.castShadow = true;
     originalStorageRackModel.receiveShadow = true;
@@ -110,7 +110,7 @@ gltfLoader.load(
     const boundingBox = new THREE.Box3().setFromObject(
       originalStorageRackModel
     );
-    console.log("boundingBox 111: ", boundingBox);
+    // console.log("boundingBox 111: ", boundingBox);
 
     // enabling shadows in child meshes
     originalStorageRackModel.traverse((child) => {
@@ -137,18 +137,18 @@ gltfLoader.load(
 
     // multiple clones of original rack at different positions
     const rackPositions = [
-      [-7.2, 0, -16.7], // row 1
-      [-2.2, 0, -16.7],
-      [2.8, 0, -16.7],
-      [7.8, 0, -16.7],
-      [-7.2, 0, -8.3], // row 2
-      [-2.2, 0, -8.3],
-      [2.8, 0, -8.3],
-      [7.8, 0, -8.3],
-      [-7.2, 0, 0.1], // row 3
-      [-2.2, 0, 0.1],
-      [2.8, 0, 0.1],
-      [7.8, 0, 0.1],
+      [-8, 0, -16.4], // row 1
+      [-2.55, 0, -16.4],
+      [2.85, 0, -16.4],
+      [8.2, 0, -16.4],
+      [-8, 0, -7.6], // row 2
+      [-2.55, 0, -7.6],
+      [2.85, 0, -7.6],
+      [8.2, 0, -7.6],
+      [-8, 0, 1.2], // row 3
+      [-2.55, 0, 1.2],
+      [2.85, 0, 1.2],
+      [8.2, 0, 1.2],
     ];
 
     for (let i = 0; i < rackPositions.length; i++) {
@@ -167,7 +167,7 @@ gltfLoader.load(
       );
 
       // add the cloned rack in the warehouseGroup
-      warehouseGroup.add(rackModel.model);
+      // warehouseGroup.add(rackModel.model);
     }
   },
   (xhr) => {
@@ -187,14 +187,21 @@ gltfLoader.load(
     robotModel1 = new Model3D("Robot Model 1", gltf.scene, 2, 3);
     robotModel1.model.castShadow = true;
     robotModel1.model.receiveShadow = true;
-    robotModel1.model.position.set(-6, 0.55, 21);
     robotModel1.model.scale.set(0.06, 0.06, 0.06);
+    robotModel1.model.position.set(-8.3, 0.55, 19.8);
     robotModel1.model.rotateY(Math.PI);
-    warehouseGroup.add(robotModel1.model);
+    // warehouseGroup.add(robotModel1.model);
+
+    // TODO
+    // const boundingBox = new THREE.Box3().setFromObject(robotModel1?.model);
+    // const boxHelper = new THREE.Box3Helper(boundingBox, 0xff0000); // red outline
+    // warehouseGroup.add(boxHelper);
 
     // Compute the bounding box
-    robotModel1.boundingBox = new THREE.Box3().setFromObject(robotModel1.model);
-    // console.log(robotModel1.boundingBox);
+    robotModel1.boundingBox = new THREE.Box3().setFromObject(
+      robotModel1?.model
+    );
+    console.log(robotModel1.boundingBox);
 
     // Play all available animations
     gltf.animations.forEach((clip) => {
@@ -229,14 +236,14 @@ gltfLoader.load(
       0.8,
       32,
       "white",
-      -6,
+      -8.3,
       0.05,
-      21
+      19.8
     );
     warehouseGroup.add(robotsStartingPointMesh);
 
     if (robotModel1.model) {
-      robotCustomAnimation1(robotModel1, 5);
+      // robotCustomAnimation1(robotModel1, 5);
     }
   },
   (xhr) => {
@@ -256,10 +263,10 @@ gltfLoader.load(
     robotModel2 = new Model3D("Robot Model 2", gltf.scene, 2, 4);
     robotModel2.model.castShadow = true;
     robotModel2.model.receiveShadow = true;
-    robotModel2.model.position.set(-6, 0.55, 21);
+    robotModel2.model.position.set(-8.3, 0.55, 19.8);
     robotModel2.model.scale.set(0.06, 0.06, 0.06);
     robotModel2.model.rotateY(-Math.PI / 2);
-    warehouseGroup.add(robotModel2.model);
+    // warehouseGroup.add(robotModel2.model);
 
     // Compute the bounding box
     robotModel2.boundingBox = new THREE.Box3().setFromObject(robotModel2.model);
@@ -294,7 +301,7 @@ gltfLoader.load(
     });
 
     if (robotModel2!.model) {
-      robotCustomAnimation2(robotModel2!, 5);
+      // robotCustomAnimation2(robotModel2!, 5);
     }
   },
   (xhr) => {
@@ -314,7 +321,7 @@ gltfLoader.load(
     robotModel3 = new Model3D("Robot Model 3", gltf.scene, 2, 5);
     robotModel3.model.castShadow = true;
     robotModel3.model.receiveShadow = true;
-    robotModel3.model.position.set(-6, 0.55, 21);
+    robotModel3.model.position.set(-8.3, 0.55, 19.8);
     robotModel3.model.scale.set(0.06, 0.06, 0.06);
     robotModel3.model.rotateY(Math.PI);
     warehouseGroup.add(robotModel3.model);
@@ -373,10 +380,10 @@ gltfLoader.load(
     forkliftModel1 = new Model3D("Fork Lift Model 1", gltf.scene, 1, 1);
     forkliftModel1.model.castShadow = true;
     forkliftModel1.model.receiveShadow = true;
-    forkliftModel1.model.position.set(6, 0.1, 21);
+    forkliftModel1.model.position.set(7.9, 0.1, 20.4);
     forkliftModel1.model.scale.set(0.01, 0.01, 0.01);
     forkliftModel1.model.rotateY(Math.PI);
-    warehouseGroup.add(forkliftModel1.model);
+    // warehouseGroup.add(forkliftModel1.model);
 
     // Computing the bounding box
     forkliftModel1.boundingBox = new THREE.Box3().setFromObject(
@@ -407,12 +414,12 @@ gltfLoader.load(
     });
 
     forkliftsStartingPointMesh = drawStartPointCircle(
-      1,
+      0.8,
       32,
       "yellow",
-      6,
+      7.9,
       0.05,
-      21
+      19.8
     );
     warehouseGroup.add(forkliftsStartingPointMesh);
 
@@ -437,7 +444,7 @@ gltfLoader.load(
     forkliftModel2 = new Model3D("Fork Lift Model 2", gltf.scene, 1, 2);
     forkliftModel2.model.castShadow = true;
     forkliftModel2.model.receiveShadow = true;
-    forkliftModel2.model.position.set(6, 0.1, 21);
+    forkliftModel2.model.position.set(7.9, 0.1, 20.4);
     forkliftModel2.model.scale.set(0.01, 0.01, 0.01);
     forkliftModel2.model.rotateY(degreesToRadians(180));
     // warehouseGroup.add(forkliftModel2.model);
@@ -470,7 +477,7 @@ gltfLoader.load(
     });
 
     if (forkliftModel2!.model) {
-      forkLiftCustomAnimation2(forkliftModel2!, 5);
+      // forkLiftCustomAnimation2(forkliftModel2!, 5);
     }
   },
   (xhr) => {

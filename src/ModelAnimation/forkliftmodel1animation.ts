@@ -17,7 +17,7 @@ const timelineForklift1 = gsap.timeline({
 function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
   timelineForklift1
     .to(forklift.model.position, {
-      z: 5,
+      z: 4.85,
       duration: 10,
       ease: "none",
       onUpdate: () => {
@@ -41,8 +41,8 @@ function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
       },
     })
     .to(forklift.model.position, {
-      x: 10,
-      duration: 3,
+      x: 9.8,
+      duration: 1.5,
       ease: "none",
       onUpdate: () => {
         forklift.occupiedCells.nextCell.x = boundingBoxFlooring(
@@ -65,7 +65,7 @@ function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
       },
     })
     .to(forklift.model.position, {
-      z: -21,
+      z: -19.8,
       duration: 13,
       ease: "none",
       onUpdate: () => {
@@ -89,7 +89,7 @@ function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
       },
     })
     .to(forklift.model.position, {
-      x: -10,
+      x: -9.9,
       duration: 10,
       ease: "none",
       onUpdate: () => {
@@ -113,7 +113,7 @@ function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
       },
     })
     .to(forklift.model.position, {
-      z: 5,
+      z: 4.6,
       duration: 13,
       ease: "none",
       onUpdate: () => {
@@ -137,7 +137,7 @@ function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
       },
     })
     .to(forklift.model.position, {
-      x: 6,
+      x: 7.9,
       duration: 8,
       ease: "none",
       onUpdate: () => {
@@ -161,7 +161,7 @@ function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
       },
     })
     .to(forklift.model.position, {
-      z: 21,
+      z: 19.9,
       duration: 10,
       ease: "none",
       onUpdate: () => {
