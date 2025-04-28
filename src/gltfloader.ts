@@ -238,7 +238,7 @@ gltfLoader.load(
     robotModel2.model.position.set(-8.3, 0.55, 19.8);
     robotModel2.model.scale.set(0.06, 0.06, 0.06);
     robotModel2.model.rotateY(-Math.PI / 2);
-    // warehouseGroup.add(robotModel2.model);
+    warehouseGroup.add(robotModel2.model);
 
     // Play all available animations
     gltf.animations.forEach((clip) => {
@@ -270,7 +270,7 @@ gltfLoader.load(
     });
 
     if (robotModel2!.model) {
-      // robotCustomAnimation2(robotModel2!);
+      robotCustomAnimation2(robotModel2!);
     }
   },
   (xhr) => {
@@ -290,7 +290,7 @@ gltfLoader.load(
     robotModel3 = new Model3D("Robot Model 3", gltf.scene);
     robotModel3.model.castShadow = true;
     robotModel3.model.receiveShadow = true;
-    robotModel3.model.position.set(-8.3, 0.55, 24.8);
+    robotModel3.model.position.set(-8.3, 0.55, 19.8);
     robotModel3.model.scale.set(0.06, 0.06, 0.06);
     robotModel3.model.rotateY(Math.PI);
     warehouseGroup.add(robotModel3.model);
@@ -324,11 +324,9 @@ gltfLoader.load(
       }
     });
 
-    // setTimeout(() => {
     if (robotModel3!.model) {
       robotCustomAnimation3(robotModel3!);
     }
-    // }, 6000);
   },
   (xhr) => {
     console.log(
@@ -351,7 +349,7 @@ gltfLoader.load(
     forkliftModel1.model.position.set(7.9, 0.1, 20.4);
     forkliftModel1.model.scale.set(0.01, 0.01, 0.01);
     forkliftModel1.model.rotateY(Math.PI);
-    // warehouseGroup.add(forkliftModel1.model);
+    warehouseGroup.add(forkliftModel1.model);
 
     // Adding shadows to child meshes of fork lift
     forkliftModel1.model.traverse((child) => {
@@ -387,7 +385,7 @@ gltfLoader.load(
     warehouseGroup.add(forkliftsStartingPointMesh);
 
     if (forkliftModel1.model) {
-      // forkLiftCustomAnimation1(forkliftModel1);
+      forkLiftCustomAnimation1(forkliftModel1);
     }
   },
   (xhr) => {
@@ -410,7 +408,7 @@ gltfLoader.load(
     forkliftModel2.model.position.set(7.9, 0.1, 20.4);
     forkliftModel2.model.scale.set(0.01, 0.01, 0.01);
     forkliftModel2.model.rotateY(degreesToRadians(180));
-    // warehouseGroup.add(forkliftModel2.model);
+    warehouseGroup.add(forkliftModel2.model);
 
     forkliftModel2.model.traverse((child) => {
       child.castShadow = true;
@@ -435,7 +433,7 @@ gltfLoader.load(
     });
 
     if (forkliftModel2!.model) {
-      // forkLiftCustomAnimation2(forkliftModel2!);
+      forkLiftCustomAnimation2(forkliftModel2!);
     }
   },
   (xhr) => {

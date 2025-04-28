@@ -15,7 +15,7 @@ function robotCustomAnimation1(robot: Model3D) {
   timelineRobot1
     .to(robot.model.position, {
       z: 4.3,
-      duration: 16,
+      duration: 14,
       ease: "none",
     })
     .to(robot.model.rotation, {
