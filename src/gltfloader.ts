@@ -62,12 +62,6 @@ gltfLoader.load(
       child.castShadow = true;
       child.receiveShadow = true;
       if (child instanceof THREE.Mesh) {
-        if (child.userData.name !== "NurbsPath.005_WetConcrete_0") {
-          // Remove the unwanted mesh from its parent
-          if (child.parent) {
-            child.parent.remove(child);
-          }
-        }
         child.castShadow = true;
         child.receiveShadow = true;
         if (Array.isArray(child.material)) {

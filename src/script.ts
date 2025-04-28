@@ -12,6 +12,7 @@ import {
 } from "./gltfloader";
 import { Model3D } from "./model3DClass";
 import maplibregl from "maplibre-gl";
+import { removeWarehouseRoof, addWarehouseRoof } from "./utils";
 
 // Converting 3D spherical earth coordinates into flat 2D map coordinates
 const modelRenderOrigin: [number, number] = [
@@ -288,102 +289,53 @@ function warehouseControls(map: maplibregl.Map): maplibregl.IControl {
   // Define warehouse settings
   const warehouseCenterLng = -111.77060200008945;
   const warehouseCenterLat = 32.86684249587934;
-  const longitudeRange = 0.00095; // Adjust for desired longitude constraint
-  const latitudeRange = 0.0001; // Small latitude range as requested
   const insideViewZoom = 21;
   const insideViewPitch = 80;
   const insideViewBearing = -90;
 
   let warehouseInsideViewFlag = false;
-  let moveListener: any = null;
-  let zoomListener: any = null;
+  const removedRoofMeshes: { mesh: THREE.Mesh; parent: THREE.Object3D }[] = [];
 
   warehouseInsideViewButton.addEventListener("click", (e) => {
     e.stopPropagation();
     warehouseInsideViewFlag = !warehouseInsideViewFlag;
 
     if (warehouseInsideViewFlag) {
-      // Set camera to inside view
-      map.flyTo({
-        center: [warehouseCenterLng, warehouseCenterLat],
-        zoom: insideViewZoom,
-        pitch: insideViewPitch,
-        bearing: insideViewBearing,
-        duration: 2000,
-      });
+      // Remove warehouse roof mesh
+      // console.log("warehouseModel is:", warehouseModel);
+      // console.log("warehouseModel.model is:", warehouseModel?.model);
 
-      // Add constraints after the flyTo animation completes
-      setTimeout(() => {
-        // Remove any existing listeners first
-        if (moveListener) {
-          map.off("move", moveListener);
-        }
-        if (zoomListener) {
-          map.off("zoom", zoomListener);
-        }
+      try {
+        removeWarehouseRoof(warehouseModel!);
 
-        // Add move listener to constrain position
-        moveListener = function () {
-          const currentCenter = map.getCenter();
-          const currentLng = currentCenter.lng;
-          const currentLat = currentCenter.lat;
-          let needsUpdate = false;
-          let newLng = currentLng;
-          let newLat = currentLat;
-
-          // Check longitude bounds
-          if (
-            currentLng < warehouseCenterLng - longitudeRange ||
-            currentLng > warehouseCenterLng + longitudeRange
-          ) {
-            newLng = Math.max(
-              warehouseCenterLng - longitudeRange,
-              Math.min(warehouseCenterLng + longitudeRange, currentLng)
-            );
-            needsUpdate = true;
-          }
-
-          // Check latitude bounds
-          if (
-            currentLat < warehouseCenterLat - latitudeRange ||
-            currentLat > warehouseCenterLat + latitudeRange
-          ) {
-            newLat = Math.max(
-              warehouseCenterLat - latitudeRange,
-              Math.min(warehouseCenterLat + latitudeRange, currentLat)
-            );
-            needsUpdate = true;
-          }
-
-          // Update center if needed
-          if (needsUpdate) {
-            map.setCenter([newLng, newLat]);
-          }
-        };
-
-        // Add zoom listener to maintain fixed zoom level
-        zoomListener = function () {
-          const currentZoom = map.getZoom();
-          if (currentZoom !== insideViewZoom) {
-            map.setZoom(insideViewZoom);
-          }
-        };
-
-        map.on("move", moveListener);
-        map.on("zoom", zoomListener);
-      }, 2000); // Wait for flyTo animation to complete
+        // Now that the roof removal is successful, move the camera
+        map.flyTo({
+          center: [warehouseCenterLng, warehouseCenterLat],
+          zoom: insideViewZoom,
+          pitch: insideViewPitch,
+          bearing: insideViewBearing,
+          duration: 2000,
+        });
+      } catch (error) {
+        console.error("Error handling roof removal:", error);
+        // Still try to move the camera even if roof removal fails
+        map.flyTo({
+          center: [warehouseCenterLng, warehouseCenterLat],
+          zoom: insideViewZoom,
+          pitch: insideViewPitch,
+          bearing: insideViewBearing,
+          duration: 2000,
+        });
+      }
     } else {
-      // Remove constraints when exiting inside view
-      if (moveListener) {
-        map.off("move", moveListener);
-        moveListener = null;
-      }
-      if (zoomListener) {
-        map.off("zoom", zoomListener);
-        zoomListener = null;
+      // Similar error handling for adding the roof back
+      try {
+        addWarehouseRoof(warehouseModel!);
+      } catch (error) {
+        console.error("Error handling roof addition:", error);
       }
 
-      // Set camera to outside view
+      // Still move the camera regardless of roof handling
       map.flyTo({
         center: [warehouseCenterLng, warehouseCenterLat],
         zoom: 17,
@@ -401,14 +353,8 @@ function warehouseControls(map: maplibregl.Map): maplibregl.IControl {
     onAdd: function (): HTMLElement {
       return warehouseInsideViewContainer;
     },
-    onRemove: function (map: maplibregl.Map) {
+    onRemove: function () {
       // Clean up listeners when control is removed
-      if (moveListener) {
-        map.off("move", moveListener);
-      }
-      if (zoomListener) {
-        map.off("zoom", zoomListener);
-      }
       warehouseInsideViewContainer.remove();
     },
   };
