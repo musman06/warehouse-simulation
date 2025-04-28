@@ -105,11 +105,6 @@ gltfLoader.load(
     originalStorageRackModel.castShadow = true;
     originalStorageRackModel.receiveShadow = true;
 
-    const boundingBox = new THREE.Box3().setFromObject(
-      originalStorageRackModel
-    );
-    // console.log("boundingBox 111: ", boundingBox);
-
     // enabling shadows in child meshes
     originalStorageRackModel.traverse((child) => {
       child.castShadow = true;
@@ -120,13 +115,11 @@ gltfLoader.load(
         if (Array.isArray(child.material)) {
           child.material.forEach((material) => {
             if (material instanceof THREE.MeshStandardMaterial) {
-              // console.log("hahaha 1");
               material.needsUpdate = true;
             }
           });
         } else {
           if (child.material instanceof THREE.MeshStandardMaterial) {
-            // console.log("hahaha 2");
             child.material.needsUpdate = true;
           }
         }
@@ -163,7 +156,7 @@ gltfLoader.load(
       );
 
       // add the cloned rack in the warehouseGroup
-      // warehouseGroup.add(rackModel.model);
+      warehouseGroup.add(rackModel.model);
     }
   },
   (xhr) => {
