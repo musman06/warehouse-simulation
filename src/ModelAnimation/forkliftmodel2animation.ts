@@ -1,8 +1,4 @@
-import {
-  degreesToRadians,
-  boundingBoxFlooring,
-  rotationDurationForklift,
-} from "../utils";
+import { degreesToRadians, rotationDurationForklift } from "../utils";
 import gsap from "gsap";
 import { Model3D } from "../model3DClass";
 
@@ -14,7 +10,7 @@ const timelineForklift2 = gsap.timeline({
 });
 
 // Animation Function For Fork Lift Model 2
-function forkLiftCustomAnimation2(forklift: Model3D, cellSize: number) {
+function forkLiftCustomAnimation2(forklift: Model3D) {
   timelineForklift2
     .to(forklift.model.position, {
       z: 4.85,

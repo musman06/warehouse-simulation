@@ -228,7 +228,7 @@ gltfLoader.load(
     warehouseGroup.add(robotsStartingPointMesh);
 
     if (robotModel1.model) {
-      robotCustomAnimation1(robotModel1, 5);
+      robotCustomAnimation1(robotModel1);
     }
   },
   (xhr) => {
@@ -283,7 +283,7 @@ gltfLoader.load(
     });
 
     if (robotModel2!.model) {
-      // robotCustomAnimation2(robotModel2!, 5);
+      // robotCustomAnimation2(robotModel2!);
     }
   },
   (xhr) => {
@@ -339,7 +339,7 @@ gltfLoader.load(
 
     // setTimeout(() => {
     if (robotModel3!.model) {
-      robotCustomAnimation3(robotModel3!, 5);
+      robotCustomAnimation3(robotModel3!);
     }
     // }, 6000);
   },
@@ -400,7 +400,7 @@ gltfLoader.load(
     warehouseGroup.add(forkliftsStartingPointMesh);
 
     if (forkliftModel1.model) {
-      // forkLiftCustomAnimation1(forkliftModel1, 5);
+      // forkLiftCustomAnimation1(forkliftModel1);
     }
   },
   (xhr) => {
@@ -448,7 +448,7 @@ gltfLoader.load(
     });
 
     if (forkliftModel2!.model) {
-      // forkLiftCustomAnimation2(forkliftModel2!, 5);
+      // forkLiftCustomAnimation2(forkliftModel2!);
     }
   },
   (xhr) => {

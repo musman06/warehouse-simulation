@@ -1,8 +1,4 @@
-import {
-  degreesToRadians,
-  boundingBoxFlooring,
-  rotationDurationRobot,
-} from "../utils";
+import { degreesToRadians, rotationDurationRobot } from "../utils";
 import gsap from "gsap";
 import { Model3D } from "../model3DClass";
 
@@ -14,7 +10,7 @@ const timelineRobot2 = gsap.timeline({
 });
 
 // Animation Function For Robot Model 2
-function robotCustomAnimation2(robot: Model3D, cellSize: number) {
+function robotCustomAnimation2(robot: Model3D) {
   timelineRobot2
     .to(robot.model.position, {
       x: -10.1,
