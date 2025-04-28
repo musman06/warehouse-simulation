@@ -20,7 +20,7 @@ const removedRoofMeshes: { mesh: THREE.Mesh; parent: THREE.Object3D }[] = [];
 
 // Remove Warehouse roof
 function removeWarehouseRoof(warehouseModel: Model3D) {
-  const meshesToRemove: { mesh: THREE.Mesh; parent: THREE.Object3D }[] = [];
+  const meshesToRemove: { mesh: THREE.Mesh; parent: THREE.Object3D }[] = []; // meshes of warehouse model to remove
 
   warehouseModel.model.traverse((child) => {
     if (child instanceof THREE.Mesh) {
@@ -43,7 +43,7 @@ function removeWarehouseRoof(warehouseModel: Model3D) {
 }
 
 // Add Warehouse roof
-function addWarehouseRoof(warehouseModel: Model3D) {
+function addWarehouseRoof() {
   for (const { mesh, parent } of removedRoofMeshes) {
     parent.add(mesh); // Re-attach to its original parent
   }

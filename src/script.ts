@@ -294,21 +294,17 @@ function warehouseControls(map: maplibregl.Map): maplibregl.IControl {
   const insideViewBearing = -90;
 
   let warehouseInsideViewFlag = false;
-  const removedRoofMeshes: { mesh: THREE.Mesh; parent: THREE.Object3D }[] = [];
 
   warehouseInsideViewButton.addEventListener("click", (e) => {
     e.stopPropagation();
     warehouseInsideViewFlag = !warehouseInsideViewFlag;
 
     if (warehouseInsideViewFlag) {
-      // Remove warehouse roof mesh
-      // console.log("warehouseModel is:", warehouseModel);
-      // console.log("warehouseModel.model is:", warehouseModel?.model);
-
       try {
+        // call function to remove warehouse roof and roof's white rods
         removeWarehouseRoof(warehouseModel!);
 
-        // Now that the roof removal is successful, move the camera
+        // move inside the warehouse
         map.flyTo({
           center: [warehouseCenterLng, warehouseCenterLat],
           zoom: insideViewZoom,
@@ -330,7 +326,7 @@ function warehouseControls(map: maplibregl.Map): maplibregl.IControl {
     } else {
       // Similar error handling for adding the roof back
       try {
-        addWarehouseRoof(warehouseModel!);
+        addWarehouseRoof();
       } catch (error) {
         console.error("Error handling roof addition:", error);
       }
