@@ -92,6 +92,4 @@ lineGeometry5.setPositions(points5);
 const line5 = new Line2(lineGeometry5, lineMaterial5);
 warehouseGroup.add(line5);
 
-// circleMesh.position.set(-6, 0.3, 21);
-
 export { line1, line2, line3, line4, line5 };

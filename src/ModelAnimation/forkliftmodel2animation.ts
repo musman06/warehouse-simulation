@@ -5,7 +5,6 @@ import {
 } from "../utils";
 import gsap from "gsap";
 import { Model3D } from "../model3DClass";
-import { NONAME } from "dns";
 
 // Model Animation timeline
 const timelineForklift2 = gsap.timeline({
