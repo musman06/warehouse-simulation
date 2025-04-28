@@ -116,16 +116,37 @@ function checkForCollisions(modelsArray: Model3D[]) {
   }
 }
 
+function isSameCell(a: any, b: any): boolean {
+  return a.x === b.x && a.z === b.z;
+}
+
+function isBehind(modelA: Model3D, modelB: Model3D): boolean {
+  return (
+    modelA.direction.x === modelB.direction.x &&
+    modelA.direction.z === modelB.direction.z &&
+    ((modelA.direction.x !== 0 &&
+      Math.sign(modelB.model.position.x - modelA.model.position.x) ===
+        modelA.direction.x) ||
+      (modelA.direction.z !== 0 &&
+        Math.sign(modelB.model.position.z - modelA.model.position.z) ===
+          modelA.direction.z))
+  );
+}
+
+function detectCollision(modelA: Model3D, modelB: Model3D): boolean {
+  const aNext = modelA.occupiedCells.nextCell;
+  const bCurrent = modelB.occupiedCells.currentCell;
+  const bPrevious = modelB.occupiedCells.previousCell;
+
+  return isSameCell(aNext, bCurrent) || isSameCell(aNext, bPrevious);
+}
+
 // converting real-world coordinates into warehouse floor mesh indices
 function worldToGridIndex(
   worldPos: number,
   start: number,
   cellSize: number
 ): number {
-  // console.log("boundingBox.max.x: ", worldPos);
-  // console.log("startX: ", start);
-  // console.log("cellSizeX: ", cellSize);
-  // console.log("Row No: ", Math.floor((worldPos - start) / cellSize));
   return Math.floor((worldPos - start) / cellSize);
 }
 
@@ -152,9 +173,9 @@ function updateModelCell(
   if (newX !== prevX || newZ !== prevZ) {
     // Mark previous cell as free
     if (prevX >= 0 && prevX < rows && prevZ >= 0 && prevZ < columns) {
-      console.log("I am here");
-      console.log("newX: ", newX, "newZ: ", newZ);
-      console.log("prevX: ", prevX, "prevZ: ", prevZ);
+      // console.log("I am here");
+      // console.log("newX: ", newX, "newZ: ", newZ);
+      // console.log("prevX: ", prevX, "prevZ: ", prevZ);
       gridCells[prevX][prevZ].isOccupied = false;
       gridCells[prevX][prevZ].changeCellColor();
     }
@@ -178,6 +199,8 @@ function handleCollisions(
   cellSizeZ: number
 ) {
   for (const model of modelsArray) {
+    console.log("Model Name: ", model.name);
+    console.log("Model Cells: ", model.occupiedCells);
     updateModelCell(
       model,
       gridCells,
@@ -188,71 +211,34 @@ function handleCollisions(
       rows,
       columns
     );
-    // const minX = Math.floor(model.boundingBox.min.x);
-    // const maxX = Math.floor(model.boundingBox.max.x);
-    // const minZ = Math.floor(model.boundingBox.min.z);
-    // const maxZ = Math.floor(model.boundingBox.max.z);
-    // model.occupiedCells.currentCell.x = worldToGridIndex(
-    //   model.boundingBox.max.x,
-    //   startX,
-    //   cellSizeX
-    // );
-    // model.occupiedCells.currentCell.z = worldToGridIndex(
-    //   model.boundingBox.max.z,
-    //   startZ,
-    //   cellSizeZ
-    // );
-    // const modelRow = model.occupiedCells.currentCell.x;
-    // const modelColumn = model.occupiedCells.currentCell.z;
-    // console.log("modelRow: ", modelRow);
-    // console.log("modelColumn: ", modelColumn);
-    // if (
-    //   model.occupiedCells.currentCell.x >= 0 &&
-    //   model.occupiedCells.currentCell.x < rows &&
-    //   model.occupiedCells.currentCell.z >= 0 &&
-    //   model.occupiedCells.currentCell.z < columns
-    // ) {
-    //   gridCells[modelRow][modelColumn].isOccupied = true;
-    //   gridCells[modelRow][modelColumn].changeCellColor();
-    //   // console.log("I am here");
-    // }
-    // if (minX !== maxX || minZ !== maxZ) {
-    //   if (minX !== maxX && minZ !== maxZ) {
-    //     // if (model.name === "Robot Model 1") console.log("I am here 1");
-    //     model.occupiedCells.previousCell.x =
-    //       model.occupiedCells.currentCell.x - 1;
-    //     model.occupiedCells.previousCell.z =
-    //       model.occupiedCells.currentCell.z - 1;
-    //   } else if (minX !== maxX) {
-    //     // if (model.name === "Robot Model 1") console.log("I am here 2");
-    //     model.occupiedCells.previousCell.x =
-    //       model.occupiedCells.currentCell.x - 1;
-    //     model.occupiedCells.previousCell.z = model.occupiedCells.currentCell.z;
-    //   } else if (minZ !== maxZ) {
-    //     // if (model.name === "Robot Model 1") console.log("I am here 3");
-    //     model.occupiedCells.previousCell.x = model.occupiedCells.currentCell.x;
-    //     model.occupiedCells.previousCell.z =
-    //       model.occupiedCells.currentCell.z - 1;
-    //   }
-    // } else {
-    //   model.occupiedCells.previousCell.x = model.occupiedCells.currentCell.x;
-    //   model.occupiedCells.previousCell.z = model.occupiedCells.currentCell.z;
-    // }
-    // if (model.name === "Robot Model 1")
-    //   console.log(
-    //     "Previous Position: ",
-    //     model.occupiedCells.previousCell,
-    //     "Current Position: ",
-    //     model.occupiedCells.currentCell,
-    //     "Next Position: ",
-    //     model.occupiedCells.nextCell
-    //   );
+
+    // Update next cell based on direction
+    model.occupiedCells.nextCell = {
+      x: model.occupiedCells.currentCell.x + model.direction.x,
+      z: model.occupiedCells.currentCell.z + model.direction.z,
+    };
   }
 
-  // checkForCollisions(modelsArray);
+  // Check collisions between all pairs
+  for (let i = 0; i < modelsArray.length; i++) {
+    for (let j = 0; j < modelsArray.length; j++) {
+      if (i === j) continue;
 
-  // console.log(rm1bb, rm2bb, rm3bb, flm1bb, flm2bb, rows, columns, cellSize);
-  // console.log(currentCellNumberRM1BB);
+      const modelA = modelsArray[i]; // the faster one coming from behind
+      const modelB = modelsArray[j]; // the slower one ahead
+
+      if (detectCollision(modelA, modelB) && isBehind(modelA, modelB)) {
+        // Pause modelA's timeline (the one coming from behind)
+        if (timelineRobot3.isActive()) {
+          timelineRobot3.pause();
+
+          setTimeout(() => {
+            timelineRobot3.resume();
+          }, 3000);
+        }
+      }
+    }
+  }
 }
 
 export { degreesToRadians, handleCollisions, boundingBoxFlooring };

@@ -14,12 +14,21 @@ const timelineRobot1 = gsap.timeline({
 });
 
 // Animation Function For Robot Model 1
+
 function robotCustomAnimation1(robot: Model3D, cellSize: number) {
   timelineRobot1
     .to(robot.model.position, {
       z: 4.3,
       duration: 16,
       ease: "none",
+      onStart: () => {
+        const dz = 4.3 - robot.model.position.z;
+
+        robot.direction = {
+          x: 0,
+          z: Math.sign(dz),
+        };
+      },
       onUpdate: () => {
         robot.occupiedCells.nextCell.x = robot.occupiedCells.currentCell.x;
         robot.occupiedCells.nextCell.z = boundingBoxFlooring(

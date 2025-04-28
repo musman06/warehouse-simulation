@@ -9,19 +9,11 @@ export class Model3D {
   boundingBox: THREE.Box3;
   isStopped: boolean;
   occupiedCells: {
-    previousCell: {
-      x: number;
-      z: number;
-    };
-    currentCell: {
-      x: number;
-      z: number;
-    };
-    nextCell: {
-      x: number;
-      z: number;
-    };
+    previousCell: { x: number; z: number };
+    currentCell: { x: number; z: number };
+    nextCell: { x: number; z: number };
   };
+  direction: { x: number; z: number };
 
   constructor(
     name: string,
@@ -41,5 +33,6 @@ export class Model3D {
       currentCell: { x: -1, z: -1 },
       nextCell: { x: -1, z: -1 },
     };
+    this.direction = { x: 0, z: 0 }; // Default to stationary
   }
 }

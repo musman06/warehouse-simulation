@@ -765,10 +765,10 @@ const customLayer = {
       // Calls the Function for Collision Detection
       const modelsArray: Model3D[] = [
         robotModel1!,
-        robotModel2!,
+        // robotModel2!,
         robotModel3!,
-        forkliftModel1!,
-        forkliftModel2!,
+        // forkliftModel1!,
+        // forkliftModel2!,
       ];
 
       handleCollisions(modelsArray, cellSizeX, cellSizeZ);

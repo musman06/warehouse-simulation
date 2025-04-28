@@ -190,7 +190,7 @@ gltfLoader.load(
     robotModel1.model.scale.set(0.06, 0.06, 0.06);
     robotModel1.model.position.set(-8.3, 0.55, 19.8);
     robotModel1.model.rotateY(Math.PI);
-    // warehouseGroup.add(robotModel1.model);
+    warehouseGroup.add(robotModel1.model);
 
     // TODO
     // const boundingBox = new THREE.Box3().setFromObject(robotModel1?.model);
@@ -201,7 +201,7 @@ gltfLoader.load(
     robotModel1.boundingBox = new THREE.Box3().setFromObject(
       robotModel1?.model
     );
-    console.log(robotModel1.boundingBox);
+    // console.log(robotModel1.boundingBox);
 
     // Play all available animations
     gltf.animations.forEach((clip) => {
@@ -243,7 +243,7 @@ gltfLoader.load(
     warehouseGroup.add(robotsStartingPointMesh);
 
     if (robotModel1.model) {
-      // robotCustomAnimation1(robotModel1, 5);
+      robotCustomAnimation1(robotModel1, 5);
     }
   },
   (xhr) => {
@@ -321,7 +321,7 @@ gltfLoader.load(
     robotModel3 = new Model3D("Robot Model 3", gltf.scene, 2, 5);
     robotModel3.model.castShadow = true;
     robotModel3.model.receiveShadow = true;
-    robotModel3.model.position.set(-8.3, 0.55, 19.8);
+    robotModel3.model.position.set(-8.3, 0.55, 24.8);
     robotModel3.model.scale.set(0.06, 0.06, 0.06);
     robotModel3.model.rotateY(Math.PI);
     warehouseGroup.add(robotModel3.model);
@@ -358,9 +358,11 @@ gltfLoader.load(
       }
     });
 
+    // setTimeout(() => {
     if (robotModel3!.model) {
       robotCustomAnimation3(robotModel3!, 5);
     }
+    // }, 6000);
   },
   (xhr) => {
     console.log(
