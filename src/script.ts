@@ -10,17 +10,8 @@ import {
   robotsStartingPointMesh,
   forkliftsStartingPointMesh,
 } from "./gltfloader";
-import {
-  line1,
-  line2,
-  line3,
-  line4,
-  line5,
-} from "./NavigationPathRendering/lineanimation";
-import { handleCollisions } from "./utils";
 import { Model3D } from "./model3DClass";
 import maplibregl from "maplibre-gl";
-import SpriteText from "three-spritetext";
 
 // Converting 3D spherical earth coordinates into flat 2D map coordinates
 const modelRenderOrigin: [number, number] = [
@@ -41,25 +32,6 @@ const cameraX = modelRenderAsMercatorCoordinate.x;
 const cameraY = modelRenderAsMercatorCoordinate.y + 5;
 const cameraZ = modelRenderAsMercatorCoordinate.z + 20;
 
-// floor mesh variables
-export let rows: number;
-export let columns: number;
-export const cellSizeX: number = 1.8;
-export const cellSizeZ: number = 2.2;
-export let startX: number;
-export let startZ: number;
-
-// for storing cells
-interface CellInfo {
-  cell: THREE.Mesh;
-  isOccupied: boolean;
-  changeCellColor(): void;
-}
-
-export const gridCells: CellInfo[][] = [];
-const gridGroup = new THREE.Group();
-warehouseGroup.add(gridGroup);
-
 // Keep checking every 0.5s until models are available
 let modelsLoaded: boolean = false;
 const waitForModels = setInterval(() => {
@@ -71,147 +43,12 @@ const waitForModels = setInterval(() => {
     forkliftModel1?.model &&
     forkliftModel2?.model &&
     robotsStartingPointMesh &&
-    forkliftsStartingPointMesh &&
-    line1 &&
-    line2 &&
-    line3 &&
-    line4 &&
-    line5
+    forkliftsStartingPointMesh
   ) {
     warehouseGroup.scale.set(5, 5, 6.45);
     scene.add(warehouseGroup);
     modelsLoaded = true;
     clearInterval(waitForModels);
-
-    // Calculating Rows & Columns Based On Warehouse Floor
-    const sizeFloor = new THREE.Vector3();
-    warehouseModel?.boundingBox.getSize(sizeFloor);
-    rows = Math.floor(sizeFloor.x / cellSizeX);
-    columns = Math.floor(sizeFloor.z / cellSizeZ);
-
-    // Assume bottom-left corner as origin (could also use boundingBox.min if needed)
-    startX = warehouseModel?.boundingBox.min.x ?? 0;
-    startZ = warehouseModel?.boundingBox.min.z ?? 0;
-
-    for (let i = 0; i < rows; i++) {
-      gridCells[i] = [];
-      for (let j = 0; j < columns; j++) {
-        const geometry = new THREE.PlaneGeometry(cellSizeX, cellSizeZ);
-        const material = new THREE.MeshBasicMaterial({
-          color: 0x00ff00, // green for free
-          side: THREE.DoubleSide,
-          transparent: true,
-          opacity: 0.3,
-          wireframe: true,
-        });
-
-        const cell = new THREE.Mesh(geometry, material);
-        cell.rotation.x = -Math.PI / 2; // make it horizontal (on floor)
-
-        // Positioning center of the cell
-        cell.position.x = startX + cellSizeX / 2 + i * cellSizeX;
-        cell.position.z = startZ + cellSizeZ / 2 + j * cellSizeZ;
-        cell.position.y = 0.1; // slightly above ground to avoid z-fighting
-
-        const cellInfo: CellInfo = {
-          cell: cell,
-          isOccupied: false,
-          changeCellColor: function () {
-            const material = this.cell.material as THREE.MeshBasicMaterial;
-            if (this.isOccupied) {
-              material.color.set("red");
-            } else {
-              material.color.set("green");
-            }
-          },
-        };
-
-        // Debug label
-        const label = new SpriteText(`${i},${j}`);
-        label.color = "white";
-        label.textHeight = 0.7;
-        label.position.set(cell.position.x, 1.5, cell.position.z); // above the cell
-        label.rotateX(Math.PI / 2);
-        gridGroup.add(label);
-
-        gridGroup.add(cell);
-        gridCells[i][j] = cellInfo;
-      }
-    }
-    // Row 1
-    // // rack 1
-    gridCells[2][2].isOccupied = true;
-    gridCells[2][2].changeCellColor();
-    gridCells[2][3].isOccupied = true;
-    gridCells[2][3].changeCellColor();
-
-    // // rack 2
-    gridCells[5][2].isOccupied = true;
-    gridCells[5][2].changeCellColor();
-    gridCells[5][3].isOccupied = true;
-    gridCells[5][3].changeCellColor();
-
-    // // rack 3
-    gridCells[8][2].isOccupied = true;
-    gridCells[8][2].changeCellColor();
-    gridCells[8][3].isOccupied = true;
-    gridCells[8][3].changeCellColor();
-
-    // // rack 4
-    gridCells[11][2].isOccupied = true;
-    gridCells[11][2].changeCellColor();
-    gridCells[11][3].isOccupied = true;
-    gridCells[11][3].changeCellColor();
-
-    // Row 2
-    // // rack 1
-    gridCells[2][6].isOccupied = true;
-    gridCells[2][6].changeCellColor();
-    gridCells[2][7].isOccupied = true;
-    gridCells[2][7].changeCellColor();
-
-    // // rack 2
-    gridCells[5][6].isOccupied = true;
-    gridCells[5][6].changeCellColor();
-    gridCells[5][7].isOccupied = true;
-    gridCells[5][7].changeCellColor();
-
-    // // rack 3
-    gridCells[8][6].isOccupied = true;
-    gridCells[8][6].changeCellColor();
-    gridCells[8][7].isOccupied = true;
-    gridCells[8][7].changeCellColor();
-
-    // // rack 4
-    gridCells[11][6].isOccupied = true;
-    gridCells[11][6].changeCellColor();
-    gridCells[11][7].isOccupied = true;
-    gridCells[11][7].changeCellColor();
-
-    // Row 3
-    // // rack 1
-    gridCells[2][10].isOccupied = true;
-    gridCells[2][10].changeCellColor();
-    gridCells[2][11].isOccupied = true;
-    gridCells[2][11].changeCellColor();
-
-    // // rack 2
-    gridCells[5][10].isOccupied = true;
-    gridCells[5][10].changeCellColor();
-    gridCells[5][11].isOccupied = true;
-    gridCells[5][11].changeCellColor();
-
-    // // rack 3
-    gridCells[8][10].isOccupied = true;
-    gridCells[8][10].changeCellColor();
-    gridCells[8][11].isOccupied = true;
-    gridCells[8][11].changeCellColor();
-
-    // // rack 4
-    gridCells[11][10].isOccupied = true;
-    gridCells[11][10].changeCellColor();
-    gridCells[11][11].isOccupied = true;
-    gridCells[11][11].changeCellColor();
   }
 }, 500);
 
@@ -637,142 +474,6 @@ const customLayer = {
     const delta = clock.getDelta();
 
     if (modelsLoaded) {
-      // compute the world bounding boxes of all the models
-      // // robots world bounding boxes
-      const robotModel1WorldBoundingBox = new THREE.Box3().setFromObject(
-        robotModel1!.model
-      );
-      const robotModel2WorldBoundingBox = new THREE.Box3().setFromObject(
-        robotModel2!.model
-      );
-      const robotModel3WorldBoundingBox = new THREE.Box3().setFromObject(
-        robotModel3!.model
-      );
-
-      // // forklifts bounding boxes
-      const forkliftModel1WorldBoundingBox = new THREE.Box3().setFromObject(
-        forkliftModel1!.model
-      );
-      const forkliftModel2WorldBoundingBox = new THREE.Box3().setFromObject(
-        forkliftModel2!.model
-      );
-
-      // create local space bounding boxes by dividing by scale factors
-      // // robots local bounding boxes
-      const robotModel1LocalBoundingBox = new THREE.Box3(
-        new THREE.Vector3(
-          robotModel1WorldBoundingBox.min.x / 5,
-          robotModel1WorldBoundingBox.min.y / 5,
-          robotModel1WorldBoundingBox.min.z / 6.45
-        ),
-        new THREE.Vector3(
-          robotModel1WorldBoundingBox.max.x / 5,
-          robotModel1WorldBoundingBox.max.y / 5,
-          robotModel1WorldBoundingBox.max.z / 6.45
-        )
-      );
-      const robotModel2LocalBoundingBox = new THREE.Box3(
-        new THREE.Vector3(
-          robotModel2WorldBoundingBox.min.x / 5,
-          robotModel2WorldBoundingBox.min.y / 5,
-          robotModel2WorldBoundingBox.min.z / 6.45
-        ),
-        new THREE.Vector3(
-          robotModel2WorldBoundingBox.max.x / 5,
-          robotModel2WorldBoundingBox.max.y / 5,
-          robotModel2WorldBoundingBox.max.z / 6.45
-        )
-      );
-      const robotModel3LocalBoundingBox = new THREE.Box3(
-        new THREE.Vector3(
-          robotModel3WorldBoundingBox.min.x / 5,
-          robotModel3WorldBoundingBox.min.y / 5,
-          robotModel3WorldBoundingBox.min.z / 6.45
-        ),
-        new THREE.Vector3(
-          robotModel3WorldBoundingBox.max.x / 5,
-          robotModel3WorldBoundingBox.max.y / 5,
-          robotModel3WorldBoundingBox.max.z / 6.45
-        )
-      );
-
-      // // forklifts local bounding boxes
-      const forkliftModel1LocalBoundingBox = new THREE.Box3(
-        new THREE.Vector3(
-          forkliftModel1WorldBoundingBox.min.x / 5,
-          forkliftModel1WorldBoundingBox.min.y / 5,
-          forkliftModel1WorldBoundingBox.min.z / 6.45
-        ),
-        new THREE.Vector3(
-          forkliftModel1WorldBoundingBox.max.x / 5,
-          forkliftModel1WorldBoundingBox.max.y / 5,
-          forkliftModel1WorldBoundingBox.max.z / 6.45
-        )
-      );
-      const forkliftModel2LocalBoundingBox = new THREE.Box3(
-        new THREE.Vector3(
-          forkliftModel2WorldBoundingBox.min.x / 5,
-          forkliftModel2WorldBoundingBox.min.y / 5,
-          forkliftModel2WorldBoundingBox.min.z / 6.45
-        ),
-        new THREE.Vector3(
-          forkliftModel2WorldBoundingBox.max.x / 5,
-          forkliftModel2WorldBoundingBox.max.y / 5,
-          forkliftModel2WorldBoundingBox.max.z / 6.45
-        )
-      );
-
-      robotModel1!.boundingBox = robotModel1LocalBoundingBox;
-      robotModel2!.boundingBox = robotModel2LocalBoundingBox;
-      robotModel3!.boundingBox = robotModel3LocalBoundingBox;
-
-      forkliftModel1!.boundingBox = forkliftModel1LocalBoundingBox;
-      forkliftModel2!.boundingBox = forkliftModel2LocalBoundingBox;
-
-      // bounding boxes visualisation for debugging
-      // // robots bounding boxes visualisation
-      const boxHelper1 = new THREE.Box3Helper(
-        robotModel1LocalBoundingBox,
-        0xff0000
-      );
-      warehouseGroup.add(boxHelper1);
-
-      const boxHelper2 = new THREE.Box3Helper(
-        robotModel2LocalBoundingBox,
-        0xff0000
-      );
-      warehouseGroup.add(boxHelper2);
-
-      const boxHelper3 = new THREE.Box3Helper(
-        robotModel3LocalBoundingBox,
-        0xff0000
-      );
-      warehouseGroup.add(boxHelper3);
-
-      // // forklifts bounding boxes visualisation
-      const boxHelper4 = new THREE.Box3Helper(
-        forkliftModel1LocalBoundingBox,
-        0xff0000
-      );
-      warehouseGroup.add(boxHelper4);
-
-      const boxHelper5 = new THREE.Box3Helper(
-        forkliftModel2LocalBoundingBox,
-        0xff0000
-      );
-      warehouseGroup.add(boxHelper5);
-
-      // Calls the Function for Collision Detection
-      const modelsArray: Model3D[] = [
-        robotModel1!,
-        // robotModel2!,
-        robotModel3!,
-        // forkliftModel1!,
-        // forkliftModel2!,
-      ];
-
-      handleCollisions(modelsArray, cellSizeX, cellSizeZ);
-
       // Update animation mixer (if available)
       if (robotModel1!.mixer) {
         robotModel1!.mixer.update(delta);

@@ -31,7 +31,7 @@ const warehouseGroup = new THREE.Group();
 gltfLoader.load(
   "/assets/warehouse/scene.gltf",
   (gltf) => {
-    warehouseModel = new Model3D("Warehouse Model", gltf.scene, 0, 0);
+    warehouseModel = new Model3D("Warehouse Model", gltf.scene);
     warehouseModel.model.castShadow = true;
     warehouseModel.model.receiveShadow = true;
     warehouseModel.model.scale.set(1.6, 1.5, 1);
@@ -39,7 +39,6 @@ gltfLoader.load(
 
     // Compute the bounding box
     let boundingBox = new THREE.Box3().setFromObject(warehouseModel.model);
-    warehouseModel.boundingBox = boundingBox;
 
     // Get size (width, height, depth)
     const size = new THREE.Vector3();
@@ -58,7 +57,6 @@ gltfLoader.load(
     warehouseModel.model.position.y += size.y / 2;
 
     boundingBox = new THREE.Box3().setFromObject(warehouseModel.model);
-    warehouseModel.boundingBox = boundingBox;
 
     warehouseModel.model.traverse((child) => {
       child.castShadow = true;
@@ -161,9 +159,7 @@ gltfLoader.load(
       //  wrap this clone into your Model3D class
       const rackModel = new Model3D(
         `Storage Rack ${i}`,
-        clonedStorageRackModel,
-        0,
-        0
+        clonedStorageRackModel
       );
 
       // add the cloned rack in the warehouseGroup
@@ -184,24 +180,13 @@ gltfLoader.load(
 gltfLoader.load(
   "/assets/robot/scene.gltf",
   (gltf) => {
-    robotModel1 = new Model3D("Robot Model 1", gltf.scene, 2, 3);
+    robotModel1 = new Model3D("Robot Model 1", gltf.scene);
     robotModel1.model.castShadow = true;
     robotModel1.model.receiveShadow = true;
     robotModel1.model.scale.set(0.06, 0.06, 0.06);
     robotModel1.model.position.set(-8.3, 0.55, 19.8);
     robotModel1.model.rotateY(Math.PI);
     warehouseGroup.add(robotModel1.model);
-
-    // TODO
-    // const boundingBox = new THREE.Box3().setFromObject(robotModel1?.model);
-    // const boxHelper = new THREE.Box3Helper(boundingBox, 0xff0000); // red outline
-    // warehouseGroup.add(boxHelper);
-
-    // Compute the bounding box
-    robotModel1.boundingBox = new THREE.Box3().setFromObject(
-      robotModel1?.model
-    );
-    // console.log(robotModel1.boundingBox);
 
     // Play all available animations
     gltf.animations.forEach((clip) => {
@@ -260,16 +245,13 @@ gltfLoader.load(
 gltfLoader.load(
   "/assets/robot/scene.gltf",
   (gltf) => {
-    robotModel2 = new Model3D("Robot Model 2", gltf.scene, 2, 4);
+    robotModel2 = new Model3D("Robot Model 2", gltf.scene);
     robotModel2.model.castShadow = true;
     robotModel2.model.receiveShadow = true;
     robotModel2.model.position.set(-8.3, 0.55, 19.8);
     robotModel2.model.scale.set(0.06, 0.06, 0.06);
     robotModel2.model.rotateY(-Math.PI / 2);
     // warehouseGroup.add(robotModel2.model);
-
-    // Compute the bounding box
-    robotModel2.boundingBox = new THREE.Box3().setFromObject(robotModel2.model);
 
     // Play all available animations
     gltf.animations.forEach((clip) => {
@@ -318,16 +300,13 @@ gltfLoader.load(
 gltfLoader.load(
   "/assets/robot/scene.gltf",
   (gltf) => {
-    robotModel3 = new Model3D("Robot Model 3", gltf.scene, 2, 5);
+    robotModel3 = new Model3D("Robot Model 3", gltf.scene);
     robotModel3.model.castShadow = true;
     robotModel3.model.receiveShadow = true;
     robotModel3.model.position.set(-8.3, 0.55, 24.8);
     robotModel3.model.scale.set(0.06, 0.06, 0.06);
     robotModel3.model.rotateY(Math.PI);
     warehouseGroup.add(robotModel3.model);
-
-    // Compute the bounding box
-    robotModel3.boundingBox = new THREE.Box3().setFromObject(robotModel3.model);
 
     // Play all available animations
     gltf.animations.forEach((clip) => {
@@ -379,18 +358,13 @@ gltfLoader.load(
   "/assets/forkliftGLTF/Forklift_A01_PR_V_NVD_01.gltf",
   (gltf) => {
     // Initializing & setting basic properties
-    forkliftModel1 = new Model3D("Fork Lift Model 1", gltf.scene, 1, 1);
+    forkliftModel1 = new Model3D("Fork Lift Model 1", gltf.scene);
     forkliftModel1.model.castShadow = true;
     forkliftModel1.model.receiveShadow = true;
     forkliftModel1.model.position.set(7.9, 0.1, 20.4);
     forkliftModel1.model.scale.set(0.01, 0.01, 0.01);
     forkliftModel1.model.rotateY(Math.PI);
     // warehouseGroup.add(forkliftModel1.model);
-
-    // Computing the bounding box
-    forkliftModel1.boundingBox = new THREE.Box3().setFromObject(
-      forkliftModel1.model
-    );
 
     // Adding shadows to child meshes of fork lift
     forkliftModel1.model.traverse((child) => {
@@ -443,18 +417,13 @@ gltfLoader.load(
 gltfLoader.load(
   "/assets/forkliftGLTF/Forklift_A01_PR_V_NVD_01.gltf",
   (gltf) => {
-    forkliftModel2 = new Model3D("Fork Lift Model 2", gltf.scene, 1, 2);
+    forkliftModel2 = new Model3D("Fork Lift Model 2", gltf.scene);
     forkliftModel2.model.castShadow = true;
     forkliftModel2.model.receiveShadow = true;
     forkliftModel2.model.position.set(7.9, 0.1, 20.4);
     forkliftModel2.model.scale.set(0.01, 0.01, 0.01);
     forkliftModel2.model.rotateY(degreesToRadians(180));
     // warehouseGroup.add(forkliftModel2.model);
-
-    // Compute the bounding box
-    forkliftModel2.boundingBox = new THREE.Box3().setFromObject(
-      forkliftModel2.model
-    );
 
     forkliftModel2.model.traverse((child) => {
       child.castShadow = true;

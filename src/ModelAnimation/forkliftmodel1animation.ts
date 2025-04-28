@@ -20,14 +20,6 @@ function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
       z: 4.85,
       duration: 10,
       ease: "none",
-      onUpdate: () => {
-        forklift.occupiedCells.nextCell.x =
-          forklift.occupiedCells.currentCell.x;
-        forklift.occupiedCells.nextCell.z = boundingBoxFlooring(
-          forklift.model.position.z - 5,
-          cellSize
-        );
-      },
     })
     .to(forklift.model.rotation, {
       y: degreesToRadians(90),
@@ -44,14 +36,6 @@ function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
       x: 9.8,
       duration: 1.5,
       ease: "none",
-      onUpdate: () => {
-        forklift.occupiedCells.nextCell.x = boundingBoxFlooring(
-          forklift.model.position.x - 5,
-          cellSize
-        );
-        forklift.occupiedCells.nextCell.z =
-          forklift.occupiedCells.currentCell.z;
-      },
     })
     .to(forklift.model.rotation, {
       y: degreesToRadians(-0),
@@ -68,14 +52,6 @@ function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
       z: -19.8,
       duration: 13,
       ease: "none",
-      onUpdate: () => {
-        forklift.occupiedCells.nextCell.x =
-          forklift.occupiedCells.currentCell.x;
-        forklift.occupiedCells.nextCell.z = boundingBoxFlooring(
-          forklift.model.position.z + 5,
-          cellSize
-        );
-      },
     })
     .to(forklift.model.rotation, {
       y: degreesToRadians(-90),
@@ -92,14 +68,6 @@ function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
       x: -9.9,
       duration: 10,
       ease: "none",
-      onUpdate: () => {
-        forklift.occupiedCells.nextCell.x = boundingBoxFlooring(
-          forklift.model.position.x - 5,
-          cellSize
-        );
-        forklift.occupiedCells.nextCell.z =
-          forklift.occupiedCells.currentCell.z;
-      },
     })
     .to(forklift.model.rotation, {
       y: degreesToRadians(-180),
@@ -116,14 +84,6 @@ function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
       z: 4.6,
       duration: 13,
       ease: "none",
-      onUpdate: () => {
-        forklift.occupiedCells.nextCell.x = boundingBoxFlooring(
-          forklift.model.position.x - 5,
-          cellSize
-        );
-        forklift.occupiedCells.nextCell.z =
-          forklift.occupiedCells.currentCell.z;
-      },
     })
     .to(forklift.model.rotation, {
       y: degreesToRadians(-270),
@@ -140,14 +100,6 @@ function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
       x: 7.9,
       duration: 8,
       ease: "none",
-      onUpdate: () => {
-        forklift.occupiedCells.nextCell.x = boundingBoxFlooring(
-          forklift.model.position.x - 5,
-          cellSize
-        );
-        forklift.occupiedCells.nextCell.z =
-          forklift.occupiedCells.currentCell.z;
-      },
     })
     .to(forklift.model.rotation, {
       y: degreesToRadians(-180),
@@ -164,14 +116,6 @@ function forkLiftCustomAnimation1(forklift: Model3D, cellSize: number) {
       z: 19.9,
       duration: 10,
       ease: "none",
-      onUpdate: () => {
-        forklift.occupiedCells.nextCell.x = boundingBoxFlooring(
-          forklift.model.position.x - 5,
-          cellSize
-        );
-        forklift.occupiedCells.nextCell.z =
-          forklift.occupiedCells.currentCell.z;
-      },
     });
 }
 

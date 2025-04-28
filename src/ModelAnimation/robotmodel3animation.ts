@@ -20,21 +20,6 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
       z: 4.3,
       duration: 16,
       ease: "none",
-      onStart: () => {
-        const dz = 4.3 - robot.model.position.z;
-
-        robot.direction = {
-          x: 0,
-          z: Math.sign(dz),
-        };
-      },
-      onUpdate: () => {
-        robot.occupiedCells.nextCell.x = robot.occupiedCells.currentCell.x;
-        robot.occupiedCells.nextCell.z = boundingBoxFlooring(
-          robot.model.position.z - 5,
-          cellSize
-        );
-      },
     })
     .to(robot.model.rotation, {
       y: degreesToRadians(90),
@@ -51,13 +36,6 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
       x: 9.7,
       duration: 20,
       ease: "none",
-      onUpdate: () => {
-        robot.occupiedCells.nextCell.x = boundingBoxFlooring(
-          robot.model.position.x - 5,
-          cellSize
-        );
-        robot.occupiedCells.nextCell.z = robot.occupiedCells.currentCell.z;
-      },
     })
     .to(robot.model.rotation, {
       y: degreesToRadians(0),
@@ -74,13 +52,6 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
       z: -13.2,
       duration: 15,
       ease: "none",
-      onUpdate: () => {
-        robot.occupiedCells.nextCell.x = robot.occupiedCells.currentCell.x;
-        robot.occupiedCells.nextCell.z = boundingBoxFlooring(
-          robot.model.position.z - 5,
-          cellSize
-        );
-      },
     })
     .to(robot.model.rotation, {
       y: degreesToRadians(-90),
@@ -97,13 +68,6 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
       x: 6.15,
       duration: 5,
       ease: "none",
-      onUpdate: () => {
-        robot.occupiedCells.nextCell.x = boundingBoxFlooring(
-          robot.model.position.x + 5,
-          cellSize
-        );
-        robot.occupiedCells.nextCell.z = robot.occupiedCells.currentCell.z;
-      },
     })
     .to(robot.model.rotation, {
       y: degreesToRadians(0),
@@ -120,13 +84,6 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
       z: -19.9,
       duration: 7.5,
       ease: "none",
-      onUpdate: () => {
-        robot.occupiedCells.nextCell.x = boundingBoxFlooring(
-          robot.model.position.x + 5,
-          cellSize
-        );
-        robot.occupiedCells.nextCell.z = robot.occupiedCells.currentCell.z;
-      },
     })
     .to(robot.model.rotation, {
       y: degreesToRadians(-90),
@@ -143,13 +100,6 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
       x: 0.7,
       duration: 5,
       ease: "none",
-      onUpdate: () => {
-        robot.occupiedCells.nextCell.x = boundingBoxFlooring(
-          robot.model.position.x + 5,
-          cellSize
-        );
-        robot.occupiedCells.nextCell.z = robot.occupiedCells.currentCell.z;
-      },
     })
     .to(robot.model.rotation, {
       y: degreesToRadians(-180),
@@ -166,13 +116,6 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
       z: -4.4,
       duration: 10,
       ease: "none",
-      onUpdate: () => {
-        robot.occupiedCells.nextCell.x = boundingBoxFlooring(
-          robot.model.position.x + 5,
-          cellSize
-        );
-        robot.occupiedCells.nextCell.z = robot.occupiedCells.currentCell.z;
-      },
     })
     .to(robot.model.rotation, {
       y: degreesToRadians(-90),
@@ -189,13 +132,6 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
       x: -10,
       duration: 12,
       ease: "none",
-      onUpdate: () => {
-        robot.occupiedCells.nextCell.x = boundingBoxFlooring(
-          robot.model.position.x + 5,
-          cellSize
-        );
-        robot.occupiedCells.nextCell.z = robot.occupiedCells.currentCell.z;
-      },
     })
     .to(robot.model.rotation, {
       y: degreesToRadians(-180),
@@ -212,13 +148,6 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
       z: 19.8,
       duration: 25,
       ease: "none",
-      onUpdate: () => {
-        robot.occupiedCells.nextCell.x = boundingBoxFlooring(
-          robot.model.position.x + 5,
-          cellSize
-        );
-        robot.occupiedCells.nextCell.z = robot.occupiedCells.currentCell.z;
-      },
     })
     .to(robot.model.rotation, {
       y: degreesToRadians(-270),
@@ -235,13 +164,6 @@ function robotCustomAnimation3(robot: Model3D, cellSize: number) {
       x: -8.2,
       duration: 3,
       ease: "none",
-      onUpdate: () => {
-        robot.occupiedCells.nextCell.x = boundingBoxFlooring(
-          robot.model.position.x + 5,
-          cellSize
-        );
-        robot.occupiedCells.nextCell.z = robot.occupiedCells.currentCell.z;
-      },
     });
 }
 
