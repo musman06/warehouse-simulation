@@ -77,27 +77,33 @@ scene.add(ambientLight);
 
 // // Directional Light
 const directionalLight = new THREE.DirectionalLight("white", 1);
-directionalLight.position.set(45, 15, 45).normalize();
+directionalLight.position.set(100, 700, 300);
 directionalLight.castShadow = true;
 directionalLight.shadow.mapSize.x = 1024;
 directionalLight.shadow.mapSize.y = 1024;
 scene.add(directionalLight);
 
+const directionalLightHelper = new THREE.DirectionalLightHelper(
+  directionalLight,
+  2
+);
+scene.add(directionalLightHelper);
+
 // // Point Light
-const pointLight1 = new THREE.PointLight("red", 8000, 0);
-pointLight1.position.set(0, 35, 130);
+const pointLight1 = new THREE.PointLight("#cdeced", 500, 0);
+pointLight1.position.set(0, 30, 130);
 pointLight1.castShadow = true;
-scene.add(pointLight1);
+// scene.add(pointLight1);
 
-const pointLight2 = new THREE.PointLight("red", 8000, 0);
-pointLight2.position.set(0, 35, 0);
+const pointLight2 = new THREE.PointLight("#cdeced", 500, 0);
+pointLight2.position.set(0, 30, 0);
 pointLight2.castShadow = true;
-scene.add(pointLight2);
+// scene.add(pointLight2);
 
-const pointLight3 = new THREE.PointLight("red", 8000, 0);
-pointLight3.position.set(0, 35, -130);
+const pointLight3 = new THREE.PointLight("#cdeced", 500, 0);
+pointLight3.position.set(0, 30, -130);
 pointLight3.castShadow = true;
-scene.add(pointLight3);
+// scene.add(pointLight3);
 
 // Initialize the map
 const map = new maplibregl.Map({
