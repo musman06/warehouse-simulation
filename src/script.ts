@@ -83,12 +83,6 @@ directionalLight.shadow.mapSize.x = 1024;
 directionalLight.shadow.mapSize.y = 1024;
 scene.add(directionalLight);
 
-const directionalLightHelper = new THREE.DirectionalLightHelper(
-  directionalLight,
-  2
-);
-scene.add(directionalLightHelper);
-
 // // Point Light
 const pointLight1 = new THREE.PointLight("#cdeced", 500, 0);
 pointLight1.position.set(0, 30, 130);
