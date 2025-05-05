@@ -16,34 +16,34 @@ import { Model3D } from "../../model3DClass";
 import drawStartPointCircle from "../../NavigationPathRendering/CasaGrande/startpointcircle";
 
 // 3D Models Placeholder
-let warehouseModel: Model3D | null = null;
+let warehouseModelCasa: Model3D | null = null;
 // let clonedStorageRackModel: Model3D | null = null;
-let robotModel1: Model3D | null = null;
-let robotModel2: Model3D | null = null;
-let robotModel3: Model3D | null = null;
-let forkliftModel1: Model3D | null = null;
-let forkliftModel2: Model3D | null = null;
-let robotsStartingPointMesh: THREE.Mesh | null = null;
-let forkliftsStartingPointMesh: THREE.Mesh | null = null;
+let robotModel1Casa: Model3D | null = null;
+let robotModel2Casa: Model3D | null = null;
+let robotModel3Casa: Model3D | null = null;
+let forkliftModel1Casa: Model3D | null = null;
+let forkliftModel2Casa: Model3D | null = null;
+let robotsStartingPointMeshCasa: THREE.Mesh | null = null;
+let forkliftsStartingPointMeshCasa: THREE.Mesh | null = null;
 
 // 3D Model Loader
 const gltfLoader = new GLTFLoader();
 
 // Group to hold all the models
-const warehouseGroup = new THREE.Group();
+const warehouseGroupCasa = new THREE.Group();
 
 // Warehouse Model Loading
 gltfLoader.load(
   "/assets/warehouse/scene.gltf",
   (gltf) => {
-    warehouseModel = new Model3D("Warehouse Model Casa Grande", gltf.scene);
-    warehouseModel.model.castShadow = true;
-    warehouseModel.model.receiveShadow = true;
-    warehouseModel.model.scale.set(1.6, 1.5, 1);
-    warehouseGroup.add(warehouseModel.model);
+    warehouseModelCasa = new Model3D("Warehouse Model Casa Grande", gltf.scene);
+    warehouseModelCasa.model.castShadow = true;
+    warehouseModelCasa.model.receiveShadow = true;
+    warehouseModelCasa.model.scale.set(1.6, 1.5, 1);
+    warehouseGroupCasa.add(warehouseModelCasa.model);
 
     // Compute the bounding box
-    let boundingBox = new THREE.Box3().setFromObject(warehouseModel.model);
+    let boundingBox = new THREE.Box3().setFromObject(warehouseModelCasa.model);
 
     // Get size (width, height, depth)
     const size = new THREE.Vector3();
@@ -56,14 +56,14 @@ gltfLoader.load(
     // console.log("Center: ", center);
 
     // Reposition the model so that it's centered at (0, 0, 0)
-    warehouseModel.model.position.sub(center);
+    warehouseModelCasa.model.position.sub(center);
 
     // Move the model slightly above the ground
-    warehouseModel.model.position.y += size.y / 2;
+    warehouseModelCasa.model.position.y += size.y / 2;
 
-    boundingBox = new THREE.Box3().setFromObject(warehouseModel.model);
+    boundingBox = new THREE.Box3().setFromObject(warehouseModelCasa.model);
 
-    warehouseModel.model.traverse((child) => {
+    warehouseModelCasa.model.traverse((child) => {
       child.castShadow = true;
       child.receiveShadow = true;
       if (child instanceof THREE.Mesh) {
@@ -83,7 +83,7 @@ gltfLoader.load(
       }
     });
 
-    removeWarehouseRoof(warehouseModel);
+    removeWarehouseRoof(warehouseModelCasa);
   },
   (xhr) => {
     console.log(
@@ -177,7 +177,7 @@ gltfLoader.load(
       );
 
       // add the cloned rack in the warehouseGroup
-      warehouseGroup.add(rackModel.model);
+      warehouseGroupCasa.add(rackModel.model);
     }
   },
   (xhr) => {
@@ -194,24 +194,24 @@ gltfLoader.load(
 gltfLoader.load(
   "/assets/robot2/scene.gltf",
   (gltf) => {
-    robotModel1 = new Model3D("Robot Model 1", gltf.scene);
-    robotModel1.model.castShadow = true;
-    robotModel1.model.receiveShadow = true;
-    robotModel1.model.scale.set(0.6, 0.6, 0.6);
-    robotModel1.model.position.set(-8.3, 0.85, 19.8);
-    robotModel1.model.rotateY(Math.PI);
-    warehouseGroup.add(robotModel1.model);
+    robotModel1Casa = new Model3D("Robot Model 1", gltf.scene);
+    robotModel1Casa.model.castShadow = true;
+    robotModel1Casa.model.receiveShadow = true;
+    robotModel1Casa.model.scale.set(0.6, 0.6, 0.6);
+    robotModel1Casa.model.position.set(-8.3, 0.85, 19.8);
+    robotModel1Casa.model.rotateY(Math.PI);
+    warehouseGroupCasa.add(robotModel1Casa.model);
 
     // Play all available animations
     gltf.animations.forEach((clip) => {
-      const action = robotModel1?.mixer.clipAction(clip);
+      const action = robotModel1Casa?.mixer.clipAction(clip);
       action!.play();
     });
 
     // console.log("Top-level children:", robotModel1.model.children);
 
     // Updating texture of all the child objects
-    robotModel1.model.traverse((child) => {
+    robotModel1Casa.model.traverse((child) => {
       // console.log("Robot model 1 Meash: ", child);
       child.castShadow = true;
       child.receiveShadow = true;
@@ -234,7 +234,7 @@ gltfLoader.load(
       }
     });
 
-    robotsStartingPointMesh = drawStartPointCircle(
+    robotsStartingPointMeshCasa = drawStartPointCircle(
       0.8,
       32,
       "white",
@@ -242,9 +242,9 @@ gltfLoader.load(
       0.05,
       19.8
     );
-    warehouseGroup.add(robotsStartingPointMesh);
+    warehouseGroupCasa.add(robotsStartingPointMeshCasa);
 
-    if (robotModel1.model) {
+    if (robotModel1Casa.model) {
       // robotCustomAnimation1(robotModel1);
     }
   },
@@ -262,22 +262,22 @@ gltfLoader.load(
 gltfLoader.load(
   "/assets/robot/scene.gltf",
   (gltf) => {
-    robotModel2 = new Model3D("Robot Model 2", gltf.scene);
-    robotModel2.model.castShadow = true;
-    robotModel2.model.receiveShadow = true;
-    robotModel2.model.position.set(-8.3, 0.55, 19.8);
-    robotModel2.model.scale.set(0.06, 0.06, 0.06);
-    robotModel2.model.rotateY(-Math.PI / 2);
-    warehouseGroup.add(robotModel2.model);
+    robotModel2Casa = new Model3D("Robot Model 2", gltf.scene);
+    robotModel2Casa.model.castShadow = true;
+    robotModel2Casa.model.receiveShadow = true;
+    robotModel2Casa.model.position.set(-8.3, 0.55, 19.8);
+    robotModel2Casa.model.scale.set(0.06, 0.06, 0.06);
+    robotModel2Casa.model.rotateY(-Math.PI / 2);
+    warehouseGroupCasa.add(robotModel2Casa.model);
 
     // Play all available animations
     gltf.animations.forEach((clip) => {
-      const action = robotModel2?.mixer.clipAction(clip);
+      const action = robotModel2Casa?.mixer.clipAction(clip);
       action!.play();
     });
 
     // Updating texture of all the child objects
-    robotModel2.model.traverse((child) => {
+    robotModel2Casa.model.traverse((child) => {
       child.castShadow = true;
       child.receiveShadow = true;
       if (child instanceof THREE.Mesh) {
@@ -299,8 +299,8 @@ gltfLoader.load(
       }
     });
 
-    if (robotModel2!.model) {
-      robotCustomAnimation2(robotModel2!);
+    if (robotModel2Casa!.model) {
+      robotCustomAnimation2(robotModel2Casa!);
     }
   },
   (xhr) => {
@@ -317,22 +317,22 @@ gltfLoader.load(
 gltfLoader.load(
   "/assets/robot/scene.gltf",
   (gltf) => {
-    robotModel3 = new Model3D("Robot Model 3", gltf.scene);
-    robotModel3.model.castShadow = true;
-    robotModel3.model.receiveShadow = true;
-    robotModel3.model.position.set(-8.3, 0.55, 19.8);
-    robotModel3.model.scale.set(0.06, 0.06, 0.06);
-    robotModel3.model.rotateY(Math.PI);
-    warehouseGroup.add(robotModel3.model);
+    robotModel3Casa = new Model3D("Robot Model 3", gltf.scene);
+    robotModel3Casa.model.castShadow = true;
+    robotModel3Casa.model.receiveShadow = true;
+    robotModel3Casa.model.position.set(-8.3, 0.55, 19.8);
+    robotModel3Casa.model.scale.set(0.06, 0.06, 0.06);
+    robotModel3Casa.model.rotateY(Math.PI);
+    warehouseGroupCasa.add(robotModel3Casa.model);
 
     // Play all available animations
     gltf.animations.forEach((clip) => {
-      const action = robotModel3?.mixer.clipAction(clip);
+      const action = robotModel3Casa?.mixer.clipAction(clip);
       action!.play();
     });
 
     // Updating texture of all the child objects
-    robotModel3.model.traverse((child) => {
+    robotModel3Casa.model.traverse((child) => {
       child.castShadow = true;
       child.receiveShadow = true;
       if (child instanceof THREE.Mesh) {
@@ -354,8 +354,8 @@ gltfLoader.load(
       }
     });
 
-    if (robotModel3!.model) {
-      robotCustomAnimation3(robotModel3!);
+    if (robotModel3Casa!.model) {
+      robotCustomAnimation3(robotModel3Casa!);
     }
   },
   (xhr) => {
@@ -373,16 +373,16 @@ gltfLoader.load(
   "/assets/forklifts/forklift-casagrande/scene.gltf",
   (gltf) => {
     // Initializing & setting basic properties
-    forkliftModel1 = new Model3D("Fork Lift Model 1", gltf.scene);
-    forkliftModel1.model.castShadow = true;
-    forkliftModel1.model.receiveShadow = true;
-    forkliftModel1.model.position.set(7.9, 0.1, 20.4);
-    forkliftModel1.model.scale.set(7.8, 7.8, 7.8);
-    forkliftModel1.model.rotateY(degreesToRadians(-90));
-    warehouseGroup.add(forkliftModel1.model);
+    forkliftModel1Casa = new Model3D("Fork Lift Model 1", gltf.scene);
+    forkliftModel1Casa.model.castShadow = true;
+    forkliftModel1Casa.model.receiveShadow = true;
+    forkliftModel1Casa.model.position.set(7.9, 0.1, 20.4);
+    forkliftModel1Casa.model.scale.set(7.8, 7.8, 7.8);
+    forkliftModel1Casa.model.rotateY(degreesToRadians(-90));
+    warehouseGroupCasa.add(forkliftModel1Casa.model);
 
     // Adding shadows to child meshes of fork lift
-    forkliftModel1.model.traverse((child) => {
+    forkliftModel1Casa.model.traverse((child) => {
       child.castShadow = true;
       child.receiveShadow = true;
       if (child instanceof THREE.Mesh) {
@@ -391,7 +391,7 @@ gltfLoader.load(
       }
     });
 
-    forkliftsStartingPointMesh = drawStartPointCircle(
+    forkliftsStartingPointMeshCasa = drawStartPointCircle(
       0.8,
       32,
       "yellow",
@@ -399,10 +399,10 @@ gltfLoader.load(
       0.05,
       19.8
     );
-    warehouseGroup.add(forkliftsStartingPointMesh);
+    warehouseGroupCasa.add(forkliftsStartingPointMeshCasa);
 
-    if (forkliftModel1.model) {
-      forkLiftCustomAnimation1(forkliftModel1);
+    if (forkliftModel1Casa.model) {
+      forkLiftCustomAnimation1(forkliftModel1Casa);
     }
   },
   (xhr) => {
@@ -419,15 +419,15 @@ gltfLoader.load(
 gltfLoader.load(
   "/assets/forklifts/forklift-casagrande/scene.gltf",
   (gltf) => {
-    forkliftModel2 = new Model3D("Fork Lift Model 2", gltf.scene);
-    forkliftModel2.model.castShadow = true;
-    forkliftModel2.model.receiveShadow = true;
-    forkliftModel2.model.position.set(7.9, 0.1, 20.4);
-    forkliftModel2.model.scale.set(7.8, 7.8, 7.8);
-    forkliftModel2.model.rotateY(degreesToRadians(-90));
-    warehouseGroup.add(forkliftModel2.model);
+    forkliftModel2Casa = new Model3D("Fork Lift Model 2", gltf.scene);
+    forkliftModel2Casa.model.castShadow = true;
+    forkliftModel2Casa.model.receiveShadow = true;
+    forkliftModel2Casa.model.position.set(7.9, 0.1, 20.4);
+    forkliftModel2Casa.model.scale.set(7.8, 7.8, 7.8);
+    forkliftModel2Casa.model.rotateY(degreesToRadians(-90));
+    warehouseGroupCasa.add(forkliftModel2Casa.model);
 
-    forkliftModel2.model.traverse((child) => {
+    forkliftModel2Casa.model.traverse((child) => {
       child.castShadow = true;
       child.receiveShadow = true;
       if (child instanceof THREE.Mesh) {
@@ -436,8 +436,8 @@ gltfLoader.load(
       }
     });
 
-    if (forkliftModel2!.model) {
-      forkLiftCustomAnimation2(forkliftModel2!);
+    if (forkliftModel2Casa!.model) {
+      forkLiftCustomAnimation2(forkliftModel2Casa!);
     }
   },
   (xhr) => {
@@ -451,13 +451,13 @@ gltfLoader.load(
 );
 
 export {
-  warehouseGroup,
-  warehouseModel,
-  robotModel1,
-  robotModel2,
-  robotModel3,
-  forkliftModel1,
-  forkliftModel2,
-  robotsStartingPointMesh,
-  forkliftsStartingPointMesh,
+  warehouseGroupCasa,
+  warehouseModelCasa,
+  robotModel1Casa,
+  robotModel2Casa,
+  robotModel3Casa,
+  forkliftModel1Casa,
+  forkliftModel2Casa,
+  robotsStartingPointMeshCasa,
+  forkliftsStartingPointMeshCasa,
 };

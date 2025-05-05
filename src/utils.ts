@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { Model3D } from "./model3DClass";
+import maplibregl from "maplibre-gl";
 
 // Time taken by robot to rotate
 export const rotationDurationRobot = 4;
@@ -17,6 +18,7 @@ function boundingBoxFlooring(coordinate: number, cellSize: number) {
   return Math.floor(coordinate / cellSize) + 1;
 }
 
+// Array holding removed roof meshes
 const removedRoofMeshes: { mesh: THREE.Mesh; parent: THREE.Object3D }[] = [];
 
 // Remove Warehouse roof
@@ -76,7 +78,6 @@ function emptyStorageRack(rack: THREE.Group) {
 }
 
 // Make a storage rack partially empty
-// Make a storage rack empty
 function partialStorageRack(rack: THREE.Group) {
   const meshesToRemove: THREE.Object3D[] = []; // Store meshes to remove
 
@@ -98,6 +99,20 @@ function partialStorageRack(rack: THREE.Group) {
   return rack;
 }
 
+// 3D earth to 2D map coordinates
+function convert3DEarthTo2DMapCoordinates(
+  modelRenderOrigin: [number, number],
+  modelRenderAltitude: number
+): maplibregl.MercatorCoordinate {
+  const modelRenderAsMercatorCoordinate =
+    maplibregl.MercatorCoordinate.fromLngLat(
+      { lng: modelRenderOrigin[0], lat: modelRenderOrigin[1] },
+      modelRenderAltitude
+    );
+
+  return modelRenderAsMercatorCoordinate;
+}
+
 export {
   degreesToRadians,
   boundingBoxFlooring,
@@ -105,4 +120,5 @@ export {
   addWarehouseRoof,
   emptyStorageRack,
   partialStorageRack,
+  convert3DEarthTo2DMapCoordinates,
 };

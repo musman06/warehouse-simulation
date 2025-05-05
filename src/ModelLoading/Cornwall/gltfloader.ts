@@ -14,6 +14,7 @@ import {
 } from "../../utils";
 import { Model3D } from "../../model3DClass";
 import drawStartPointCircle from "../../NavigationPathRendering/CasaGrande/startpointcircle";
+import { camera } from "../../script";
 
 // 3D Models Placeholder
 let warehouseModelCornwall: Model3D | null = null;
@@ -88,7 +89,6 @@ gltfLoader.load(
         }
       }
     });
-    removeWarehouseRoof(warehouseModelCornwall!);
   },
   (xhr) => {
     console.log(
@@ -212,6 +212,103 @@ gltfLoader.load(
   }
 );
 
+// Raycaster for hover effects
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+// Store original materials to restore them when not hovering
+const originalMaterials = new Map();
+
+// Track which object is currently being hovered
+let currentHover: THREE.Object3D | null = null;
+
+// Mouse move event handler
+function onMouseMove(event: MouseEvent) {
+  // Calculate mouse position in normalized device coordinates (-1 to +1)
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  // Update the raycaster
+  setTimeout(() => {
+    updateRaycaster();
+  }, 3000);
+}
+
+// Function to update the raycaster and handle hover effects
+// if (camera) {
+// }
+export function updateRaycaster() {
+  // Update the picking ray with the camera and mouse position
+  raycaster.setFromCamera(mouse, camera); // You'll need to make sure 'camera' is accessible here
+
+  // Calculate objects intersecting the picking ray
+  const intersects = raycaster.intersectObjects(
+    warehouseGroupCornwall.children,
+    true
+  );
+
+  // Reset previously hovered object if we're now hovering over something else or nothing
+  if (
+    currentHover &&
+    (intersects.length === 0 || intersects[0].object !== currentHover)
+  ) {
+    resetHoveredObject(currentHover);
+    currentHover = null;
+  }
+
+  // Handle new hover
+  if (intersects.length > 0) {
+    const hoveredObject = intersects[0].object;
+
+    // Skip if it's the same object we're already hovering over
+    if (hoveredObject === currentHover) return;
+
+    // Store the new hovered object
+    currentHover = hoveredObject;
+
+    // Apply hover effect
+    applyHoverEffect(hoveredObject);
+  }
+}
+
+// Apply hover effect to an object
+function applyHoverEffect(object: THREE.Object3D) {
+  if (object instanceof THREE.Mesh && object.material) {
+    // Store original materials if not already stored
+    if (!originalMaterials.has(object.uuid)) {
+      // Clone materials to restore later
+      originalMaterials.set(object.uuid, object.material.clone());
+    }
+
+    // Apply hover effect to material
+    if (Array.isArray(object.material)) {
+      object.material.forEach((material) => {
+        if (material.opacity !== undefined) {
+          material.transparent = true;
+          material.opacity = 0.7; // Change opacity for hover effect
+        }
+      });
+    } else {
+      if (object.material.opacity !== undefined) {
+        object.material.transparent = true;
+        object.material.opacity = 0.7; // Change opacity for hover effect
+      }
+    }
+  }
+}
+
+// Reset object to its original appearance
+function resetHoveredObject(object: THREE.Object3D) {
+  if (object instanceof THREE.Mesh && originalMaterials.has(object.uuid)) {
+    // Restore original material
+    object.material = originalMaterials.get(object.uuid);
+    originalMaterials.delete(object.uuid);
+  }
+}
+
+// Add event listener for mouse movement
+window.addEventListener("mousemove", onMouseMove, false);
+
 // // Robot Model 1 Loading
 gltfLoader.load(
   "/assets/robot/scene.gltf",
@@ -231,6 +328,10 @@ gltfLoader.load(
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
+
+        // Make the object interactive
+        child.userData.interactive = true;
+
         if (Array.isArray(child.material)) {
           child.material.forEach((material) => {
             if (material instanceof THREE.MeshStandardMaterial) {
@@ -258,7 +359,7 @@ gltfLoader.load(
     warehouseGroupCornwall.add(robotsStartingPointMesh);
 
     if (robotModel1.model) {
-      robotCustomAnimation1(robotModel1);
+      // robotCustomAnimation1(robotModel1);
     }
   },
   (xhr) => {
