@@ -1,7 +1,6 @@
 function addCasaGrandeLocation(
   map: maplibregl.Map,
   dropdown: HTMLDivElement,
-  currentPositionButtonText: HTMLSpanElement,
   setSelectedLocation: (location: string) => void
 ) {
   const casaGrandeItem = document.createElement("div");

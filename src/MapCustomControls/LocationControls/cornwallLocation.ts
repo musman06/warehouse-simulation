@@ -1,7 +1,6 @@
 function addCornwallLocation(
   map: maplibregl.Map,
   dropdown: HTMLDivElement,
-  currentPositionButtonText: HTMLSpanElement,
   setSelectedLocation: (location: string) => void
 ) {
   const cornwallItem = document.createElement("div");
