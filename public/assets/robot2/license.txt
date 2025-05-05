@@ -1,0 +1,11 @@
+Model Information:
+* title:	ZEERY Autonomous Delivery Robot
+* source:	https://sketchfab.com/3d-models/zeery-autonomous-delivery-robot-351bfef8e7f6496ea78a72f0b45e1d12
+* author:	eltayerkebulan (https://sketchfab.com/eltayerkebulan)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "ZEERY Autonomous Delivery Robot" (https://sketchfab.com/3d-models/zeery-autonomous-delivery-robot-351bfef8e7f6496ea78a72f0b45e1d12) by eltayerkebulan (https://sketchfab.com/eltayerkebulan) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

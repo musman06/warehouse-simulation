@@ -9,10 +9,19 @@ import {
   forkliftModel2,
   robotsStartingPointMesh,
   forkliftsStartingPointMesh,
-} from "./gltfloader";
-import { Model3D } from "./model3DClass";
+} from "./ModelLoading/CasaGrande/gltfLoader";
+import {
+  warehouseGroupCornwall,
+  warehouseModelCornwall,
+} from "./ModelLoading/Cornwall/gltfloader";
 import maplibregl from "maplibre-gl";
-import { removeWarehouseRoof, addWarehouseRoof } from "./utils";
+import {
+  removeWarehouseRoof,
+  addWarehouseRoof,
+  degreesToRadians,
+} from "./utils";
+
+import { line5 } from "./NavigationPathRendering/CasaGrande/lineanimation";
 
 // Converting 3D spherical earth coordinates into flat 2D map coordinates
 const modelRenderOrigin: [number, number] = [
@@ -25,8 +34,18 @@ const modelRenderAsMercatorCoordinate =
     modelRenderAltitude
   );
 
+const modelRenderOriginCornwall: [number, number] = [-74.7077, 45.0489];
+const modelRenderAltitudeCornwall = 0;
+const modelRenderAsMercatorCoordinateCornwall =
+  maplibregl.MercatorCoordinate.fromLngLat(
+    modelRenderOriginCornwall,
+    modelRenderAltitudeCornwall
+  );
+
 // Calculating scale factor to scle our model to avoid zoom level issues
 const scale = modelRenderAsMercatorCoordinate.meterInMercatorCoordinateUnits();
+const scaleCornwall =
+  modelRenderAsMercatorCoordinateCornwall.meterInMercatorCoordinateUnits();
 
 // Calculating coordinates for camera position
 const cameraX = modelRenderAsMercatorCoordinate.x;
@@ -35,6 +54,7 @@ const cameraZ = modelRenderAsMercatorCoordinate.z + 20;
 
 // Keep checking every 0.5s until models are available
 let modelsLoaded: boolean = false;
+let modelsLoadedCornwall: boolean = false;
 const waitForModels = setInterval(() => {
   if (
     warehouseModel?.model &&
@@ -44,11 +64,30 @@ const waitForModels = setInterval(() => {
     forkliftModel1?.model &&
     forkliftModel2?.model &&
     robotsStartingPointMesh &&
-    forkliftsStartingPointMesh
+    forkliftsStartingPointMesh &&
+    warehouseModelCornwall?.model &&
+    line5
   ) {
+    // scale the models
     warehouseGroup.scale.set(5, 5, 6.45);
-    scene.add(warehouseGroup);
+    warehouseGroupCornwall.scale.set(5, 5, 6.45);
+
+    warehouseGroup.position.set(
+      modelRenderAsMercatorCoordinate.x,
+      modelRenderAsMercatorCoordinate.y,
+      modelRenderAsMercatorCoordinate.z
+    );
+
+    // warehouseGroupCornwall.position.set(
+    //   modelRenderAsMercatorCoordinateCornwall.x,
+    //   modelRenderAsMercatorCoordinateCornwall.y,
+    //   modelRenderAsMercatorCoordinateCornwall.z
+    // );
+
+    // scene.add(warehouseGroup);
+    scene.add(warehouseGroupCornwall);
     modelsLoaded = true;
+    modelsLoadedCornwall = true;
     clearInterval(waitForModels);
   }
 }, 500);
@@ -77,7 +116,11 @@ scene.add(ambientLight);
 
 // // Directional Light
 const directionalLight = new THREE.DirectionalLight("white", 1);
-directionalLight.position.set(100, 700, 300);
+directionalLight.position.set(
+  modelRenderAsMercatorCoordinate.x + 100,
+  modelRenderAsMercatorCoordinate.y + 700,
+  modelRenderAsMercatorCoordinate.z + 300
+);
 directionalLight.castShadow = true;
 directionalLight.shadow.mapSize.x = 1024;
 directionalLight.shadow.mapSize.y = 1024;
@@ -104,43 +147,48 @@ const map = new maplibregl.Map({
   container: "map", // ID of the HTML div
   style:
     "https://api.maptiler.com/maps/basic-v2/style.json?key=7dFQzHIS1xcksIlnhtW4", // Open-source map style
-  center: [-111.77060200008945, 32.86688980631886], // Longitude, Latitude
-  zoom: 17,
+  // center: [-111.77060200008945, 32.86688980631886], // Longitude, Latitude of warehousemodel
+
+  center: [-74.707, 45.04946], // Longitude, Latitude of warehousemodelCornwall
+  zoom: 16,
+  // zoom: 17,
   maxZoom: 22,
   minZoom: 2,
-  pitch: 30, // Vertical tilting of the map
-  bearing: -90, // rotating the map
+  // pitch: 30,
+  // bearing: -90,
+  pitch: 45, // Vertical tilting of the map
+  bearing: -118, // rotating the map
   canvasContextAttributes: { antialias: true },
 });
 
 // Function to calculate max pitch based on zoom level
-function getMaxPitchForZoom(zoom: number) {
-  if (zoom >= 18) return 90;
-  if (zoom >= 15) return 80;
-  if (zoom >= 12) return 70;
-  if (zoom >= 10) return 60;
-  if (zoom >= 8) return 50;
-  if (zoom >= 6) return 40;
-  return 0; // For zoom levels 2-5
-}
+// function getMaxPitchForZoom(zoom: number) {
+//   if (zoom >= 18) return 90;
+//   if (zoom >= 15) return 80;
+//   if (zoom >= 12) return 70;
+//   if (zoom >= 10) return 60;
+//   if (zoom >= 8) return 50;
+//   if (zoom >= 6) return 40;
+//   return 0; // For zoom levels 2-5
+// }
 
 // Function to enforce pitch limit
-function enforcePitchLimit() {
-  const currentZoom = map.getZoom();
-  const currentPitch = map.getPitch();
-  const maxPitch = getMaxPitchForZoom(currentZoom);
+// function enforcePitchLimit() {
+//   const currentZoom = map.getZoom();
+//   const currentPitch = map.getPitch();
+//   const maxPitch = getMaxPitchForZoom(currentZoom);
 
-  if (currentPitch > maxPitch) {
-    map.setPitch(maxPitch);
-  }
-}
+//   if (currentPitch > maxPitch) {
+//     map.setPitch(maxPitch);
+//   }
+// }
 
 // Add event listeners
-map.on("zoomend", enforcePitchLimit);
-map.on("load", enforcePitchLimit); // Apply on initial load too
+// map.on("zoomend", enforcePitchLimit);
+// map.on("load", enforcePitchLimit); // Apply on initial load too
 
-// Also limit pitch when it's directly changed
-map.on("pitch", enforcePitchLimit);
+// // Also limit pitch when it's directly changed
+// map.on("pitch", enforcePitchLimit);
 
 // Add navigation controls
 map.addControl(new maplibregl.NavigationControl());
@@ -151,6 +199,8 @@ map.addControl(new maplibregl.ScaleControl());
 // Map custom controls
 // // Locations Control
 function locationsControls(map: maplibregl.Map): maplibregl.IControl {
+  let locationSelected: string = "";
+
   // Current position button
   const currentPositionContainer = document.createElement("div");
   currentPositionContainer.className = "maplibregl-ctrl maplibregl-ctrl-group";
@@ -214,6 +264,8 @@ function locationsControls(map: maplibregl.Map): maplibregl.IControl {
   });
   casaGrandeItem.addEventListener("click", (e) => {
     e.stopPropagation();
+    locationSelected = "Casa Grande";
+    console.log("locationSelected: ", locationSelected);
     map.flyTo({
       center: [-111.77060200008945, 32.86688980631886],
       zoom: 17,
@@ -226,6 +278,35 @@ function locationsControls(map: maplibregl.Map): maplibregl.IControl {
     dropdown.style.display = "none"; // Hide dropdown after selection
   });
   dropdown.appendChild(casaGrandeItem);
+
+  // Add Cornwall location
+  const cornwallItem = document.createElement("div");
+  cornwallItem.textContent = "Cornwall";
+  cornwallItem.style.padding = "10px";
+  cornwallItem.style.cursor = "pointer";
+  cornwallItem.style.borderBottom = "1px solid #e0e0e0";
+  cornwallItem.addEventListener("mouseenter", () => {
+    cornwallItem.style.backgroundColor = "#f0f0f0";
+  });
+  cornwallItem.addEventListener("mouseleave", () => {
+    cornwallItem.style.backgroundColor = "white";
+  });
+  cornwallItem.addEventListener("click", (e) => {
+    e.stopPropagation();
+    locationSelected = "Cornwall";
+    console.log("locationSelected: ", locationSelected);
+    map.flyTo({
+      center: [-74.707, 45.04946],
+      zoom: 16,
+      speed: 2,
+      pitch: 45,
+      bearing: -118,
+      curve: 1,
+      easing: (t: any) => t,
+    });
+    dropdown.style.display = "none"; // Hide dropdown after selection
+  });
+  dropdown.appendChild(cornwallItem);
 
   // Toggle dropdown display on button click
   currentPositionButton.addEventListener("click", (e) => {
@@ -258,12 +339,16 @@ function locationsControls(map: maplibregl.Map): maplibregl.IControl {
     onRemove: function () {
       currentPositionContainer.remove();
     },
-  };
+    getSelectedLocation: () => locationSelected,
+  } as any;
 }
 
 map.addControl(locationsControls(map), "top-left");
 
-function warehouseControls(map: maplibregl.Map): maplibregl.IControl {
+function warehouseControls(
+  map: maplibregl.Map,
+  getSelectedLocation: () => string
+): maplibregl.IControl {
   // Warehouse inside view button
   const warehouseInsideViewContainer = document.createElement("div");
   warehouseInsideViewContainer.className =
@@ -286,18 +371,37 @@ function warehouseControls(map: maplibregl.Map): maplibregl.IControl {
   warehouseInsideViewButtonIcon.textContent = "🎦";
   warehouseInsideViewButton.appendChild(warehouseInsideViewButtonIcon);
 
-  // Define warehouse settings
-  const warehouseCenterLng = -111.77060200008945;
-  const warehouseCenterLat = 32.86684249587934;
-  const insideViewZoom = 21;
-  const insideViewPitch = 80;
-  const insideViewBearing = -90;
-
   let warehouseInsideViewFlag = false;
 
   warehouseInsideViewButton.addEventListener("click", (e) => {
     e.stopPropagation();
+    const selected = getSelectedLocation();
+    console.log("selected: ", selected);
+    if (!selected) return;
+
     warehouseInsideViewFlag = !warehouseInsideViewFlag;
+
+    let warehouseCenterLng: number,
+      warehouseCenterLat: number,
+      insideViewZoom: number,
+      insideViewPitch: number,
+      insideViewBearing: number;
+
+    if (selected === "Casa Grande") {
+      warehouseCenterLng = -111.77060200008945;
+      warehouseCenterLat = 32.86684249587934;
+      insideViewZoom = 21;
+      insideViewPitch = 80;
+      insideViewBearing = -90;
+    } else if (selected === "Cornwall") {
+      warehouseCenterLng = -74.7077;
+      warehouseCenterLat = 45.0489;
+      insideViewZoom = 21;
+      insideViewPitch = 80;
+      insideViewBearing = -118;
+    } else {
+      return; // unknown location
+    }
 
     if (warehouseInsideViewFlag) {
       try {
@@ -356,7 +460,11 @@ function warehouseControls(map: maplibregl.Map): maplibregl.IControl {
   };
 }
 
-map.addControl(warehouseControls(map), "top-right");
+const locationControl = locationsControls(map);
+map.addControl(
+  warehouseControls(map, () => (locationControl as any).getSelectedLocation()),
+  "top-right"
+);
 
 const clock = new THREE.Clock();
 // Custom MapLibre 3D Layer
@@ -403,15 +511,13 @@ const customLayer = {
     const rotationX = new THREE.Matrix4().makeRotationX(Math.PI / 2);
     const rotationY = new THREE.Matrix4().makeRotationY(Math.PI / 2);
 
-    const l = new THREE.Matrix4()
-      .makeTranslation(
-        modelRenderAsMercatorCoordinate.x,
-        modelRenderAsMercatorCoordinate.y,
-        modelRenderAsMercatorCoordinate.z
-      )
-      .scale(new THREE.Vector3(scale, -scale, scale))
-      .multiply(rotationX)
-      .multiply(rotationY);
+    const l = getModelMatrix(modelRenderAsMercatorCoordinate, scale, 90, 90);
+    const lCornwall = getModelMatrix(
+      modelRenderAsMercatorCoordinateCornwall,
+      scaleCornwall,
+      90,
+      118
+    );
 
     const delta = clock.getDelta();
 
@@ -430,7 +536,7 @@ const customLayer = {
       }
     }
 
-    camera!.projectionMatrix = m.multiply(l);
+    camera!.projectionMatrix = m.multiply(lCornwall);
     this.renderer!.resetState();
     this.renderer!.render(scene, camera!);
     this.map!.triggerRepaint();
@@ -441,3 +547,25 @@ const customLayer = {
 map.on("style.load", () => {
   map.addLayer(customLayer);
 });
+
+function getModelMatrix(
+  coord: maplibregl.MercatorCoordinate,
+  scale: number,
+  rotateX: number,
+  rotateY: number
+) {
+  const translation = new THREE.Matrix4().makeTranslation(
+    coord.x,
+    coord.y,
+    coord.z
+  );
+  const scaling = new THREE.Matrix4().makeScale(scale, -scale, scale);
+  const rotationX = new THREE.Matrix4().makeRotationX(
+    degreesToRadians(rotateX)
+  );
+  const rotationY = new THREE.Matrix4().makeRotationY(
+    degreesToRadians(rotateY)
+  );
+
+  return translation.multiply(scaling).multiply(rotationX).multiply(rotationY);
+}

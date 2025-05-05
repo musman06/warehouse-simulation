@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { Model3D } from "./model3DClass";
+
 // Time taken by robot to rotate
 export const rotationDurationRobot = 4;
 
@@ -20,6 +21,7 @@ const removedRoofMeshes: { mesh: THREE.Mesh; parent: THREE.Object3D }[] = [];
 
 // Remove Warehouse roof
 function removeWarehouseRoof(warehouseModel: Model3D) {
+  console.log("i am called");
   const meshesToRemove: { mesh: THREE.Mesh; parent: THREE.Object3D }[] = []; // meshes of warehouse model to remove
 
   warehouseModel.model.traverse((child) => {
@@ -37,6 +39,7 @@ function removeWarehouseRoof(warehouseModel: Model3D) {
 
   // Now outside traversal, safely remove
   for (const { mesh, parent } of meshesToRemove) {
+    console.log("meshesToRemove: ", meshesToRemove);
     removedRoofMeshes.push({ mesh, parent });
     parent.remove(mesh);
   }
@@ -50,9 +53,56 @@ function addWarehouseRoof() {
   removedRoofMeshes.length = 0;
 }
 
+// Make a storage rack empty
+function emptyStorageRack(rack: THREE.Group) {
+  const meshesToRemove: THREE.Object3D[] = []; // Store meshes to remove
+
+  rack.traverse((child) => {
+    if (child instanceof THREE.Mesh) {
+      if (child.name === "Material2" || child.name === "Material2_1") {
+        meshesToRemove.push(child); // mark for removal
+      }
+    }
+  });
+
+  // Remove after traversal
+  meshesToRemove.forEach((mesh) => {
+    if (mesh.parent) {
+      mesh.parent.remove(mesh);
+    }
+  });
+
+  return rack;
+}
+
+// Make a storage rack partially empty
+// Make a storage rack empty
+function partialStorageRack(rack: THREE.Group) {
+  const meshesToRemove: THREE.Object3D[] = []; // Store meshes to remove
+
+  rack.traverse((child) => {
+    if (child instanceof THREE.Mesh) {
+      if (child.name === "Material2_1") {
+        meshesToRemove.push(child); // mark for removal
+      }
+    }
+  });
+
+  // Remove after traversal
+  meshesToRemove.forEach((mesh) => {
+    if (mesh.parent) {
+      mesh.parent.remove(mesh);
+    }
+  });
+
+  return rack;
+}
+
 export {
   degreesToRadians,
   boundingBoxFlooring,
   removeWarehouseRoof,
   addWarehouseRoof,
+  emptyStorageRack,
+  partialStorageRack,
 };
