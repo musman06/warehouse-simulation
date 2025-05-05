@@ -4,11 +4,12 @@ import { addCornwallLocation } from "./cornwallLocation";
 // Define the interface for the location control to ensure type safety
 interface LocationControl extends maplibregl.IControl {
   getSelectedLocation: () => string;
+  setSelectedLocation: (location: string) => void;
 }
 
 // Locations Control
 function locationsControls(map: maplibregl.Map): LocationControl {
-  // Create locationSelected variable - initially null string
+  // Create locationSelected variable - initially empty string
   let locationSelected: string = "";
 
   // Current position button
@@ -60,20 +61,26 @@ function locationsControls(map: maplibregl.Map): LocationControl {
   dropdown.style.borderRadius = "3px";
   dropdown.style.marginTop = "5px";
 
+  // Create a setter function to update locationSelected
+  const setSelectedLocation = (location: string) => {
+    locationSelected = location;
+    currentPositionButtonText.textContent = location || "Locations";
+  };
+
   // Add Casa Grande location
   addCasaGrandeLocation(
-    locationSelected,
     map,
     dropdown,
-    currentPositionButtonText
+    currentPositionButtonText,
+    setSelectedLocation
   );
 
   // Add Cornwall location
   addCornwallLocation(
-    locationSelected,
     map,
     dropdown,
-    currentPositionButtonText
+    currentPositionButtonText,
+    setSelectedLocation
   );
 
   // Toggle dropdown display on button click
@@ -110,6 +117,9 @@ function locationsControls(map: maplibregl.Map): LocationControl {
     },
     getSelectedLocation: function () {
       return locationSelected;
+    },
+    setSelectedLocation: function (location: string) {
+      setSelectedLocation(location);
     },
   };
 

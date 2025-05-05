@@ -1,8 +1,8 @@
 function addCornwallLocation(
-  locationSelected: string,
   map: maplibregl.Map,
   dropdown: HTMLDivElement,
-  currentPositionButtonText: HTMLSpanElement
+  currentPositionButtonText: HTMLSpanElement,
+  setSelectedLocation: (location: string) => void
 ) {
   const cornwallItem = document.createElement("div");
   cornwallItem.textContent = "Cornwall";
@@ -17,9 +17,9 @@ function addCornwallLocation(
   });
   cornwallItem.addEventListener("click", (e) => {
     e.stopPropagation();
-    // Set locationSelected value when Cornwall is clicked
-    locationSelected = "Cornwall";
-    console.log("Location selected:", locationSelected);
+    // Update the selected location using the setter function
+    setSelectedLocation("Cornwall");
+    console.log("Location selected:", "Cornwall");
 
     map.flyTo({
       center: [-74.707, 45.04946],
@@ -31,9 +31,6 @@ function addCornwallLocation(
       easing: (t: any) => t,
     });
     dropdown.style.display = "none"; // Hide dropdown after selection
-
-    // Update button text to show selected location
-    currentPositionButtonText.textContent = locationSelected;
   });
   dropdown.appendChild(cornwallItem);
 }
