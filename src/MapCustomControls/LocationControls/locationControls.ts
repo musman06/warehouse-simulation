@@ -68,20 +68,10 @@ function locationsControls(map: maplibregl.Map): LocationControl {
   };
 
   // Add Casa Grande location
-  addCasaGrandeLocation(
-    map,
-    dropdown,
-    currentPositionButtonText,
-    setSelectedLocation
-  );
+  addCasaGrandeLocation(map, dropdown, setSelectedLocation);
 
   // Add Cornwall location
-  addCornwallLocation(
-    map,
-    dropdown,
-    currentPositionButtonText,
-    setSelectedLocation
-  );
+  addCornwallLocation(map, dropdown, setSelectedLocation);
 
   // Toggle dropdown display on button click
   currentPositionButton.addEventListener("click", (e) => {
