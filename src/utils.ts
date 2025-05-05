@@ -113,6 +113,29 @@ function convert3DEarthTo2DMapCoordinates(
   return modelRenderAsMercatorCoordinate;
 }
 
+// Warehouse Model Transformation
+function getModelMatrix(
+  coord: maplibregl.MercatorCoordinate,
+  scale: number,
+  rotateX: number,
+  rotateY: number
+) {
+  const translation = new THREE.Matrix4().makeTranslation(
+    coord.x,
+    coord.y,
+    coord.z
+  );
+  const scaling = new THREE.Matrix4().makeScale(scale, -scale, scale);
+  const rotationX = new THREE.Matrix4().makeRotationX(
+    degreesToRadians(rotateX)
+  );
+  const rotationY = new THREE.Matrix4().makeRotationY(
+    degreesToRadians(rotateY)
+  );
+
+  return translation.multiply(scaling).multiply(rotationX).multiply(rotationY);
+}
+
 export {
   degreesToRadians,
   boundingBoxFlooring,
@@ -121,4 +144,5 @@ export {
   emptyStorageRack,
   partialStorageRack,
   convert3DEarthTo2DMapCoordinates,
+  getModelMatrix,
 };
