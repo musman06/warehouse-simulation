@@ -89,6 +89,7 @@ gltfLoader.load(
         }
       }
     });
+    removeWarehouseRoof(warehouseModelCornwall);
   },
   (xhr) => {
     console.log(
@@ -212,113 +213,16 @@ gltfLoader.load(
   }
 );
 
-// Raycaster for hover effects
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
-// Store original materials to restore them when not hovering
-const originalMaterials = new Map();
-
-// Track which object is currently being hovered
-let currentHover: THREE.Object3D | null = null;
-
-// Mouse move event handler
-function onMouseMove(event: MouseEvent) {
-  // Calculate mouse position in normalized device coordinates (-1 to +1)
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-  // Update the raycaster
-  setTimeout(() => {
-    updateRaycaster();
-  }, 3000);
-}
-
-// Function to update the raycaster and handle hover effects
-// if (camera) {
-// }
-export function updateRaycaster() {
-  // Update the picking ray with the camera and mouse position
-  raycaster.setFromCamera(mouse, camera); // You'll need to make sure 'camera' is accessible here
-
-  // Calculate objects intersecting the picking ray
-  const intersects = raycaster.intersectObjects(
-    warehouseGroupCornwall.children,
-    true
-  );
-
-  // Reset previously hovered object if we're now hovering over something else or nothing
-  if (
-    currentHover &&
-    (intersects.length === 0 || intersects[0].object !== currentHover)
-  ) {
-    resetHoveredObject(currentHover);
-    currentHover = null;
-  }
-
-  // Handle new hover
-  if (intersects.length > 0) {
-    const hoveredObject = intersects[0].object;
-
-    // Skip if it's the same object we're already hovering over
-    if (hoveredObject === currentHover) return;
-
-    // Store the new hovered object
-    currentHover = hoveredObject;
-
-    // Apply hover effect
-    applyHoverEffect(hoveredObject);
-  }
-}
-
-// Apply hover effect to an object
-function applyHoverEffect(object: THREE.Object3D) {
-  if (object instanceof THREE.Mesh && object.material) {
-    // Store original materials if not already stored
-    if (!originalMaterials.has(object.uuid)) {
-      // Clone materials to restore later
-      originalMaterials.set(object.uuid, object.material.clone());
-    }
-
-    // Apply hover effect to material
-    if (Array.isArray(object.material)) {
-      object.material.forEach((material) => {
-        if (material.opacity !== undefined) {
-          material.transparent = true;
-          material.opacity = 0.7; // Change opacity for hover effect
-        }
-      });
-    } else {
-      if (object.material.opacity !== undefined) {
-        object.material.transparent = true;
-        object.material.opacity = 0.7; // Change opacity for hover effect
-      }
-    }
-  }
-}
-
-// Reset object to its original appearance
-function resetHoveredObject(object: THREE.Object3D) {
-  if (object instanceof THREE.Mesh && originalMaterials.has(object.uuid)) {
-    // Restore original material
-    object.material = originalMaterials.get(object.uuid);
-    originalMaterials.delete(object.uuid);
-  }
-}
-
-// Add event listener for mouse movement
-window.addEventListener("mousemove", onMouseMove, false);
-
 // // Robot Model 1 Loading
 gltfLoader.load(
-  "/assets/robot/scene.gltf",
+  "/assets/robot2/scene.gltf",
   (gltf) => {
     robotModel1 = new Model3D("Robot Model 1", gltf.scene);
     robotModel1.model.castShadow = true;
     robotModel1.model.receiveShadow = true;
-    robotModel1.model.scale.set(0.06, 0.06, 0.06);
-    robotModel1.model.position.set(-17, 0.55, 60);
-    robotModel1.model.rotateY(Math.PI);
+    robotModel1.model.scale.set(0.6, 0.6, 0.6);
+    robotModel1.model.position.set(-17, 1, 60);
+    robotModel1.model.rotateY(degreesToRadians(-25));
     warehouseGroupCornwall.add(robotModel1.model);
 
     // Updating texture of all the child objects
@@ -328,23 +232,6 @@ gltfLoader.load(
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
-
-        // Make the object interactive
-        child.userData.interactive = true;
-
-        if (Array.isArray(child.material)) {
-          child.material.forEach((material) => {
-            if (material instanceof THREE.MeshStandardMaterial) {
-              material.map = robotTexture;
-              material.needsUpdate = true;
-            }
-          });
-        } else {
-          if (child.material instanceof THREE.MeshStandardMaterial) {
-            child.material.map = robotTexture;
-            child.material.needsUpdate = true;
-          }
-        }
       }
     });
 
@@ -359,7 +246,7 @@ gltfLoader.load(
     warehouseGroupCornwall.add(robotsStartingPointMesh);
 
     if (robotModel1.model) {
-      // robotCustomAnimation1(robotModel1);
+      robotCustomAnimation1(robotModel1);
     }
   },
   (xhr) => {
@@ -374,13 +261,13 @@ gltfLoader.load(
 
 // // Robot Model 2 Loading
 gltfLoader.load(
-  "/assets/robot/scene.gltf",
+  "/assets/robot2/scene.gltf",
   (gltf) => {
     robotModel2 = new Model3D("Robot Model 2", gltf.scene);
     robotModel2.model.castShadow = true;
     robotModel2.model.receiveShadow = true;
-    robotModel2.model.position.set(-17, 0.55, 60);
-    robotModel2.model.scale.set(0.06, 0.06, 0.06);
+    robotModel2.model.scale.set(0.6, 0.6, 0.6);
+    robotModel2.model.position.set(-17, 1, 60);
     robotModel2.model.rotateY(degreesToRadians(90));
     warehouseGroupCornwall.add(robotModel2.model);
 
@@ -391,19 +278,6 @@ gltfLoader.load(
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
-        if (Array.isArray(child.material)) {
-          child.material.forEach((material) => {
-            if (material instanceof THREE.MeshStandardMaterial) {
-              material.map = robotTexture;
-              material.needsUpdate = true;
-            }
-          });
-        } else {
-          if (child.material instanceof THREE.MeshStandardMaterial) {
-            child.material.map = robotTexture;
-            child.material.needsUpdate = true;
-          }
-        }
       }
     });
 
@@ -423,21 +297,15 @@ gltfLoader.load(
 
 // // Robot Model 3 Loading
 gltfLoader.load(
-  "/assets/robot/scene.gltf",
+  "/assets/robot3/scene.gltf",
   (gltf) => {
     robotModel3 = new Model3D("Robot Model 3", gltf.scene);
     robotModel3.model.castShadow = true;
     robotModel3.model.receiveShadow = true;
-    robotModel3.model.position.set(-17, 0.55, 60);
-    robotModel3.model.scale.set(0.06, 0.06, 0.06);
+    robotModel3.model.scale.set(0.6, 0.6, 0.6);
+    robotModel3.model.position.set(-17, 1, 60);
     robotModel3.model.rotateY(Math.PI);
     warehouseGroupCornwall.add(robotModel3.model);
-
-    // Play all available animations
-    gltf.animations.forEach((clip) => {
-      const action = robotModel3?.mixer.clipAction(clip);
-      action!.play();
-    });
 
     // Updating texture of all the child objects
     robotModel3.model.traverse((child) => {
@@ -446,19 +314,6 @@ gltfLoader.load(
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
-        if (Array.isArray(child.material)) {
-          child.material.forEach((material) => {
-            if (material instanceof THREE.MeshStandardMaterial) {
-              material.map = robotTexture;
-              material.needsUpdate = true;
-            }
-          });
-        } else {
-          if (child.material instanceof THREE.MeshStandardMaterial) {
-            child.material.map = robotTexture;
-            child.material.needsUpdate = true;
-          }
-        }
       }
     });
 

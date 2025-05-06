@@ -14,7 +14,6 @@ import {
 import {
   warehouseGroupCornwall,
   warehouseModelCornwall,
-  updateRaycaster,
 } from "./ModelLoading/Cornwall/gltfloader";
 import { enforcePitchLimit } from "./MapCustomControls/pitchLimitControl";
 import { locationsControls } from "./MapCustomControls/LocationControls/locationControls";
@@ -214,10 +213,6 @@ const customLayer = {
 
       if (robotModel3Casa!.mixer) {
         robotModel3Casa!.mixer.update(delta);
-      }
-
-      if (warehouseModelCornwall!.model) {
-        updateRaycaster();
       }
     }
 

@@ -19,7 +19,7 @@ function robotCustomAnimation1(robot: Model3D) {
       ease: "none",
     })
     .to(robot.model.rotation, {
-      y: degreesToRadians(90),
+      y: degreesToRadians(65),
       duration: rotationDurationRobot,
       ease: "none",
       onStart: () => {
