@@ -14,7 +14,7 @@ import {
 } from "../../utils";
 import { Model3D } from "../../model3DClass";
 import drawStartPointCircle from "../../NavigationPathRendering/CasaGrande/startpointcircle";
-import { camera } from "../../script";
+// import { camera } from "../../script";
 
 // 3D Models Placeholder
 let warehouseModelCornwall: Model3D | null = null;

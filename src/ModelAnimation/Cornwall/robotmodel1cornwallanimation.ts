@@ -10,7 +10,6 @@ const timelineRobot1 = gsap.timeline({
 });
 
 // Animation Function For Robot Model 1
-
 function robotCustomAnimation1(robot: Model3D) {
   timelineRobot1
     .to(robot.model.position, {

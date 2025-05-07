@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import maplibregl from "maplibre-gl";
+import CustomThreeJSWrapper from "./CustomThreeJsWrapper/CustomThreeJsWrapper";
 import {
   warehouseGroupCasa,
   warehouseModelCasa,
@@ -37,78 +38,62 @@ const scale =
 const scaleCornwall =
   modelRenderAsMercatorCoordinateCornwall.meterInMercatorCoordinateUnits();
 
-// Keep checking every 0.5s until models are available
-let modelsLoaded: boolean = false;
-let modelsLoadedCornwall: boolean = false;
-const waitForModels = setInterval(() => {
-  if (
-    warehouseModelCasa?.model &&
-    robotModel1Casa?.model &&
-    robotModel2Casa?.model &&
-    robotModel3Casa?.model &&
-    forkliftModel1Casa?.model &&
-    forkliftModel2Casa?.model &&
-    robotsStartingPointMeshCasa &&
-    forkliftsStartingPointMeshCasa &&
-    warehouseModelCornwall?.model
-  ) {
-    // scale the models
-    warehouseGroupCasa.scale.set(5, 5, 6.45);
-    warehouseGroupCornwall.scale.set(5, 5, 6.45);
+// // Keep checking every 0.5s until models are available
+// let modelsLoaded: boolean = false;
+// let modelsLoadedCornwall: boolean = false;
+// const waitForModels = setInterval(() => {
+//   if (
+//     warehouseModelCasa?.model &&
+//     robotModel1Casa?.model &&
+//     robotModel2Casa?.model &&
+//     robotModel3Casa?.model &&
+//     forkliftModel1Casa?.model &&
+//     forkliftModel2Casa?.model &&
+//     robotsStartingPointMeshCasa &&
+//     forkliftsStartingPointMeshCasa &&
+//     warehouseModelCornwall?.model
+//   ) {
+//     // scale the models
+//     warehouseGroupCasa.scale.set(5, 5, 6.45);
+//     warehouseGroupCornwall.scale.set(5, 5, 6.45);
 
-    // scene.add(warehouseGroup);
-    scene.add(warehouseGroupCornwall);
-    modelsLoaded = true;
-    modelsLoadedCornwall = true;
+//     // scene.add(warehouseGroup);
+//     // scene.add(warehouseGroupCornwall);
+//     customThreewrapper.add(warehouseGroupCornwall);
+//     modelsLoaded = true;
+//     modelsLoadedCornwall = true;
 
-    // Add the warehouse control to the map, passing the locationControl reference
-    map.addControl(
-      warehouseControls(
-        map,
-        locationControl,
-        warehouseModelCasa!,
-        warehouseModelCornwall!
-      ),
-      "top-right"
-    );
+//     // Add the warehouse control to the map, passing the locationControl reference
+//     map.addControl(
+//       warehouseControls(
+//         map,
+//         locationControl,
+//         warehouseModelCasa!,
+//         warehouseModelCornwall!
+//       ),
+//       "top-right"
+//     );
 
-    clearInterval(waitForModels);
-  }
-}, 500);
+//     clearInterval(waitForModels);
+//   }
+// }, 500);
 
 // Viewport Sizes
-const sizes = {
-  width: window.innerWidth,
-  height: window.innerHeight,
-};
+// const sizes = {
+//   width: window.innerWidth,
+//   height: window.innerHeight,
+// };
 
 // Scene
-const scene = new THREE.Scene();
+// const scene = new THREE.Scene();
 
 // Camera
-export const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  4000
-);
-
-// Lights
-// // AmbientLight
-const ambientLight = new THREE.AmbientLight("white", 5);
-scene.add(ambientLight);
-
-// // Directional Light
-const directionalLight = new THREE.DirectionalLight("white", 1);
-directionalLight.position.set(
-  modelRenderAsMercatorCoordinateCornwall.x + 100,
-  modelRenderAsMercatorCoordinateCornwall.y + 700,
-  modelRenderAsMercatorCoordinateCornwall.z + 300
-);
-directionalLight.castShadow = true;
-directionalLight.shadow.mapSize.x = 1024;
-directionalLight.shadow.mapSize.y = 1024;
-scene.add(directionalLight);
+// export const camera = new THREE.PerspectiveCamera(
+//   75,
+//   window.innerWidth / window.innerHeight,
+//   0.1,
+//   4000
+// );
 
 // Initialize the map
 const map = new maplibregl.Map({
@@ -128,6 +113,79 @@ const map = new maplibregl.Map({
   canvasContextAttributes: { antialias: true },
 });
 
+// initialising customThreeJSWrapper
+const customThreewrapper = new CustomThreeJSWrapper(map);
+
+// Keep checking every 0.5s until models are available
+let modelsLoaded: boolean = false;
+let modelsLoadedCornwall: boolean = false;
+const waitForModels = setInterval(() => {
+  if (
+    warehouseModelCasa?.model &&
+    robotModel1Casa?.model &&
+    robotModel2Casa?.model &&
+    robotModel3Casa?.model &&
+    forkliftModel1Casa?.model &&
+    forkliftModel2Casa?.model &&
+    robotsStartingPointMeshCasa &&
+    forkliftsStartingPointMeshCasa &&
+    warehouseModelCornwall?.model
+  ) {
+    // scale the models
+    // warehouseGroupCasa.scale.set(5, 5, 6.45);
+    warehouseGroupCornwall.scale.set(50, 50, 600.45);
+
+    // scene.add(warehouseGroup);
+    // scene.add(warehouseGroupCornwall);
+    customThreewrapper.add(warehouseGroupCornwall);
+    modelsLoaded = true;
+    modelsLoadedCornwall = true;
+
+    // Add the warehouse control to the map, passing the locationControl reference
+    map.addControl(
+      warehouseControls(
+        map,
+        locationControl,
+        warehouseModelCasa!,
+        warehouseModelCornwall!
+      ),
+      "top-right"
+    );
+
+    clearInterval(waitForModels);
+  }
+}, 500);
+
+// Lights
+// // AmbientLight
+const ambientLight = new THREE.AmbientLight("white", 5);
+// scene.add(ambientLight);
+customThreewrapper.add(ambientLight);
+
+console.log(
+  "modelRenderAsMercatorCoordinateCornwall: ",
+  modelRenderAsMercatorCoordinateCornwall,
+  modelRenderAsMercatorCoordinateCasa
+);
+// // Directional Light
+const directionalLight = new THREE.DirectionalLight("white", 1);
+directionalLight.position.set(
+  modelRenderAsMercatorCoordinateCornwall.x + 100,
+  modelRenderAsMercatorCoordinateCornwall.y + 700,
+  modelRenderAsMercatorCoordinateCornwall.z + 300
+);
+directionalLight.castShadow = true;
+directionalLight.shadow.mapSize.x = 1024;
+directionalLight.shadow.mapSize.y = 1024;
+// scene.add(directionalLight);
+customThreewrapper.add(directionalLight);
+
+const directionalLightHelper = new THREE.DirectionalLightHelper(
+  directionalLight,
+  200
+);
+customThreewrapper.add(directionalLightHelper);
+
 // Add event listeners
 // map.on("load", () => enforcePitchLimit(map)); // Apply on initial load too
 // map.on("zoomend", () => enforcePitchLimit(map));
@@ -145,81 +203,67 @@ map.addControl(new maplibregl.ScaleControl());
 const locationControl = locationsControls(map);
 map.addControl(locationControl, "top-left");
 
-const clock = new THREE.Clock();
 // Custom MapLibre 3D Layer
 const customLayer = {
   id: "3D-models-loading",
   type: "custom" as "custom",
   renderingMode: "3d" as "3d",
-  map: null as maplibregl.Map | null,
-  renderer: null as THREE.WebGLRenderer | null,
-  camera: null as THREE.Camera | null,
+  // map: null as maplibregl.Map | null,
+  // renderer: null as THREE.WebGLRenderer | null,
+  // camera: null as THREE.Camera | null,
 
   onAdd(map: maplibregl.Map, gl: WebGLRenderingContext) {
-    this.map = map;
-    this.renderer = new THREE.WebGLRenderer({
-      canvas: map.getCanvas(),
-      context: gl,
-      antialias: true,
-    });
-
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.renderer.setSize(map.getCanvas().width, map.getCanvas().height);
-    this.renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
-    this.renderer.autoClear = false;
-
+    // this.map = map;
+    // this.renderer = new THREE.WebGLRenderer({
+    //   canvas: map.getCanvas(),
+    //   context: gl,
+    //   antialias: true,
+    // });
+    // this.renderer.shadowMap.enabled = true;
+    // this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    // this.renderer.setSize(map.getCanvas().width, map.getCanvas().height);
+    // this.renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
+    // this.renderer.autoClear = false;
     // Handle window resize
-    window.addEventListener("resize", () => {
-      if (this.renderer) {
-        const width = map.getCanvas().width;
-        const height = map.getCanvas().height;
-        this.renderer.setSize(width, height);
-        this.renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
-      }
-    });
+    // window.addEventListener("resize", () => {
+    //   if (this.renderer) {
+    //     const width = map.getCanvas().width;
+    //     const height = map.getCanvas().height;
+    //     this.renderer.setSize(width, height);
+    //     this.renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
+    //   }
+    // });
+    console.log("onAdd _initThreebox");
   },
   render(_gl: WebGLRenderingContext, args: any) {
-    if (!this.renderer || !this.map) return;
+    // if (!this.renderer || !this.map) return;
 
-    const m = new THREE.Matrix4().fromArray(
-      args.defaultProjectionData.mainMatrix
-    );
+    // const m = new THREE.Matrix4().fromArray(
+    //   args.defaultProjectionData.mainMatrix
+    // );
 
-    const l = getModelMatrix(
-      modelRenderAsMercatorCoordinateCasa,
-      scale,
-      90,
-      90
-    );
-    const lCornwall = getModelMatrix(
-      modelRenderAsMercatorCoordinateCornwall,
-      scaleCornwall,
-      90,
-      118
-    );
+    // const l = getModelMatrix(
+    //   modelRenderAsMercatorCoordinateCasa,
+    //   scale,
+    //   90,
+    //   90
+    // );
+    // const lCornwall = getModelMatrix(
+    //   modelRenderAsMercatorCoordinateCornwall,
+    //   scaleCornwall,
+    //   90,
+    //   118
+    // );
 
-    const delta = clock.getDelta();
+    customThreewrapper.update();
+    // customThreewrapper.camera!.projectionMatrix = m.multiply(lCornwall);
+    map.repaint = true;
+    console.log("I am being called: ", customThreewrapper);
 
-    if (modelsLoaded) {
-      // Update animation mixer (if available)
-      if (robotModel1Casa!.mixer) {
-        robotModel1Casa!.mixer.update(delta);
-      }
-
-      if (robotModel2Casa!.mixer) {
-        robotModel2Casa!.mixer.update(delta);
-      }
-
-      if (robotModel3Casa!.mixer) {
-        robotModel3Casa!.mixer.update(delta);
-      }
-    }
-
-    camera!.projectionMatrix = m.multiply(lCornwall);
-    this.renderer!.resetState();
-    this.renderer!.render(scene, camera!);
-    this.map!.triggerRepaint();
+    // camera!.projectionMatrix = m.multiply(lCornwall);
+    // this.renderer!.resetState();
+    // this.renderer!.render(scene, camera!);
+    // this.map!.triggerRepaint();
   },
 };
 
