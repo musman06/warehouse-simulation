@@ -15,11 +15,17 @@ import {
 import {
   warehouseGroupCornwall,
   warehouseModelCornwall,
+  robotModel1Cornwall,
+  robotModel2Cornwall,
+  robotModel3Cornwall,
+  forkliftModel1Cornwall,
+  forkliftModel2Cornwall,
 } from "./ModelLoading/Cornwall/gltfloader";
 import { enforcePitchLimit } from "./MapCustomControls/pitchLimitControl";
 import { locationsControls } from "./MapCustomControls/LocationControls/locationControls";
 import { warehouseControls } from "./MapCustomControls/warehouseInsideViewControl";
 import { convert3DEarthTo2DMapCoordinates, getModelMatrix } from "./utils";
+import { projectToWorld } from "./CustomThreeJsWrapper/utility/utility";
 
 // Converting 3D spherical earth coordinates into flat 2D map coordinates
 // // Casa Grande Coordiantes
@@ -121,19 +127,27 @@ let modelsLoaded: boolean = false;
 let modelsLoadedCornwall: boolean = false;
 const waitForModels = setInterval(() => {
   if (
-    warehouseModelCasa?.model &&
-    robotModel1Casa?.model &&
-    robotModel2Casa?.model &&
-    robotModel3Casa?.model &&
-    forkliftModel1Casa?.model &&
-    forkliftModel2Casa?.model &&
+    warehouseModelCornwall?.model &&
+    robotModel1Cornwall?.model &&
+    robotModel2Cornwall?.model &&
+    robotModel3Cornwall?.model &&
+    forkliftModel1Cornwall?.model &&
+    forkliftModel2Cornwall?.model &&
     robotsStartingPointMeshCasa &&
-    forkliftsStartingPointMeshCasa &&
-    warehouseModelCornwall?.model
+    forkliftsStartingPointMeshCasa
   ) {
     // scale the models
     // warehouseGroupCasa.scale.set(5, 5, 6.45);
-    warehouseGroupCornwall.scale.set(50, 50, 600.45);
+    warehouseGroupCornwall.scale.set(5000, 5000, 6000.45);
+
+    let boundingBox = new THREE.Box3().setFromObject(warehouseGroupCornwall);
+    const boundingBoxHelper = new THREE.Box3Helper(boundingBox, 0xff0000); // red color
+    console.log("boundingBoxHelper", boundingBox);
+    customThreewrapper.add(boundingBoxHelper);
+
+    // Position model
+    const worldPosition = projectToWorld([-74.7077, 45.0489]);
+    warehouseGroupCornwall.position.set(worldPosition.x, worldPosition.y, 0);
 
     // scene.add(warehouseGroup);
     // scene.add(warehouseGroupCornwall);
@@ -258,7 +272,7 @@ const customLayer = {
     customThreewrapper.update();
     // customThreewrapper.camera!.projectionMatrix = m.multiply(lCornwall);
     map.repaint = true;
-    console.log("I am being called: ", customThreewrapper);
+    // console.log("I am being called: ", customThreewrapper);
 
     // camera!.projectionMatrix = m.multiply(lCornwall);
     // this.renderer!.resetState();

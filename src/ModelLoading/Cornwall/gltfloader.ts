@@ -19,11 +19,11 @@ import drawStartPointCircle from "../../NavigationPathRendering/CasaGrande/start
 // 3D Models Placeholder
 let warehouseModelCornwall: Model3D | null = null;
 // let clonedStorageRackModel: Model3D | null = null;
-let robotModel1: Model3D | null = null;
-let robotModel2: Model3D | null = null;
-let robotModel3: Model3D | null = null;
-let forkliftModel1: Model3D | null = null;
-let forkliftModel2: Model3D | null = null;
+let robotModel1Cornwall: Model3D | null = null;
+let robotModel2Cornwall: Model3D | null = null;
+let robotModel3Cornwall: Model3D | null = null;
+let forkliftModel1Cornwall: Model3D | null = null;
+let forkliftModel2Cornwall: Model3D | null = null;
 let robotsStartingPointMesh: THREE.Mesh | null = null;
 let forkliftsStartingPointMesh: THREE.Mesh | null = null;
 
@@ -217,16 +217,16 @@ gltfLoader.load(
 gltfLoader.load(
   "/assets/robot2/scene.gltf",
   (gltf) => {
-    robotModel1 = new Model3D("Robot Model 1", gltf.scene);
-    robotModel1.model.castShadow = true;
-    robotModel1.model.receiveShadow = true;
-    robotModel1.model.scale.set(0.6, 0.6, 0.6);
-    robotModel1.model.position.set(-17, 1, 60);
-    robotModel1.model.rotateY(degreesToRadians(-25));
-    warehouseGroupCornwall.add(robotModel1.model);
+    robotModel1Cornwall = new Model3D("Robot Model 1", gltf.scene);
+    robotModel1Cornwall.model.castShadow = true;
+    robotModel1Cornwall.model.receiveShadow = true;
+    robotModel1Cornwall.model.scale.set(0.6, 0.6, 0.6);
+    robotModel1Cornwall.model.position.set(-17, 1, 60);
+    robotModel1Cornwall.model.rotateY(degreesToRadians(-25));
+    warehouseGroupCornwall.add(robotModel1Cornwall.model);
 
     // Updating texture of all the child objects
-    robotModel1.model.traverse((child) => {
+    robotModel1Cornwall.model.traverse((child) => {
       child.castShadow = true;
       child.receiveShadow = true;
       if (child instanceof THREE.Mesh) {
@@ -245,8 +245,8 @@ gltfLoader.load(
     );
     warehouseGroupCornwall.add(robotsStartingPointMesh);
 
-    if (robotModel1.model) {
-      robotCustomAnimation1(robotModel1);
+    if (robotModel1Cornwall.model) {
+      robotCustomAnimation1(robotModel1Cornwall);
     }
   },
   (xhr) => {
@@ -263,16 +263,16 @@ gltfLoader.load(
 gltfLoader.load(
   "/assets/robot2/scene.gltf",
   (gltf) => {
-    robotModel2 = new Model3D("Robot Model 2", gltf.scene);
-    robotModel2.model.castShadow = true;
-    robotModel2.model.receiveShadow = true;
-    robotModel2.model.scale.set(0.6, 0.6, 0.6);
-    robotModel2.model.position.set(-17, 1, 60);
-    robotModel2.model.rotateY(degreesToRadians(90));
-    warehouseGroupCornwall.add(robotModel2.model);
+    robotModel2Cornwall = new Model3D("Robot Model 2", gltf.scene);
+    robotModel2Cornwall.model.castShadow = true;
+    robotModel2Cornwall.model.receiveShadow = true;
+    robotModel2Cornwall.model.scale.set(0.6, 0.6, 0.6);
+    robotModel2Cornwall.model.position.set(-17, 1, 60);
+    robotModel2Cornwall.model.rotateY(degreesToRadians(90));
+    warehouseGroupCornwall.add(robotModel2Cornwall.model);
 
     // Updating texture of all the child objects
-    robotModel2.model.traverse((child) => {
+    robotModel2Cornwall.model.traverse((child) => {
       child.castShadow = true;
       child.receiveShadow = true;
       if (child instanceof THREE.Mesh) {
@@ -281,8 +281,8 @@ gltfLoader.load(
       }
     });
 
-    if (robotModel2!.model) {
-      robotCustomAnimation2(robotModel2!);
+    if (robotModel2Cornwall!.model) {
+      robotCustomAnimation2(robotModel2Cornwall!);
     }
   },
   (xhr) => {
@@ -299,16 +299,16 @@ gltfLoader.load(
 gltfLoader.load(
   "/assets/robot3/scene.gltf",
   (gltf) => {
-    robotModel3 = new Model3D("Robot Model 3", gltf.scene);
-    robotModel3.model.castShadow = true;
-    robotModel3.model.receiveShadow = true;
-    robotModel3.model.scale.set(0.6, 0.6, 0.6);
-    robotModel3.model.position.set(-17, 1, 60);
-    robotModel3.model.rotateY(Math.PI);
-    warehouseGroupCornwall.add(robotModel3.model);
+    robotModel3Cornwall = new Model3D("Robot Model 3", gltf.scene);
+    robotModel3Cornwall.model.castShadow = true;
+    robotModel3Cornwall.model.receiveShadow = true;
+    robotModel3Cornwall.model.scale.set(0.6, 0.6, 0.6);
+    robotModel3Cornwall.model.position.set(-17, 1, 60);
+    robotModel3Cornwall.model.rotateY(Math.PI);
+    warehouseGroupCornwall.add(robotModel3Cornwall.model);
 
     // Updating texture of all the child objects
-    robotModel3.model.traverse((child) => {
+    robotModel3Cornwall.model.traverse((child) => {
       child.castShadow = true;
       child.receiveShadow = true;
       if (child instanceof THREE.Mesh) {
@@ -317,8 +317,8 @@ gltfLoader.load(
       }
     });
 
-    if (robotModel3!.model) {
-      robotCustomAnimation3(robotModel3!);
+    if (robotModel3Cornwall!.model) {
+      robotCustomAnimation3(robotModel3Cornwall!);
     }
   },
   (xhr) => {
@@ -336,16 +336,16 @@ gltfLoader.load(
   "/assets/forklifts/forklift-cornwall/scene.gltf",
   (gltf) => {
     // Initializing & setting basic properties
-    forkliftModel1 = new Model3D("Fork Lift Model 1", gltf.scene);
-    forkliftModel1.model.castShadow = true;
-    forkliftModel1.model.receiveShadow = true;
-    forkliftModel1.model.position.set(17.2, 0.1, 60);
-    forkliftModel1.model.scale.set(7.8, 7.8, 7.8);
-    forkliftModel1.model.rotateY(-Math.PI / 2);
-    warehouseGroupCornwall.add(forkliftModel1.model);
+    forkliftModel1Cornwall = new Model3D("Fork Lift Model 1", gltf.scene);
+    forkliftModel1Cornwall.model.castShadow = true;
+    forkliftModel1Cornwall.model.receiveShadow = true;
+    forkliftModel1Cornwall.model.position.set(17.2, 0.1, 60);
+    forkliftModel1Cornwall.model.scale.set(7.8, 7.8, 7.8);
+    forkliftModel1Cornwall.model.rotateY(-Math.PI / 2);
+    warehouseGroupCornwall.add(forkliftModel1Cornwall.model);
 
     // Adding shadows to child meshes of fork lift
-    forkliftModel1.model.traverse((child) => {
+    forkliftModel1Cornwall.model.traverse((child) => {
       child.castShadow = true;
       child.receiveShadow = true;
       if (child instanceof THREE.Mesh) {
@@ -364,8 +364,8 @@ gltfLoader.load(
     );
     warehouseGroupCornwall.add(forkliftsStartingPointMesh);
 
-    if (forkliftModel1.model) {
-      forkLiftCustomAnimation1(forkliftModel1);
+    if (forkliftModel1Cornwall.model) {
+      forkLiftCustomAnimation1(forkliftModel1Cornwall);
     }
   },
   (xhr) => {
@@ -382,14 +382,14 @@ gltfLoader.load(
 gltfLoader.load(
   "/assets/forklifts/forklift-cornwall/scene.gltf",
   (gltf) => {
-    forkliftModel2 = new Model3D("Fork Lift Model 2", gltf.scene);
-    forkliftModel2.model.castShadow = true;
-    forkliftModel2.model.receiveShadow = true;
-    forkliftModel2.model.position.set(17.2, 0.1, 60);
-    forkliftModel2.model.scale.set(7.8, 7.8, 7.8);
-    warehouseGroupCornwall.add(forkliftModel2.model);
+    forkliftModel2Cornwall = new Model3D("Fork Lift Model 2", gltf.scene);
+    forkliftModel2Cornwall.model.castShadow = true;
+    forkliftModel2Cornwall.model.receiveShadow = true;
+    forkliftModel2Cornwall.model.position.set(17.2, 0.1, 60);
+    forkliftModel2Cornwall.model.scale.set(7.8, 7.8, 7.8);
+    warehouseGroupCornwall.add(forkliftModel2Cornwall.model);
 
-    forkliftModel2.model.traverse((child) => {
+    forkliftModel2Cornwall.model.traverse((child) => {
       child.castShadow = true;
       child.receiveShadow = true;
       if (child instanceof THREE.Mesh) {
@@ -398,8 +398,8 @@ gltfLoader.load(
       }
     });
 
-    if (forkliftModel2!.model) {
-      forkLiftCustomAnimation2(forkliftModel2!);
+    if (forkliftModel2Cornwall!.model) {
+      forkLiftCustomAnimation2(forkliftModel2Cornwall!);
     }
   },
   (xhr) => {
@@ -412,7 +412,15 @@ gltfLoader.load(
   }
 );
 
-export { warehouseGroupCornwall, warehouseModelCornwall };
+export {
+  warehouseGroupCornwall,
+  warehouseModelCornwall,
+  robotModel1Cornwall,
+  robotModel2Cornwall,
+  robotModel3Cornwall,
+  forkliftModel1Cornwall,
+  forkliftModel2Cornwall,
+};
 
 // export {
 //   warehouseGroup,
