@@ -1,13 +1,13 @@
 import * as THREE from "three";
 
-function drawStartPointCircle(
+const drawStartPointCircle = (
   radius: number,
   segments: number,
   color: string,
   x: number,
   y: number,
   z: number
-) {
+) => {
   const circleGeometry = new THREE.CircleGeometry(radius, segments);
   const circleMaterial = new THREE.MeshBasicMaterial({
     color: color,
@@ -19,6 +19,6 @@ function drawStartPointCircle(
   circleMesh.position.set(x, y, z);
 
   return circleMesh;
-}
+};
 
 export default drawStartPointCircle;

@@ -1,0 +1,32 @@
+.left-sidebar {
+  width: 360px;
+  height: 100%;
+  padding-top: 0.75rem; /* 2xl:py-5 -> 1.25rem on larger screens */
+  padding-bottom: 0.75rem; /* 2xl:py-5 -> 1.25rem on larger screens */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* 1rem gap between child elements */
+  justify-content: flex-start;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  border-right: 1px solid rgba(28, 28, 28, 0.1); /* dark:border-[#FFFFFF1A] */
+  background-color: rgba(249, 249, 249, 0.75); /* bg-[#F9F9F9BF] */
+  z-index: 1000000000000;
+  overflow-y: auto; /* custom-scrollbar if implemented */
+}
+
+.left-sidebar-div {
+  font-size: 1.125rem; /* Equivalent to text-lg */
+  color: black; /* Equivalent to text-black */
+  line-height: 1.5rem; /* Equivalent to leading-6 */
+  padding-left: 1rem; /* Equivalent to px-4 */
+  padding-right: 1rem; /* Equivalent to px-4 */
+  padding-top: 0.5rem; /* Equivalent to py-2 */
+  padding-bottom: 0.5rem; /* Equivalent to py-2 */
+  border-radius: 0.75rem; /* Equivalent to rounded-xl */
+  background-color: white; /* Equivalent to bg-white */
+  text-transform: capitalize; /* Equivalent to capitalize */
+}

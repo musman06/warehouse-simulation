@@ -136,6 +136,19 @@ function getModelMatrix(
   return translation.multiply(scaling).multiply(rotationX).multiply(rotationY);
 }
 
+// all meshes for raycaster to work on
+function getAllMeshes(object: THREE.Object3D): THREE.Mesh[] {
+  const meshes: THREE.Mesh[] = [];
+  object.traverse((child) => {
+    if (child instanceof THREE.Mesh) {
+      if (child.geometry && child.material) {
+        meshes.push(child);
+      }
+    }
+  });
+  return meshes;
+}
+
 export {
   degreesToRadians,
   boundingBoxFlooring,
@@ -145,4 +158,5 @@ export {
   partialStorageRack,
   convert3DEarthTo2DMapCoordinates,
   getModelMatrix,
+  getAllMeshes,
 };

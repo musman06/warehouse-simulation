@@ -1,11 +1,10 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
-import { robotTexture, forkliftTexture } from "./textureLoader";
 import { robotCustomAnimation1 } from "../../ModelAnimation/Cornwall/robotmodel1cornwallanimation";
 import { robotCustomAnimation2 } from "../../ModelAnimation/Cornwall/robotmodel2cornwallanimation";
 import { robotCustomAnimation3 } from "../../ModelAnimation/Cornwall/robotmodel3cornwallanimation";
-import { forkLiftCustomAnimation1 } from "../../ModelAnimation/Cornwall/forkliftmodel1animation";
-import { forkLiftCustomAnimation2 } from "../../ModelAnimation/Cornwall/forkliftmodel2animation";
+import { forkLiftCustomAnimation1 } from "../../ModelAnimation/Cornwall/forkliftmodel1cornwallanimation";
+import { forkLiftCustomAnimation2 } from "../../ModelAnimation/Cornwall/forkliftmodel2cornwallanimation";
 import {
   degreesToRadians,
   removeWarehouseRoof,
@@ -13,12 +12,10 @@ import {
   partialStorageRack,
 } from "../../utils";
 import { Model3D } from "../../model3DClass";
-import drawStartPointCircle from "../../NavigationPathRendering/CasaGrande/startpointcircle";
-// import { camera } from "../../script";
+import drawStartPointCircle from "../../NavigationPathRendering/startPointCircle";
 
 // 3D Models Placeholder
 let warehouseModelCornwall: Model3D | null = null;
-// let clonedStorageRackModel: Model3D | null = null;
 let robotModel1Cornwall: Model3D | null = null;
 let robotModel2Cornwall: Model3D | null = null;
 let robotModel3Cornwall: Model3D | null = null;
@@ -35,7 +32,7 @@ const warehouseGroupCornwall = new THREE.Group();
 
 // Warehouse Model Loading
 gltfLoader.load(
-  "/assets/warehouse2/scene.gltf",
+  "/assets/models/warehouse2/scene.gltf",
   (gltf) => {
     warehouseModelCornwall = new Model3D(
       "Warehouse Model Cornwall",
@@ -103,7 +100,7 @@ gltfLoader.load(
 
 // Storage Racks Model loading
 gltfLoader.load(
-  "./assets/storageRacks2/scene.gltf",
+  "./assets/models/storageRacks2/scene.gltf",
   (gltf) => {
     // rack to be cloned
     const originalStorageRackModel = gltf.scene;
@@ -215,7 +212,7 @@ gltfLoader.load(
 
 // // Robot Model 1 Loading
 gltfLoader.load(
-  "/assets/robot2/scene.gltf",
+  "/assets/models/robot2/scene.gltf",
   (gltf) => {
     robotModel1Cornwall = new Model3D("Robot Model 1", gltf.scene);
     robotModel1Cornwall.model.castShadow = true;
@@ -261,7 +258,7 @@ gltfLoader.load(
 
 // // Robot Model 2 Loading
 gltfLoader.load(
-  "/assets/robot2/scene.gltf",
+  "/assets/models/robot2/scene.gltf",
   (gltf) => {
     robotModel2Cornwall = new Model3D("Robot Model 2", gltf.scene);
     robotModel2Cornwall.model.castShadow = true;
@@ -297,7 +294,7 @@ gltfLoader.load(
 
 // // Robot Model 3 Loading
 gltfLoader.load(
-  "/assets/robot3/scene.gltf",
+  "/assets/models/robot3/scene.gltf",
   (gltf) => {
     robotModel3Cornwall = new Model3D("Robot Model 3", gltf.scene);
     robotModel3Cornwall.model.castShadow = true;
@@ -333,7 +330,7 @@ gltfLoader.load(
 
 // // Fork Lift Model 1
 gltfLoader.load(
-  "/assets/forklifts/forklift-cornwall/scene.gltf",
+  "/assets/models/forklifts/forklift-cornwall/scene.gltf",
   (gltf) => {
     // Initializing & setting basic properties
     forkliftModel1Cornwall = new Model3D("Fork Lift Model 1", gltf.scene);
@@ -380,7 +377,7 @@ gltfLoader.load(
 
 // // Fork Lift Model 2
 gltfLoader.load(
-  "/assets/forklifts/forklift-cornwall/scene.gltf",
+  "/assets/models/forklifts/forklift-cornwall/scene.gltf",
   (gltf) => {
     forkliftModel2Cornwall = new Model3D("Fork Lift Model 2", gltf.scene);
     forkliftModel2Cornwall.model.castShadow = true;
@@ -421,15 +418,3 @@ export {
   forkliftModel1Cornwall,
   forkliftModel2Cornwall,
 };
-
-// export {
-//   warehouseGroup,
-//   warehouseModel,
-//   robotModel1,
-//   robotModel2,
-//   robotModel3,
-//   forkliftModel1,
-//   forkliftModel2,
-//   robotsStartingPointMesh,
-//   forkliftsStartingPointMesh,
-// };
