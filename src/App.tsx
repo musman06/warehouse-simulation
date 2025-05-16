@@ -17,7 +17,7 @@ import {
   forkliftModel2Cornwall,
 } from "./ModelLoading/Cornwall/gltfLoader";
 import LeftSideBarRobot from "./components/LeftSideBarRobot";
-import LeftSideBarForklift from "./components/LeftSideBarForkLift";
+// import LeftSideBarForklift from "./components/LeftSideBarForkLift";
 import LeftSideBarStorageRack from "./components/LeftSideBarStorageRack";
 import LeftSideBarWarehouse from "./components/LeftSideBarWarehouse";
 
