@@ -18,6 +18,7 @@ import {
 } from "./ModelLoading/Cornwall/gltfLoader";
 import LeftSideBarRobot from "./components/LeftSideBarRobot";
 // import LeftSideBarForklift from "./components/LeftSideBarForkLift";
+import LeftSideBarForklift from "./components/LeftSideBarForklift";
 import LeftSideBarStorageRack from "./components/LeftSideBarStorageRack";
 import LeftSideBarWarehouse from "./components/LeftSideBarWarehouse";
 
@@ -290,7 +291,7 @@ const App = () => {
         />
       )} */}
 
-      {/* {isLeftSideBarOpen && (
+      {isLeftSideBarOpen && (
         <LeftSideBarStorageRack
           warehouseName="Warehouse Cornwall"
           name="Storage Rack 1"
@@ -316,9 +317,9 @@ const App = () => {
           ]}
           inventoryAgeTime={[44, 102, 86, 59, 60, 63, 39, 84]}
         />
-      )} */}
+      )}
 
-      {isLeftSideBarOpen && (
+      {/* {isLeftSideBarOpen && (
         <LeftSideBarWarehouse
           warehouseName="Warehouse Cornwall"
           name="Warehouse Cornwall"
@@ -354,7 +355,7 @@ const App = () => {
           ]}
           systemDowntimeDuration={[8, 12, 4, 7]}
         />
-      )}
+      )} */}
 
       <div
         ref={mapContainerRef}
