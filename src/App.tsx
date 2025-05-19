@@ -29,19 +29,19 @@ const App = () => {
   useEffect(() => {
     // Converting 3D spherical earth coordinates into flat 2D map coordinates
     // // Casa Grande Coordiantes
-    const modelRenderAsMercatorCoordinateCasa =
-      convert3DEarthTo2DMapCoordinates(
-        [-111.77060200008945, 32.86684249587934],
-        0
-      );
+    // const modelRenderAsMercatorCoordinateCasa =
+    //   convert3DEarthTo2DMapCoordinates(
+    //     [-111.77060200008945, 32.86684249587934],
+    //     0
+    //   );
 
     // // Cornwall Coordinates
     const modelRenderAsMercatorCoordinateCornwall =
       convert3DEarthTo2DMapCoordinates([-74.7077, 45.0489], 0);
 
     // Calculating scale factor to scle our model to avoid zoom level issues
-    const scaleCasa =
-      modelRenderAsMercatorCoordinateCasa.meterInMercatorCoordinateUnits();
+    // const scaleCasa =
+    //   modelRenderAsMercatorCoordinateCasa.meterInMercatorCoordinateUnits();
     const scaleCornwall =
       modelRenderAsMercatorCoordinateCornwall.meterInMercatorCoordinateUnits();
 
