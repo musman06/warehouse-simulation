@@ -152,10 +152,10 @@ function warehouseControls(
       // Similar error handling for adding the roof back
       try {
         // Choose the correct warehouse model based on selected location
-        const targetModel =
-          locationSelected === "Casa Grande"
-            ? warehouseModelCasa
-            : warehouseModelCornwall;
+        // const targetModel =
+        //   locationSelected === "Casa Grande"
+        //     ? warehouseModelCasa
+        //     : warehouseModelCornwall;
         addWarehouseRoof();
       } catch (error) {
         console.error("Error handling roof addition:", error);

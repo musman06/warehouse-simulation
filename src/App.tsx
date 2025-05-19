@@ -16,11 +16,11 @@ import {
   forkliftModel1Cornwall,
   forkliftModel2Cornwall,
 } from "./ModelLoading/Cornwall/gltfLoader";
-import LeftSideBarRobot from "./components/LeftSideBarRobot";
+// import LeftSideBarRobot from "./components/LeftSideBarRobot";
 // import LeftSideBarForklift from "./components/LeftSideBarForkLift";
-import LeftSideBarForklift from "./components/LeftSideBarForklift";
+// import LeftSideBarForklift from "./components/LeftSideBarForklift";
 import LeftSideBarStorageRack from "./components/LeftSideBarStorageRack";
-import LeftSideBarWarehouse from "./components/LeftSideBarWarehouse";
+// import LeftSideBarWarehouse from "./components/LeftSideBarWarehouse";
 
 const App = () => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -57,8 +57,8 @@ const App = () => {
     );
 
     // Keep checking every 0.5s until models are available
-    let modelsLoaded: boolean = false;
-    let modelsLoadedCornwall: boolean = false;
+    // let modelsLoaded: boolean = false;
+    // let modelsLoadedCornwall: boolean = false;
     const waitForModels = setInterval(() => {
       if (
         warehouseModelCornwall?.model &&
@@ -98,8 +98,8 @@ const App = () => {
 
         // scene.add(warehouseGroup);
         scene.add(warehouseGroupCornwall);
-        modelsLoaded = true;
-        modelsLoadedCornwall = true;
+        // modelsLoaded = true;
+        // modelsLoadedCornwall = true;
 
         clearInterval(waitForModels);
 
@@ -215,12 +215,12 @@ const App = () => {
             args.defaultProjectionData.mainMatrix
           );
 
-          const l = getModelMatrix(
-            modelRenderAsMercatorCoordinateCasa,
-            scaleCasa,
-            90,
-            90
-          );
+          // const l = getModelMatrix(
+          //   modelRenderAsMercatorCoordinateCasa,
+          //   scaleCasa,
+          //   90,
+          //   90
+          // );
           const lCornwall = getModelMatrix(
             modelRenderAsMercatorCoordinateCornwall,
             scaleCornwall,
