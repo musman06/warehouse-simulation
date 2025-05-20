@@ -59,7 +59,7 @@ const LeftSideBarSystem = ({
 }) => {
   return (
     <>
-      <div className="left-sidebar" style={{ width: "410px" }}>
+      <div className="left-sidebar" style={{ width: "360px" }}>
         {/* Breadcrumb */}
         <div className="left-sidebar-div">
           {/* Object Name */}
@@ -76,7 +76,7 @@ const LeftSideBarSystem = ({
           {/* General Info */}
           <div
             style={{
-              width: "100%",
+              width: "280px",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -112,7 +112,7 @@ const LeftSideBarSystem = ({
           {/* Employees/AMVs/Forklifts Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -136,7 +136,7 @@ const LeftSideBarSystem = ({
           {/* Average Order Cycle Time Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -162,7 +162,7 @@ const LeftSideBarSystem = ({
           {/* Throughput Rate Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -188,7 +188,7 @@ const LeftSideBarSystem = ({
           {/* Global Inventory Accuracy % Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -215,7 +215,7 @@ const LeftSideBarSystem = ({
           {/* Backorder Rate % Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -242,7 +242,7 @@ const LeftSideBarSystem = ({
           {/* Cost Per Order Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -270,14 +270,14 @@ const LeftSideBarSystem = ({
           {/* Orders Volume Distribution Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
               border: "1px solid #e5e7eb",
               padding: "1rem",
               transform: "none",
-              marginBottom: "40px",
+              marginBottom: "30px",
             }}
           >
             <div style={{ fontWeight: 700, marginBottom: "10px" }}>

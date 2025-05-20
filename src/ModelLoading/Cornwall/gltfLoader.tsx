@@ -212,7 +212,7 @@ gltfLoader.load(
 
 // // Robot Model 1 Loading
 gltfLoader.load(
-  "/assets/models/robot2/scene.gltf",
+  "/assets/models/robot_1_2/scene.gltf",
   (gltf) => {
     robotModel1Cornwall = new Model3D("Robot Model 1", gltf.scene);
     robotModel1Cornwall.model.castShadow = true;
@@ -258,7 +258,7 @@ gltfLoader.load(
 
 // // Robot Model 2 Loading
 gltfLoader.load(
-  "/assets/models/robot2/scene.gltf",
+  "/assets/models/robot_1_2/scene.gltf",
   (gltf) => {
     robotModel2Cornwall = new Model3D("Robot Model 2", gltf.scene);
     robotModel2Cornwall.model.castShadow = true;
@@ -294,13 +294,13 @@ gltfLoader.load(
 
 // // Robot Model 3 Loading
 gltfLoader.load(
-  "/assets/models/robot3/scene.gltf",
+  "/assets/models/robot_2_2/scene.gltf",
   (gltf) => {
     robotModel3Cornwall = new Model3D("Robot Model 3", gltf.scene);
     robotModel3Cornwall.model.castShadow = true;
     robotModel3Cornwall.model.receiveShadow = true;
     robotModel3Cornwall.model.scale.set(0.6, 0.6, 0.6);
-    robotModel3Cornwall.model.position.set(-17, 1, 60);
+    robotModel3Cornwall.model.position.set(-17, 0.15, 60);
     robotModel3Cornwall.model.rotateY(Math.PI);
     warehouseGroupCornwall.add(robotModel3Cornwall.model);
 

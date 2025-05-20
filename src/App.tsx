@@ -6,7 +6,8 @@ import {
   getModelMatrix,
   getAllMeshes,
 } from "./utils";
-// import { warehouseControls } from "./MapCustomControls/warehouseInsideViewControl";
+import warehouseControls from "./MapCustomControls/warehouseInsideViewControl";
+import locationsControls from "./MapCustomControls/LocationControls/locationControls";
 import {
   warehouseGroupCornwall,
   warehouseModelCornwall,
@@ -16,33 +17,43 @@ import {
   forkliftModel1Cornwall,
   forkliftModel2Cornwall,
 } from "./ModelLoading/Cornwall/gltfLoader";
+import {
+  warehouseGroupCasa,
+  warehouseModelCasa,
+  robotModel1Casa,
+  robotModel2Casa,
+  robotModel3Casa,
+  forkliftModel1Casa,
+  forkliftModel2Casa,
+} from "./ModelLoading/CasaGrande/gltfLoader";
 // import LeftSideBarRobot from "./components/LeftSideBarRobot";
 // import LeftSideBarForklift from "./components/LeftSideBarForkLift";
 // import LeftSideBarForklift from "./components/LeftSideBarForklift";
 // import LeftSideBarStorageRack from "./components/LeftSideBarStorageRack";
-// import LeftSideBarWarehouse from "./components/LeftSideBarWarehouse";
+import LeftSideBarWarehouse from "./components/LeftSideBarWarehouse";
 import LeftSideBarSystem from "./components/LeftSideBarSystem";
 
 const App = () => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const [isLeftSideBarOpen, setIsLeftSideBarOpen] = useState(true);
+  const [selectedLocation, setSelectedLocation] = useState<string>("");
 
   useEffect(() => {
     // Converting 3D spherical earth coordinates into flat 2D map coordinates
     // // Casa Grande Coordiantes
-    // const modelRenderAsMercatorCoordinateCasa =
-    //   convert3DEarthTo2DMapCoordinates(
-    //     [-111.77060200008945, 32.86684249587934],
-    //     0
-    //   );
+    const modelRenderAsMercatorCoordinateCasa =
+      convert3DEarthTo2DMapCoordinates(
+        [-111.77060200008945, 32.86684249587934],
+        0
+      );
 
     // // Cornwall Coordinates
     const modelRenderAsMercatorCoordinateCornwall =
       convert3DEarthTo2DMapCoordinates([-74.7077, 45.0489], 0);
 
     // Calculating scale factor to scle our model to avoid zoom level issues
-    // const scaleCasa =
-    //   modelRenderAsMercatorCoordinateCasa.meterInMercatorCoordinateUnits();
+    const scaleCasa =
+      modelRenderAsMercatorCoordinateCasa.meterInMercatorCoordinateUnits();
     const scaleCornwall =
       modelRenderAsMercatorCoordinateCornwall.meterInMercatorCoordinateUnits();
 
@@ -62,12 +73,13 @@ const App = () => {
     // let modelsLoadedCornwall: boolean = false;
     const waitForModels = setInterval(() => {
       if (
-        warehouseModelCornwall?.model &&
-        robotModel1Cornwall?.model &&
-        robotModel2Cornwall?.model &&
-        robotModel3Cornwall?.model &&
-        forkliftModel1Cornwall?.model &&
-        forkliftModel2Cornwall?.model
+        warehouseModelCasa?.model &&
+        robotModel1Casa?.model &&
+        robotModel2Casa?.model &&
+        robotModel3Casa?.model &&
+        forkliftModel1Casa?.model &&
+        forkliftModel2Casa?.model &&
+        warehouseModelCornwall?.model
       ) {
         // models on which raycaster works
         // const clickableObjects: any[] = [];
@@ -82,11 +94,11 @@ const App = () => {
         const clickableObjects: THREE.Object3D[] = [];
 
         [
-          robotModel1Cornwall,
-          robotModel2Cornwall,
-          robotModel3Cornwall,
-          forkliftModel1Cornwall,
-          forkliftModel2Cornwall,
+          robotModel1Casa,
+          robotModel2Casa,
+          robotModel3Casa,
+          forkliftModel1Casa,
+          forkliftModel2Casa,
         ].forEach((model) => {
           if (model?.model) {
             const meshes = getAllMeshes(model.model);
@@ -95,12 +107,23 @@ const App = () => {
         });
 
         // scale the models
-        warehouseGroupCornwall.scale.set(5, 5, 6.45);
+        warehouseGroupCasa.scale.set(5, 5, 6.45);
 
         // scene.add(warehouseGroup);
-        scene.add(warehouseGroupCornwall);
+        scene.add(warehouseGroupCasa);
         // modelsLoaded = true;
         // modelsLoadedCornwall = true;
+
+        // Add the warehouse control to the map, passing the locationControl reference
+        map.addControl(
+          warehouseControls(
+            map,
+            locationControl,
+            warehouseModelCasa!,
+            warehouseModelCornwall!
+          ),
+          "top-right"
+        );
 
         clearInterval(waitForModels);
 
@@ -162,7 +185,7 @@ const App = () => {
       container: mapContainerRef.current!, // ID of the HTML div
       style:
         "https://api.maptiler.com/maps/basic-v2/style.json?key=7dFQzHIS1xcksIlnhtW4", // Open-source map style
-      center: [-20.707, 45.04946], // Longitude, Latitude of warehousemodelCornwall
+      center: [-20.7077, 45.0489], // Longitude, Latitude of warehousemodelCornwall
       zoom: 1,
       maxZoom: 22,
       minZoom: 2,
@@ -176,6 +199,23 @@ const App = () => {
 
     // Add a scale control
     map.addControl(new maplibregl.ScaleControl());
+
+    // Add the control to the map and store the reference
+    const locationControl = locationsControls(map, (location) => {
+      setSelectedLocation(location); // reactively update on change
+    });
+    map.addControl(locationControl, "top-left");
+
+    // Get the internal MapLibre control container
+    const mapContainer = map.getContainer();
+    const topLeftControls = mapContainer.querySelector(
+      ".maplibregl-ctrl-top-left"
+    );
+
+    if (topLeftControls) {
+      // Apply custom style to offset from left
+      (topLeftControls as HTMLElement).style.left = "360px";
+    }
 
     // Add custom 3D layer
     map.on("style.load", () => {
@@ -216,12 +256,12 @@ const App = () => {
             args.defaultProjectionData.mainMatrix
           );
 
-          // const l = getModelMatrix(
-          //   modelRenderAsMercatorCoordinateCasa,
-          //   scaleCasa,
-          //   90,
-          //   90
-          // );
+          const l = getModelMatrix(
+            modelRenderAsMercatorCoordinateCasa,
+            scaleCasa,
+            90,
+            90
+          );
           const lCornwall = getModelMatrix(
             modelRenderAsMercatorCoordinateCornwall,
             scaleCornwall,
@@ -229,7 +269,7 @@ const App = () => {
             118
           );
 
-          camera!.projectionMatrix = m.multiply(lCornwall);
+          camera!.projectionMatrix = m.multiply(l);
           this.renderer!.resetState();
           this.renderer!.render(scene, camera!);
           this.map!.triggerRepaint();
@@ -358,7 +398,7 @@ const App = () => {
         />
       )} */}
 
-      {isLeftSideBarOpen && (
+      {isLeftSideBarOpen && selectedLocation === "" && (
         <LeftSideBarSystem
           systemName="Warehouse Management System"
           name="JDI Distributors"
@@ -394,6 +434,82 @@ const App = () => {
           costPerOrderMonths={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
           costPerOrderCasaGrande={[14.1, 13.96, 17.88, 11.28, 11.25, 22.3]}
           costPerOrderCornwall={[24.1, 13.96, 27.88, 15.28, 10.25, 21.3]}
+        />
+      )}
+
+      {isLeftSideBarOpen && selectedLocation === "Cornwall" && (
+        <LeftSideBarWarehouse
+          warehouseName="Warehouse Cornwall"
+          name="Warehouse Cornwall"
+          ID="WCW"
+          type="Distribution Center Warehouse"
+          avgOrderFulfillmentTime={45}
+          totalRobots={15}
+          totalForklifts={8}
+          totalEmployees={31}
+          powerConsumptionMonths={["Jan", "Feb", "Mar", "Apr", "May"]}
+          powerConsumptionAmount={[213, 196, 252, 207, 186]}
+          occupiedSpcae={60}
+          freeSpace={40}
+          throughputMonths={[
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+          ]}
+          throughputRate={[34, 58, 26, 59, 70, 11, 41, 53, 66]}
+          safetyIncidentsMonths={["Jan", "Feb", "Mar", "Apr", "May"]}
+          safetyIncidentsRate={[1, 0, 3, 4, 2]}
+          systemDowntimeMonths={[
+            "Thunderstorms",
+            "Earth Quake",
+            "Windstorm",
+            "Blackout",
+          ]}
+          systemDowntimeDuration={[8, 12, 4, 7]}
+        />
+      )}
+
+      {isLeftSideBarOpen && selectedLocation === "Casa Grande" && (
+        <LeftSideBarWarehouse
+          warehouseName="Warehouse Cornwall"
+          name="Warehouse Cornwall"
+          ID="WCW"
+          type="Distribution Center Warehouse"
+          avgOrderFulfillmentTime={45}
+          totalRobots={15}
+          totalForklifts={8}
+          totalEmployees={31}
+          powerConsumptionMonths={["Jan", "Feb", "Mar", "Apr", "May"]}
+          powerConsumptionAmount={[213, 196, 252, 207, 186]}
+          occupiedSpcae={60}
+          freeSpace={40}
+          throughputMonths={[
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+          ]}
+          throughputRate={[34, 58, 26, 59, 70, 11, 41, 53, 66]}
+          safetyIncidentsMonths={["Jan", "Feb", "Mar", "Apr", "May"]}
+          safetyIncidentsRate={[1, 0, 3, 4, 2]}
+          systemDowntimeMonths={[
+            "Thunderstorms",
+            "Earth Quake",
+            "Windstorm",
+            "Blackout",
+          ]}
+          systemDowntimeDuration={[8, 12, 4, 7]}
         />
       )}
 

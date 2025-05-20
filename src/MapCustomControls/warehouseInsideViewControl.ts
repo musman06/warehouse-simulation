@@ -11,7 +11,8 @@ function warehouseControls(
   map: maplibregl.Map,
   locationControlRef: LocationControl,
   warehouseModelCasa: Model3D,
-  warehouseModelCornwall: Model3D
+  warehouseModelCornwall: Model3D,
+  onToggleInsideView?: (flag: boolean) => void
 ): maplibregl.IControl {
   // Warehouse inside view button
   const warehouseInsideViewContainer = document.createElement("div");
@@ -112,6 +113,8 @@ function warehouseControls(
     }
 
     warehouseInsideViewFlag = !warehouseInsideViewFlag;
+    // Notify parent (App.tsx)
+    onToggleInsideView?.(warehouseInsideViewFlag);
 
     if (warehouseInsideViewFlag) {
       try {
@@ -187,4 +190,4 @@ function warehouseControls(
   };
 }
 
-export { warehouseControls };
+export default warehouseControls;
