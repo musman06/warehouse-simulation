@@ -9,13 +9,13 @@ import {
 import warehouseControls from "./MapCustomControls/warehouseInsideViewControl";
 import locationsControls from "./MapCustomControls/LocationControls/locationControls";
 import {
-  warehouseGroupCornwall,
+  // warehouseGroupCornwall,
   warehouseModelCornwall,
-  robotModel1Cornwall,
-  robotModel2Cornwall,
-  robotModel3Cornwall,
-  forkliftModel1Cornwall,
-  forkliftModel2Cornwall,
+  // robotModel1Cornwall,
+  // robotModel2Cornwall,
+  // robotModel3Cornwall,
+  // forkliftModel1Cornwall,
+  // forkliftModel2Cornwall,
 } from "./ModelLoading/Cornwall/gltfLoader";
 import {
   warehouseGroupCasa,
@@ -54,8 +54,8 @@ const App = () => {
     // Calculating scale factor to scle our model to avoid zoom level issues
     const scaleCasa =
       modelRenderAsMercatorCoordinateCasa.meterInMercatorCoordinateUnits();
-    const scaleCornwall =
-      modelRenderAsMercatorCoordinateCornwall.meterInMercatorCoordinateUnits();
+    // const scaleCornwall =
+    //   modelRenderAsMercatorCoordinateCornwall.meterInMercatorCoordinateUnits();
 
     // Scene
     const scene = new THREE.Scene();
@@ -262,12 +262,12 @@ const App = () => {
             90,
             90
           );
-          const lCornwall = getModelMatrix(
-            modelRenderAsMercatorCoordinateCornwall,
-            scaleCornwall,
-            90,
-            118
-          );
+          // const lCornwall = getModelMatrix(
+          //   modelRenderAsMercatorCoordinateCornwall,
+          //   scaleCornwall,
+          //   90,
+          //   118
+          // );
 
           camera!.projectionMatrix = m.multiply(l);
           this.renderer!.resetState();
