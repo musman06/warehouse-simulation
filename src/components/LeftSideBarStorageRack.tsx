@@ -39,10 +39,7 @@ const LeftSideBarStorageRack = ({
         {/* Breadcrumb */}
         <div className="left-sidebar-div">
           {/* Object Name */}
-          <span style={{ fontWeight: 900 }}>
-            {/* {lastClickedMapObject ? ` > ${lastClickedMapObject.name}` : ""} */}
-            {warehouseName}
-          </span>
+          <span style={{ fontWeight: 900 }}>{warehouseName}</span>
         </div>
         <div
           style={{

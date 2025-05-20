@@ -19,8 +19,9 @@ import {
 // import LeftSideBarRobot from "./components/LeftSideBarRobot";
 // import LeftSideBarForklift from "./components/LeftSideBarForkLift";
 // import LeftSideBarForklift from "./components/LeftSideBarForklift";
-import LeftSideBarStorageRack from "./components/LeftSideBarStorageRack";
+// import LeftSideBarStorageRack from "./components/LeftSideBarStorageRack";
 // import LeftSideBarWarehouse from "./components/LeftSideBarWarehouse";
+import LeftSideBarSystem from "./components/LeftSideBarSystem";
 
 const App = () => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -161,12 +162,12 @@ const App = () => {
       container: mapContainerRef.current!, // ID of the HTML div
       style:
         "https://api.maptiler.com/maps/basic-v2/style.json?key=7dFQzHIS1xcksIlnhtW4", // Open-source map style
-      center: [-74.707, 45.04946], // Longitude, Latitude of warehousemodelCornwall
-      zoom: 16,
+      center: [-20.707, 45.04946], // Longitude, Latitude of warehousemodelCornwall
+      zoom: 1,
       maxZoom: 22,
       minZoom: 2,
-      pitch: 45, // Vertical tilting of the map
-      bearing: -118, // rotating the map
+      pitch: 0, // Vertical tilting of the map
+      bearing: 0, // rotating the map
       canvasContextAttributes: { antialias: true }, //TODO
     });
 
@@ -291,8 +292,8 @@ const App = () => {
         />
       )} */}
 
-      {isLeftSideBarOpen && (
-        <LeftSideBarStorageRack
+      {/* {isLeftSideBarOpen && (
+        <LeftSideBarSystem
           warehouseName="Warehouse Cornwall"
           name="Storage Rack 1"
           ID="SR-1"
@@ -317,7 +318,7 @@ const App = () => {
           ]}
           inventoryAgeTime={[44, 102, 86, 59, 60, 63, 39, 84]}
         />
-      )}
+      )} */}
 
       {/* {isLeftSideBarOpen && (
         <LeftSideBarWarehouse
@@ -356,6 +357,45 @@ const App = () => {
           systemDowntimeDuration={[8, 12, 4, 7]}
         />
       )} */}
+
+      {isLeftSideBarOpen && (
+        <LeftSideBarSystem
+          systemName="Warehouse Management System"
+          name="JDI Distributors"
+          ID="JDI-D"
+          type="Distribution Centers Chain"
+          topPerformingWH="Cornwall WCW"
+          leastPerformingWH="CasaGrande WCG"
+          trainingHoursPerEmployee={120}
+          totalEnergyConsumption={4.2}
+          totalCarbonEmission={52}
+          totalRobots={31}
+          totalForklifts={15}
+          totalEmployees={67}
+          cornwallVolumePercentage={55}
+          casaGrandeVolumePercentage={45}
+          throughputMonths={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]}
+          throughputRate={[68, 116, 52.8, 108, 140, 23.3]}
+          avgOrderCycleMonths={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+          avgOrderCycleValue={[53, 96, 67.8, 128, 125, 23.3]}
+          backOrderRateMonths={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+          backOrderRatePercent={[4.1, 3.96, 7.88, 1.28, 1.25, 2.3]}
+          globalInventoryAccuracyMonths={[
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+          ]}
+          globalInventoryAccuracyPercent={[
+            94.1, 93.96, 97.88, 98.28, 99.25, 96.3,
+          ]}
+          costPerOrderMonths={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+          costPerOrderCasaGrande={[14.1, 13.96, 17.88, 11.28, 11.25, 22.3]}
+          costPerOrderCornwall={[24.1, 13.96, 27.88, 15.28, 10.25, 21.3]}
+        />
+      )}
 
       <div
         ref={mapContainerRef}
