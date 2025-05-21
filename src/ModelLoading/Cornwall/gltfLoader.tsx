@@ -86,7 +86,7 @@ gltfLoader.load(
         }
       }
     });
-    removeWarehouseRoof(warehouseModelCornwall);
+    // removeWarehouseRoof(warehouseModelCornwall);
   },
   (xhr) => {
     console.log(

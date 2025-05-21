@@ -82,7 +82,7 @@ gltfLoader.load(
       }
     });
 
-    removeWarehouseRoof(warehouseModelCasa);
+    // removeWarehouseRoof(warehouseModelCasa);
   },
   (xhr) => {
     console.log(
