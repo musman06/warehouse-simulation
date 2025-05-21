@@ -2,6 +2,7 @@ import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
+  BarController,
   BarElement,
   LineElement,
   PointElement,
@@ -13,6 +14,7 @@ import { Chart } from "react-chartjs-2";
 ChartJS.register(
   CategoryScale,
   LinearScale,
+  BarController,
   BarElement,
   LineElement,
   PointElement,
