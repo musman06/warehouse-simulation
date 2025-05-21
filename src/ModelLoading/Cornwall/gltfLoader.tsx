@@ -7,7 +7,7 @@ import { forkLiftCustomAnimation1 } from "../../ModelAnimation/Cornwall/forklift
 import { forkLiftCustomAnimation2 } from "../../ModelAnimation/Cornwall/forkliftmodel2cornwallanimation";
 import {
   degreesToRadians,
-  removeWarehouseRoof,
+  // removeWarehouseRoof,
   emptyStorageRack,
   partialStorageRack,
 } from "../../utils";

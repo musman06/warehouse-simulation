@@ -7,7 +7,7 @@ import { forkLiftCustomAnimation1 } from "../../ModelAnimation/CasaGrande/forkli
 import { forkLiftCustomAnimation2 } from "../../ModelAnimation/CasaGrande/forkliftmodel2casagrandeanimation";
 import {
   degreesToRadians,
-  removeWarehouseRoof,
+  // removeWarehouseRoof,
   emptyStorageRack,
   partialStorageRack,
 } from "../../utils";
