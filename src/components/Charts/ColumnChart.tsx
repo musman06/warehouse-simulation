@@ -82,6 +82,14 @@ const ColumnChart = ({
         title: {
           display: isXAxisText,
           text: xAxisText,
+          font: {
+            family: "Exo 2",
+          },
+        },
+        ticks: {
+          font: {
+            family: "Exo 2",
+          },
         },
       },
       y: {
@@ -90,6 +98,14 @@ const ColumnChart = ({
         title: {
           display: true,
           text: yAxisText,
+          font: {
+            family: "Exo 2",
+          },
+        },
+        ticks: {
+          font: {
+            family: "Exo 2",
+          },
         },
       },
     },
@@ -105,6 +121,12 @@ const ColumnChart = ({
             return `${label}: ${value}`;
           },
         },
+        titleFont: {
+          family: "Exo 2",
+        },
+        bodyFont: {
+          family: "Exo 2",
+        },
       },
     },
   };
@@ -116,8 +138,7 @@ const ColumnChart = ({
         position: "relative",
         width: "100%",
         height: "150px",
-        maxWidth: "228px",
-        margin: "0 auto",
+        maxWidth: "270px",
         overflow: "hidden",
       }}
     >

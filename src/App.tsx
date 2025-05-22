@@ -137,25 +137,18 @@ const App = () => {
           // convert mouse coords to normalized device coords (-1 to +1)
           mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
           mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+          console.log("Mouse Positions: ", mouse.x, mouse.y);
 
           raycaster.setFromCamera(mouse, camera);
-          // console.log("raycaster: ", raycaster);
-          // console.log("clickableObjects: ", clickableObjects);
 
-          const intersects = raycaster.intersectObjects(clickableObjects, true);
-          // console.log("Intersects: ", intersects);
-
-          // <LeftSideBar />;
-          console.log("isLeftSideBarOpen: ", isLeftSideBarOpen);
+          const intersects = raycaster.intersectObjects(scene.children, true);
+          console.log("Intersects: ", intersects);
+          intersects.forEach((object) => {
+            console.log("Intersected Objects: ", object.object.name);
+          });
 
           if (intersects.length > 0) {
-            const selectedModel = intersects[0].object;
-            console.log(
-              "You clicked on:",
-              selectedModel.name,
-              selectedModel.userData
-            );
-            // Handle selection/highlight/etc.
+            // const selectedModel = intersects[0].object;
           }
         }
 
@@ -211,10 +204,17 @@ const App = () => {
     const topLeftControls = mapContainer.querySelector(
       ".maplibregl-ctrl-top-left"
     );
+    const bottomLeftControls = mapContainer.querySelector(
+      ".maplibregl-ctrl-bottom-left"
+    );
 
     if (topLeftControls) {
       // Apply custom style to offset from left
       (topLeftControls as HTMLElement).style.left = "360px";
+    }
+    if (bottomLeftControls) {
+      // Apply custom style to offset from left
+      (bottomLeftControls as HTMLElement).style.left = "360px";
     }
 
     // Add custom 3D layer
@@ -240,12 +240,27 @@ const App = () => {
           this.renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
           this.renderer.autoClear = false;
 
-          window.addEventListener("resize", () => {
-            this.renderer!.setSize(
-              map.getCanvas().width,
-              map.getCanvas().height
-            );
+          console.log(
+            "Window width/height: ",
+            window.innerWidth,
+            window.innerHeight
+          );
+          console.log(
+            "Map Canvas width/heigh: ",
+            map.getCanvas().width,
+            map.getCanvas().height
+          );
+
+          map.on("resize", () => {
+            const canvas = map.getCanvas();
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+
+            this.renderer!.setSize(width, height, false);
             this.renderer!.setPixelRatio(Math.min(2, window.devicePixelRatio));
+
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
           });
         },
 

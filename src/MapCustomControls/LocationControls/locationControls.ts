@@ -33,18 +33,27 @@ function locationsControls(
   currentPositionButton.style.justifyContent = "space-between";
   currentPositionButton.style.width = "100%";
   currentPositionButton.style.height = "40px"; // Increased height
-  currentPositionButton.style.padding = "0 10px";
+  currentPositionButton.style.padding = "0px 4px 0px 10px";
   currentPositionButton.style.cursor = "pointer";
 
   // Text element
   const currentPositionButtonText = document.createElement("span");
   currentPositionButtonText.textContent = "Locations";
-  currentPositionButtonText.style.marginRight = "5px";
+  currentPositionButtonText.style.setProperty(
+    "font-family",
+    "'Exo 2', sans-serif",
+    "important"
+  );
 
   // Icon element
   const currentPositionButtonIcon = document.createElement("span");
   currentPositionButtonIcon.textContent = "📍";
   currentPositionButtonIcon.style.fontSize = "16px";
+  currentPositionButtonIcon.style.setProperty(
+    "font-family",
+    "'Exo 2', sans-serif",
+    "important"
+  );
 
   // Add text and icon to button
   currentPositionButton.appendChild(currentPositionButtonText);
