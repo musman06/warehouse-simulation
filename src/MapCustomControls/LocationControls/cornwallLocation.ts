@@ -5,6 +5,11 @@ function addCornwallLocation(
 ) {
   const cornwallItem = document.createElement("div");
   cornwallItem.textContent = "Cornwall";
+  cornwallItem.style.setProperty(
+    "font-family",
+    "'Exo 2', sans-serif",
+    "important"
+  );
   cornwallItem.style.padding = "10px";
   cornwallItem.style.cursor = "pointer";
   cornwallItem.style.borderBottom = "1px solid #e0e0e0";

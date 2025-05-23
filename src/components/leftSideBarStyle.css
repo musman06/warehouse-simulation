@@ -18,6 +18,25 @@
   overflow-y: auto; /* custom-scrollbar if implemented */
 }
 
+.left-sidebar::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
+}
+
+.left-sidebar::-webkit-scrollbar-track {
+  background: "transparent"; /* Background of the track */
+}
+
+.left-sidebar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2); /* Color of the scrollbar */
+  border-radius: 10px; /* Rounded corners */
+  border: 2px solid transparent; /* Optional padding look */
+  background-clip: content-box;
+}
+
+.left-sidebar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.4); /* Darker on hover */
+}
+
 .left-sidebar-div {
   font-size: 1.125rem; /* Equivalent to text-lg */
   color: black; /* Equivalent to text-black */

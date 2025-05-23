@@ -5,6 +5,11 @@ function addCasaGrandeLocation(
 ) {
   const casaGrandeItem = document.createElement("div");
   casaGrandeItem.textContent = "Casa Grande";
+  casaGrandeItem.style.setProperty(
+    "font-family",
+    "'Exo 2', sans-serif",
+    "important"
+  );
   casaGrandeItem.style.padding = "10px";
   casaGrandeItem.style.cursor = "pointer";
   casaGrandeItem.style.borderBottom = "1px solid #e0e0e0";

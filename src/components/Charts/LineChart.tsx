@@ -68,6 +68,12 @@ const LineChart = ({
             return `Value: ${value}`;
           },
         },
+        titleFont: {
+          family: "Exo 2",
+        },
+        bodyFont: {
+          family: "Exo 2",
+        },
       },
       legend: {
         display: false,
@@ -79,6 +85,14 @@ const LineChart = ({
         title: {
           display: isXAxisText,
           text: xAxisText,
+          font: {
+            family: "Exo 2",
+          },
+        },
+        ticks: {
+          font: {
+            family: "Exo 2",
+          },
         },
       },
       y: {
@@ -86,6 +100,14 @@ const LineChart = ({
         title: {
           display: true,
           text: yAxisText,
+          font: {
+            family: "Exo 2",
+          },
+        },
+        ticks: {
+          font: {
+            family: "Exo 2",
+          },
         },
       },
     },
@@ -97,8 +119,7 @@ const LineChart = ({
         position: "relative",
         width: "100%",
         height: "150px",
-        maxWidth: "228px",
-        margin: "0 auto",
+        maxWidth: "270px",
         overflow: "hidden",
       }}
     >

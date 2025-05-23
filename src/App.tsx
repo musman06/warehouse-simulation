@@ -183,11 +183,22 @@ const App = () => {
     const topLeftControls = mapContainer.querySelector(
       ".maplibregl-ctrl-top-left"
     );
+    const bottomLeftControls = mapContainer.querySelector(
+      ".maplibregl-ctrl-bottom-left"
+    );
 
     if (topLeftControls) {
       // Apply custom style to offset from left
       (topLeftControls as HTMLElement).style.left = "360px";
       (topLeftControls as HTMLElement).style.top = "10.3vh";
+    }
+    if (bottomLeftControls) {
+      // Apply custom style to offset from left
+      (bottomLeftControls as HTMLElement).style.left = "360px";
+    }
+    if (bottomLeftControls) {
+      // Apply custom style to offset from left
+      (bottomLeftControls as HTMLElement).style.left = "360px";
     }
 
     // Add custom 3D layer

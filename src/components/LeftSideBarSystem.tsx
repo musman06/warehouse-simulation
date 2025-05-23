@@ -63,7 +63,7 @@ const LeftSideBarSystem = ({
         {/* Breadcrumb */}
         <div className="left-sidebar-div">
           {/* Object Name */}
-          <span style={{ fontWeight: 900 }}>{systemName}</span>
+          <span style={{ fontWeight: 700 }}>{systemName}</span>
         </div>
         <div
           style={{
@@ -86,25 +86,51 @@ const LeftSideBarSystem = ({
             }}
           >
             <div>
-              <span style={{ fontWeight: 600 }}>General Info</span>
-              <div style={{ marginTop: "20px" }}>Name: {name}</div>
-              <div style={{ marginTop: "8px" }}>ID: {ID}</div>
-              <div style={{ marginTop: "8px" }}>Type: {type}</div>
+              <span style={{ fontWeight: 700 }}>General Info</span>
+              <div style={{ marginTop: "20px" }}>
+                <span style={{ fontWeight: 600 }}> Name: </span>
+                <span>{name}</span>
+              </div>
+              <div style={{ marginTop: "8px" }}>
+                {" "}
+                <span style={{ fontWeight: 600 }}> ID: </span>
+                <span>{ID}</span>
+              </div>
+              <div style={{ marginTop: "8px" }}>
+                {" "}
+                <span style={{ fontWeight: 600 }}> Type: </span>
+                <span>{type}</span>
+              </div>
 
               <div style={{ marginTop: "8px" }}>
-                Top Performing Warehouse: {topPerformingWH}
+                <span style={{ fontWeight: 600 }}>
+                  Top Performing Warehouse:{" "}
+                </span>
+                <span>{topPerformingWH}</span>
               </div>
               <div style={{ marginTop: "8px" }}>
-                Least Performing Warehouse: {leastPerformingWH}
+                <span style={{ fontWeight: 600 }}>
+                  {" "}
+                  Least Performing Warehouse:{" "}
+                </span>
+                <span>{leastPerformingWH}</span>
               </div>
               <div style={{ marginTop: "8px" }}>
-                Training Hours Per Employee: {trainingHoursPerEmployee} hrs
+                <span style={{ fontWeight: 600 }}>
+                  {" "}
+                  Training Hours Per Employee:{" "}
+                </span>
+                <span>{trainingHoursPerEmployee} hrs</span>
               </div>
               <div style={{ marginTop: "8px" }}>
-                Total Energy Consumption: {totalEnergyConsumption} MWh per day
+                <span style={{ fontWeight: 600 }}>
+                  Total Energy Consumption:{" "}
+                </span>
+                <span>{totalEnergyConsumption} MWh per day</span>
               </div>
               <div style={{ marginTop: "8px" }}>
-                Total Carbon Emission: {totalCarbonEmission} tCO₂e per month
+                <span style={{ fontWeight: 600 }}>Total Carbon Emission: </span>
+                <span>{totalCarbonEmission} tCO₂e per month</span>
               </div>
             </div>
           </div>

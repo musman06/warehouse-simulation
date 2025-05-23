@@ -220,6 +220,7 @@ const LeftSideBarWarehouse = ({
               border: "1px solid #e5e7eb",
               padding: "1rem",
               transform: "none",
+              marginBottom: "30px",
             }}
           >
             <div style={{ fontWeight: 700, marginBottom: "10px" }}>

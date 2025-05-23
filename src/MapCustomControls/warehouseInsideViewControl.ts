@@ -66,7 +66,7 @@ function warehouseControls(
     // Use the passed locationControlRef instead of trying to access a global variable
     const locationSelected = locationControlRef.getSelectedLocation();
 
-    console.log("Current location selected:", locationSelected);
+    // console.log("Current location selected:", locationSelected);
 
     if (locationSelected === "") {
       // Disable button if no location is selected
