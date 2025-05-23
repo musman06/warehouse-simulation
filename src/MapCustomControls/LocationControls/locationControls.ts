@@ -22,6 +22,9 @@ function locationsControls(
   currentPositionContainer.style.width = "auto"; // Auto width to fit content
   currentPositionContainer.style.minWidth = "80px"; // Minimum width
   currentPositionContainer.style.position = "relative"; // For dropdown positioning
+  currentPositionContainer.style.border = "2px solid #eb841b";
+  currentPositionContainer.style.borderRadius = "5px";
+  currentPositionContainer.style.boxShadow = "0 0 0 0 ";
 
   // Current position button element
   const currentPositionButton = document.createElement("button");
@@ -70,7 +73,7 @@ function locationsControls(
   dropdown.style.boxShadow = "0 2px 4px rgba(0,0,0,0.2)";
   dropdown.style.zIndex = "1";
   dropdown.style.width = "100%";
-  dropdown.style.borderRadius = "3px";
+  dropdown.style.borderRadius = "5px";
   dropdown.style.marginTop = "5px";
 
   // Create a setter function to update locationSelected

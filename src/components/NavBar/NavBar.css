@@ -1,0 +1,56 @@
+.navbar-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  /* justify-content: space-around; */
+  z-index: 1000000000000;
+  background-color: white;
+  position: fixed;
+  top: 0;
+  height: 10vh;
+  width: 100%;
+  left: 0;
+}
+
+.navbar-titlelogo-container {
+  margin-left: 30px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.navbar-logo {
+  cursor: pointer;
+}
+
+.navbar-title {
+  font-size: 40px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 10px;
+  background-image: linear-gradient(to right, #ec193f, #ec193f),
+    linear-gradient(
+      to right,
+      #da5817 0%,
+      #da5817 47%,
+      #eb841b 47%,
+      #eb841b 100%
+    );
+  background-size: 0% 100%, 100% 100%;
+  background-repeat: no-repeat;
+  background-position: left;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: transform 0.3s ease, background-size 1s ease;
+}
+
+.navbar-title:hover {
+  transform: scale(1.05);
+  background-size: 100% 100%, 100% 100%;
+}
+
+.navbar-profile-container {
+  position: fixed;
+  right: 30px;
+}

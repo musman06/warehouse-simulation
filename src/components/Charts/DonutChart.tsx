@@ -48,6 +48,12 @@ const DonutChart = ({
             return isPercent ? `${label}: ${value}%` : `${label}: ${value}`;
           },
         },
+        titleFont: {
+          family: "Exo 2",
+        },
+        bodyFont: {
+          family: "Exo 2",
+        },
       },
     },
   };

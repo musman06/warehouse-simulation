@@ -34,7 +34,7 @@ import { projectToWorld } from "./CustomThreeJsWrapper/utility/utility";
 // import LeftSideBarStorageRack from "./components/LeftSideBarStorageRack";
 import LeftSideBarWarehouse from "./components/LeftSideBarWarehouse";
 import LeftSideBarSystem from "./components/LeftSideBarSystem";
-import NavBar from "./components/NavBar";
+import NavBar from "./components/NavBar/NavBar";
 
 const App = () => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -189,12 +189,9 @@ const App = () => {
 
     if (topLeftControls) {
       // Apply custom style to offset from left
-      (topLeftControls as HTMLElement).style.left = "360px";
-      (topLeftControls as HTMLElement).style.top = "10.3vh";
-    }
-    if (bottomLeftControls) {
-      // Apply custom style to offset from left
-      (bottomLeftControls as HTMLElement).style.left = "360px";
+      (topLeftControls as HTMLElement).style.left = "400px";
+      (topLeftControls as HTMLElement).style.top = "1.75vh";
+      (topLeftControls as HTMLElement).style.zIndex = "10000000000000";
     }
     if (bottomLeftControls) {
       // Apply custom style to offset from left

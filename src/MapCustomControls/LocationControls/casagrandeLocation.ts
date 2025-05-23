@@ -12,7 +12,7 @@ function addCasaGrandeLocation(
   );
   casaGrandeItem.style.padding = "10px";
   casaGrandeItem.style.cursor = "pointer";
-  casaGrandeItem.style.borderBottom = "1px solid #e0e0e0";
+  casaGrandeItem.style.borderBottom = "1px solid #eb841b";
   casaGrandeItem.addEventListener("mouseenter", () => {
     casaGrandeItem.style.backgroundColor = "#f0f0f0";
   });
