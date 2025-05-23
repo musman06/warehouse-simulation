@@ -26,12 +26,15 @@ import {
   forkliftModel1Casa,
   forkliftModel2Casa,
 } from "./ModelLoading/CasaGrande/gltfLoader";
+import CustomThreeJSWrapper from "./CustomThreeJsWrapper/CustomThreeJsWrapper";
+import { projectToWorld } from "./CustomThreeJsWrapper/utility/utility";
 // import LeftSideBarRobot from "./components/LeftSideBarRobot";
 // import LeftSideBarForklift from "./components/LeftSideBarForkLift";
 // import LeftSideBarForklift from "./components/LeftSideBarForklift";
 // import LeftSideBarStorageRack from "./components/LeftSideBarStorageRack";
 import LeftSideBarWarehouse from "./components/LeftSideBarWarehouse";
 import LeftSideBarSystem from "./components/LeftSideBarSystem";
+import NavBar from "./components/NavBar";
 
 const App = () => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -48,8 +51,8 @@ const App = () => {
       );
 
     // // Cornwall Coordinates
-    const modelRenderAsMercatorCoordinateCornwall =
-      convert3DEarthTo2DMapCoordinates([-74.7077, 45.0489], 0);
+    // const modelRenderAsMercatorCoordinateCornwall =
+    //   convert3DEarthTo2DMapCoordinates([-74.7077, 45.0489], 0);
 
     // Calculating scale factor to scle our model to avoid zoom level issues
     const scaleCasa =
@@ -58,127 +61,15 @@ const App = () => {
     //   modelRenderAsMercatorCoordinateCornwall.meterInMercatorCoordinateUnits();
 
     // Scene
-    const scene = new THREE.Scene();
+    // const scene = new THREE.Scene();
 
     // Camera
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      4000
-    );
-
-    // Keep checking every 0.5s until models are available
-    // let modelsLoaded: boolean = false;
-    // let modelsLoadedCornwall: boolean = false;
-    const waitForModels = setInterval(() => {
-      if (
-        warehouseModelCasa?.model &&
-        robotModel1Casa?.model &&
-        robotModel2Casa?.model &&
-        robotModel3Casa?.model &&
-        forkliftModel1Casa?.model &&
-        forkliftModel2Casa?.model &&
-        warehouseModelCornwall?.model
-      ) {
-        // models on which raycaster works
-        // const clickableObjects: any[] = [];
-        // clickableObjects.push(
-        //   robotModel1Cornwall?.model,
-        //   robotModel2Cornwall?.model,
-        //   robotModel3Cornwall?.model,
-        //   forkliftModel1Cornwall?.model,
-        //   forkliftModel2Cornwall?.model
-        // );
-
-        const clickableObjects: THREE.Object3D[] = [];
-
-        [
-          robotModel1Casa,
-          robotModel2Casa,
-          robotModel3Casa,
-          forkliftModel1Casa,
-          forkliftModel2Casa,
-        ].forEach((model) => {
-          if (model?.model) {
-            const meshes = getAllMeshes(model.model);
-            clickableObjects.push(...meshes);
-          }
-        });
-
-        // scale the models
-        warehouseGroupCasa.scale.set(5, 5, 6.45);
-
-        // scene.add(warehouseGroup);
-        scene.add(warehouseGroupCasa);
-        // modelsLoaded = true;
-        // modelsLoadedCornwall = true;
-
-        // Add the warehouse control to the map, passing the locationControl reference
-        map.addControl(
-          warehouseControls(
-            map,
-            locationControl,
-            warehouseModelCasa!,
-            warehouseModelCornwall!
-          ),
-          "top-right"
-        );
-
-        clearInterval(waitForModels);
-
-        // === RAYCASTER SETUP ===
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
-
-        function onMouseClick(event: MouseEvent) {
-          setIsLeftSideBarOpen(true);
-
-          // convert mouse coords to normalized device coords (-1 to +1)
-          mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-          mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-          raycaster.setFromCamera(mouse, camera);
-          // console.log("raycaster: ", raycaster);
-          // console.log("clickableObjects: ", clickableObjects);
-
-          const intersects = raycaster.intersectObjects(clickableObjects, true);
-          // console.log("Intersects: ", intersects);
-
-          // <LeftSideBar />;
-          console.log("isLeftSideBarOpen: ", isLeftSideBarOpen);
-
-          if (intersects.length > 0) {
-            const selectedModel = intersects[0].object;
-            console.log(
-              "You clicked on:",
-              selectedModel.name,
-              selectedModel.userData
-            );
-            // Handle selection/highlight/etc.
-          }
-        }
-
-        window.addEventListener("click", onMouseClick);
-      }
-    }, 500);
-
-    // Lights
-    // // AmbientLight
-    const ambientLight = new THREE.AmbientLight("white", 5);
-    scene.add(ambientLight);
-
-    // // Directional Light
-    const directionalLight = new THREE.DirectionalLight("white", 1);
-    directionalLight.position.set(
-      modelRenderAsMercatorCoordinateCornwall.x + 100,
-      modelRenderAsMercatorCoordinateCornwall.y + 700,
-      modelRenderAsMercatorCoordinateCornwall.z + 300
-    );
-    directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.x = 1024;
-    directionalLight.shadow.mapSize.y = 1024;
-    scene.add(directionalLight);
+    // const camera = new THREE.PerspectiveCamera(
+    //   75,
+    //   window.innerWidth / window.innerHeight,
+    //   0.1,
+    //   4000
+    // );
 
     // Initialize the map
     const map = new maplibregl.Map({
@@ -193,6 +84,87 @@ const App = () => {
       bearing: 0, // rotating the map
       canvasContextAttributes: { antialias: true }, //TODO
     });
+
+    // initialising customThreeJSWrapper
+    const customThreewrapper = new CustomThreeJSWrapper(map);
+    // customThreewrapper.setEnvironment();
+
+    // Keep checking every 0.5s until models are available
+    // let modelsLoaded: boolean = false;
+    // let modelsLoadedCornwall: boolean = false;
+    // const waitForModels = setInterval(() => {
+    //   if (
+    //     warehouseModelCasa?.model &&
+    //     robotModel1Casa?.model &&
+    //     robotModel2Casa?.model &&
+    //     robotModel3Casa?.model &&
+    //     forkliftModel1Casa?.model &&
+    //     forkliftModel2Casa?.model &&
+    //     warehouseModelCornwall?.model
+    //   ) {
+    // scale the models
+    // warehouseGroupCasa.scale.set(5, 5, 6.45);
+
+    // let boundingBox = new THREE.Box3().setFromObject(warehouseGroupCasa);
+    // const boundingBoxHelper = new THREE.Box3Helper(boundingBox, 0xff0000); // red color
+    // console.log("boundingBoxHelper", boundingBox);
+    // customThreewrapper.add(boundingBoxHelper);
+
+    // scene.add(warehouseGroup);
+    // scene.add(warehouseGroupCasa);
+    // customThreewrapper.add(warehouseGroupCasa);
+    // modelsLoaded = true;
+    // modelsLoadedCornwall = true;
+
+    // Add the warehouse control to the map, passing the locationControl reference
+    // map.addControl(
+    //   warehouseControls(
+    //     map,
+    //     locationControl,
+    //     warehouseModelCasa!,
+    //     warehouseModelCornwall!
+    //   ),
+    //   "top-right"
+    // );
+
+    // clearInterval(waitForModels);
+    // }
+    // }, 500);
+
+    // Lights
+    // // AmbientLight
+    const ambientLight = new THREE.AmbientLight("white", 5);
+    // scene.add(ambientLight);
+    customThreewrapper.add(ambientLight);
+
+    // // Directional Light
+    const directionalLight = new THREE.DirectionalLight("white", 1);
+    directionalLight.position.set(
+      modelRenderAsMercatorCoordinateCasa.x + 100,
+      modelRenderAsMercatorCoordinateCasa.y + 700,
+      modelRenderAsMercatorCoordinateCasa.z + 300
+    );
+    directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.x = 1024;
+    directionalLight.shadow.mapSize.y = 1024;
+    // scene.add(directionalLight);
+    customThreewrapper.add(directionalLight);
+
+    const directionalLightHelper = new THREE.DirectionalLightHelper(
+      directionalLight,
+      200
+    );
+    customThreewrapper.add(directionalLightHelper);
+
+    const geometry = new THREE.BoxGeometry(100000, 100000, 100000);
+    const material = new THREE.MeshBasicMaterial({ color: "red" });
+    const cube = new THREE.Mesh(geometry, material);
+    // Position model
+    const worldPosition = projectToWorld([
+      -111.77060200008945, 32.86684249587934,
+    ]);
+    cube.position.set(worldPosition.x, worldPosition.y, 0);
+    customThreewrapper.add(cube);
 
     // Add navigation controls
     map.addControl(new maplibregl.NavigationControl());
@@ -215,6 +187,7 @@ const App = () => {
     if (topLeftControls) {
       // Apply custom style to offset from left
       (topLeftControls as HTMLElement).style.left = "360px";
+      (topLeftControls as HTMLElement).style.top = "10.3vh";
     }
 
     // Add custom 3D layer
@@ -223,56 +196,55 @@ const App = () => {
         id: "3D-models-loading",
         type: "custom" as "custom",
         renderingMode: "3d" as "3d",
-        map: null as maplibregl.Map | null,
-        renderer: null as THREE.WebGLRenderer | null,
-        camera: null as THREE.Camera | null,
+        // map: null as maplibregl.Map | null,
+        // renderer: null as THREE.WebGLRenderer | null,
+        // camera: null as THREE.Camera | null,
 
         onAdd(map: maplibregl.Map, gl: WebGLRenderingContext) {
-          this.map = map;
-          this.renderer = new THREE.WebGLRenderer({
-            canvas: map.getCanvas(),
-            context: gl,
-            antialias: true,
-          });
-          this.renderer.shadowMap.enabled = true;
-          this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-          this.renderer.setSize(map.getCanvas().width, map.getCanvas().height);
-          this.renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
-          this.renderer.autoClear = false;
-
-          window.addEventListener("resize", () => {
-            this.renderer!.setSize(
-              map.getCanvas().width,
-              map.getCanvas().height
-            );
-            this.renderer!.setPixelRatio(Math.min(2, window.devicePixelRatio));
-          });
+          // this.map = map;
+          // this.renderer = new THREE.WebGLRenderer({
+          //   canvas: map.getCanvas(),
+          //   context: gl,
+          //   antialias: true,
+          // });
+          // this.renderer.shadowMap.enabled = true;
+          // this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+          // this.renderer.setSize(map.getCanvas().width, map.getCanvas().height);
+          // this.renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
+          // this.renderer.autoClear = false;
+          // window.addEventListener("resize", () => {
+          //   this.renderer!.setSize(
+          //     map.getCanvas().width,
+          //     map.getCanvas().height
+          //   );
+          //   this.renderer!.setPixelRatio(Math.min(2, window.devicePixelRatio));
+          // });
         },
 
         render(_gl: WebGLRenderingContext, args: any) {
-          if (!this.renderer || !this.map) return;
-
-          const m = new THREE.Matrix4().fromArray(
-            args.defaultProjectionData.mainMatrix
-          );
-
-          const l = getModelMatrix(
-            modelRenderAsMercatorCoordinateCasa,
-            scaleCasa,
-            90,
-            90
-          );
+          // if (!this.renderer || !this.map) return;
+          // const m = new THREE.Matrix4().fromArray(
+          //   args.defaultProjectionData.mainMatrix
+          // );
+          // const l = getModelMatrix(
+          //   modelRenderAsMercatorCoordinateCasa,
+          //   scaleCasa,
+          //   90,
+          //   90
+          // );
           // const lCornwall = getModelMatrix(
           //   modelRenderAsMercatorCoordinateCornwall,
           //   scaleCornwall,
           //   90,
           //   118
           // );
+          // camera!.projectionMatrix = m.multiply(l);
+          // this.renderer!.resetState();
+          // this.renderer!.render(scene, camera!);
+          // this.map!.triggerRepaint();
 
-          camera!.projectionMatrix = m.multiply(l);
-          this.renderer!.resetState();
-          this.renderer!.render(scene, camera!);
-          this.map!.triggerRepaint();
+          customThreewrapper.update();
+          map.repaint = true;
         },
       };
 
@@ -286,6 +258,7 @@ const App = () => {
 
   return (
     <div>
+      <NavBar />
       {/* Conditionally render LeftSideBar based on the state */}
       {/* {isLeftSideBarOpen && (
         <LeftSideBarRobot
