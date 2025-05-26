@@ -1,4 +1,3 @@
-import React from "react";
 import "./NavBar.css";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import PersonIcon from "@mui/icons-material/Person";
