@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import maplibregl from "maplibre-gl";
+import maplibregl, { LngLatLike } from "maplibre-gl";
 import {
   convert3DEarthTo2DMapCoordinates,
   getModelMatrix,
@@ -32,6 +32,7 @@ import {
 // import LeftSideBarStorageRack from "./components/LeftSideBarStorageRack";
 import LeftSideBarWarehouse from "./components/LeftSideBarWarehouse";
 import LeftSideBarSystem from "./components/LeftSideBarSystem";
+import locationPins from "./components/LocationPins/locationPins";
 
 const App = () => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -186,6 +187,14 @@ const App = () => {
       bearing: 0, // rotating the map
       canvasContextAttributes: { antialias: true }, //TODO
     });
+
+    // Adding Location Pins On Map
+    const coordinates: LngLatLike[] = [
+      [-111.77060200008945, 32.86684249587934],
+      [-74.7077, 45.0489],
+    ];
+    const locationNames: string[] = ["Casa Grande", "Cornwall"];
+    const locationMarkers = locationPins(coordinates, map, locationNames);
 
     // Add navigation controls
     map.addControl(new maplibregl.NavigationControl());
