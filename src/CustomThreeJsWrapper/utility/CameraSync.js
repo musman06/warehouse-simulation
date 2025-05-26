@@ -148,11 +148,10 @@ class CameraSync {
 
     scale.makeScale(zoomPow, zoomPow, zoomPow);
 
-    // console.log("CameraSync updateCamera got t =", t);
-    let x = t?.x ?? t?.point?.x ?? 20;
-    let y = t?.y ?? t?.point?.y ?? 10;
-    translateMap.makeTranslation(-x, y, 0);
-    rotateMap.makeRotationZ(Math.PI);
+        let x = t.x || t.point.x;
+        let y = t.y || t.point.y;
+        translateMap.makeTranslation(-x, y, 0);
+        rotateMap.makeRotationZ(Math.PI);
 
     this.world.matrix = new Matrix4()
       .premultiply(rotateMap)

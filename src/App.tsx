@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import maplibregl from "maplibre-gl";
-import { convert3DEarthTo2DMapCoordinates } from "./utils";
 import locationsControls from "./MapCustomControls/LocationControls/locationControls";
 import CustomThreeJSWrapper from "./CustomThreeJsWrapper/CustomThreeJsWrapper";
 import { projectToWorld } from "./CustomThreeJsWrapper/utility/utility";
@@ -12,7 +11,7 @@ import NavBar from "./components/NavBar/NavBar";
 const App = () => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
-  const customWrapperRef = useRef<any | null>(null);
+  const customWrapperRef = useRef<CustomThreeJSWrapper | null>(null);
   const [isLeftSideBarOpen, setIsLeftSideBarOpen] = useState(true);
   const [selectedLocation, setSelectedLocation] = useState<string>("");
   const [isMapLoaded, setIsMapLoaded] = useState<boolean>(false);
@@ -23,8 +22,8 @@ const App = () => {
       container: mapContainerRef.current!, // ID of the HTML div
       style:
         "https://api.maptiler.com/maps/basic-v2/style.json?key=7dFQzHIS1xcksIlnhtW4", // Open-source map style
-      center: [-20.7077, 45.0489], // Longitude, Latitude of warehousemodelCornwall
-      zoom: 1,
+      center: [-111.77060200008945, 32.86684249587934], // Longitude, Latitude of warehousemodelCornwall
+      zoom: 12,
       maxZoom: 22,
       minZoom: 2,
       pitch: 0, // Vertical tilting of the map
@@ -40,6 +39,24 @@ const App = () => {
     mapRef.current.on("load", () => {
       console.log("Map loaded");
       setIsMapLoaded(true);
+      const customLayer = {
+        id: "3D-models-loading",
+        type: "custom" as const,
+        renderingMode: "3d" as const,
+
+        onAdd() {
+          console.log("Custom 3D layer added");
+        },
+
+        render() {
+          if (customWrapperRef.current) {
+            customWrapperRef.current.update();
+          }
+        },
+      };
+
+      mapRef.current?.addLayer(customLayer);
+      mapRef.current?.triggerRepaint();
     });
 
     // Cleanup function
@@ -89,34 +106,14 @@ const App = () => {
     customWrapperRef.current.setEnvironment();
 
     // Setup 3D scene
-    setup3DScene();
     setIsLeftSideBarOpen(true);
-
-    // Add custom layer
-    const customLayer = {
-      id: "3D-models-loading",
-      type: "custom" as "custom",
-      renderingMode: "3d" as "3d",
-
-      onAdd() {
-        console.log("Custom 3D layer added");
-      },
-
-      render(gl: WebGLRenderingContext) {
-        if (customWrapperRef.current) {
-          customWrapperRef.current.update();
-        }
-      },
-    };
-
-    mapRef.current.addLayer(customLayer);
-    mapRef.current.triggerRepaint();
+    setup3DScene();
 
     // Cleanup 3D resources
     return () => {
       if (customWrapperRef.current) {
         // Add cleanup logic for 3D resources
-        customWrapperRef.current.dispose?.();
+        // customWrapperRef.current.dispose?.();
         customWrapperRef.current = null;
       }
     };
@@ -133,14 +130,14 @@ const App = () => {
     console.log("World position:", worldPosition);
 
     // Create test cube
-    const geometry = new THREE.BoxGeometry(1000, 1000, 1000); // Smaller size
+    const geometry = new THREE.BoxGeometry(20, 20, 20); // Smaller size
     const material = new THREE.MeshStandardMaterial({
       color: "red",
     });
     const cube = new THREE.Mesh(geometry, material);
 
     // Position the cube
-    cube.position.set(worldPosition.x, worldPosition.y, 500); // Above ground
+    cube.position.set(worldPosition.x, worldPosition.y, 0); // Above ground
     console.log("Cube position:", cube.position);
 
     customWrapperRef.current.add(cube);
