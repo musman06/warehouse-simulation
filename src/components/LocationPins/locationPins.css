@@ -1,0 +1,6 @@
+.maplibregl-marker {
+  cursor: pointer !important;
+  /* border-radius: 50% !important; */
+  width: 30px !important;
+  height: 20px !important;
+}
