@@ -51,12 +51,11 @@ const App = () => {
       minZoom: 2,
       pitch: 0, // Vertical tilting of the map
       bearing: 0, // rotating the map
-      canvasContextAttributes: { antialias: true }, //TODO
     });
 
     // Add basic map controls
     mapRef.current.addControl(new maplibregl.NavigationControl());
-    mapRef.current.addControl(new maplibregl.ScaleControl());
+    mapRef.current.addControl(new maplibregl.ScaleControl({}));
 
     // Set up map load event
     mapRef.current.on("style.load", () => {
@@ -110,14 +109,20 @@ const App = () => {
     const topLeftControls = mapContainer.querySelector(
       ".maplibregl-ctrl-top-left"
     );
+    const topRightControls = mapContainer.querySelector(
+      ".maplibregl-ctrl-top-right"
+    );
     const bottomLeftControls = mapContainer.querySelector(
       ".maplibregl-ctrl-bottom-left"
     );
 
     if (topLeftControls) {
-      (topLeftControls as HTMLElement).style.left = "400px";
+      (topLeftControls as HTMLElement).style.left = "360px";
       (topLeftControls as HTMLElement).style.top = "1.75vh";
       (topLeftControls as HTMLElement).style.zIndex = "10000000000000";
+    }
+    if (topRightControls) {
+      (topRightControls as HTMLElement).style.top = "10.5vh";
     }
     if (bottomLeftControls) {
       (bottomLeftControls as HTMLElement).style.left = "360px";

@@ -9,7 +9,7 @@ const NavBar = () => {
         <div className="navbar-logo">
           <img src="/images/twinware-logo1.png" width={100} />
         </div>
-        <div className="navbar-title">TwinWare</div>
+        {/* <div className="navbar-title">TwinWare</div> */}
       </div>
       <div className="navbar-profile-container">
         <NotificationsIcon
@@ -17,14 +17,12 @@ const NavBar = () => {
             color: "#da5817",
             fontSize: 28,
             marginRight: 2,
-            backgroundColor: "black",
             padding: "3px",
             borderRadius: "100px",
             cursor: "pointer",
             transition: "all 0.3s ease",
             "&:hover": {
               transform: "scale(1.15)",
-              boxShadow: "2px 2px 2px 1.5px #312c2d82",
             },
           }}
         />
@@ -33,14 +31,12 @@ const NavBar = () => {
             color: "#eb841b",
             fontSize: 28,
             marginRight: 0,
-            backgroundColor: "black",
             padding: "3px",
             borderRadius: "100px",
             cursor: "pointer",
             transition: "all 0.3s ease",
             "&:hover": {
               transform: "scale(1.15)",
-              boxShadow: "2px 2px 2px 1.5px #312c2d82",
             },
           }}
         />
