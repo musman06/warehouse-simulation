@@ -199,9 +199,9 @@ const App = () => {
         );
 
         warehouseGroupCasa.rotateX(degreesToRadians(90));
-        warehouseGroupCasa.rotateY(degreesToRadians(90));
+        warehouseGroupCasa.rotateY(degreesToRadians(-90));
         warehouseGroupCornwall.rotateX(degreesToRadians(90));
-        warehouseGroupCornwall.rotateY(degreesToRadians(118));
+        warehouseGroupCornwall.rotateY(degreesToRadians(-62.5));
 
         customWrapperRef.current!.add(warehouseGroupCasa);
         customWrapperRef.current!.add(warehouseGroupCornwall);
