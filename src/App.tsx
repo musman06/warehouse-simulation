@@ -2,18 +2,41 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import maplibregl from "maplibre-gl";
 import locationsControls from "./MapCustomControls/LocationControls/locationControls";
+import warehouseControls from "./MapCustomControls/warehouseInsideViewControl";
+import {
+  warehouseGroupCasa,
+  warehouseModelCasa,
+  robotModel1Casa,
+  robotModel2Casa,
+  robotModel3Casa,
+  forkliftModel1Casa,
+  forkliftModel2Casa,
+} from "./ModelLoading/CasaGrande/gltfLoader";
+import {
+  warehouseGroupCornwall,
+  warehouseModelCornwall,
+  robotModel1Cornwall,
+  robotModel2Cornwall,
+  robotModel3Cornwall,
+  forkliftModel1Cornwall,
+  forkliftModel2Cornwall,
+} from "./ModelLoading/Cornwall/gltfLoader";
 import CustomThreeJSWrapper from "./CustomThreeJsWrapper/CustomThreeJsWrapper";
 import { projectToWorld } from "./CustomThreeJsWrapper/utility/utility";
 import LeftSideBarWarehouse from "./components/LeftSideBarWarehouse";
 import LeftSideBarSystem from "./components/LeftSideBarSystem";
 import NavBar from "./components/NavBar/NavBar";
+import { degreesToRadians } from "./utils";
 
 const App = () => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const customWrapperRef = useRef<CustomThreeJSWrapper | null>(null);
+  const locationControlsRef = useRef<any | null>(null);
+  const clickableObjectsRef = useRef<THREE.Object3D[]>([]);
   const [isLeftSideBarOpen, setIsLeftSideBarOpen] = useState(true);
   const [selectedLocation, setSelectedLocation] = useState<string>("");
+  const [isModelsLoaded, setIsModelsLoaded] = useState<boolean>(false);
   const [isMapLoaded, setIsMapLoaded] = useState<boolean>(false);
 
   useEffect(() => {
@@ -22,8 +45,8 @@ const App = () => {
       container: mapContainerRef.current!, // ID of the HTML div
       style:
         "https://api.maptiler.com/maps/basic-v2/style.json?key=7dFQzHIS1xcksIlnhtW4", // Open-source map style
-      center: [-111.77060200008945, 32.86684249587934], // Longitude, Latitude of warehousemodelCornwall
-      zoom: 12,
+      center: [-20.7077, 45.0489],
+      zoom: 1,
       maxZoom: 22,
       minZoom: 2,
       pitch: 0, // Vertical tilting of the map
@@ -36,7 +59,7 @@ const App = () => {
     mapRef.current.addControl(new maplibregl.ScaleControl());
 
     // Set up map load event
-    mapRef.current.on("load", () => {
+    mapRef.current.on("style.load", () => {
       console.log("Map loaded");
       setIsMapLoaded(true);
       const customLayer = {
@@ -49,8 +72,10 @@ const App = () => {
         },
 
         render() {
+          console.log("I am in renderer");
           if (customWrapperRef.current) {
-            customWrapperRef.current.update();
+            customWrapperRef.current!.update();
+            mapRef.current!.repaint = true;
           }
         },
       };
@@ -72,10 +97,13 @@ const App = () => {
   useEffect(() => {
     if (!mapRef.current) return;
 
-    const locationControl = locationsControls(mapRef.current, (location) => {
-      setSelectedLocation(location);
-    });
-    mapRef.current.addControl(locationControl, "top-left");
+    locationControlsRef.current = locationsControls(
+      mapRef.current,
+      (location) => {
+        setSelectedLocation(location);
+      }
+    );
+    mapRef.current.addControl(locationControlsRef.current, "top-left");
 
     // Style the controls
     const mapContainer = mapRef.current.getContainer();
@@ -123,25 +151,112 @@ const App = () => {
   const setup3DScene = () => {
     if (!customWrapperRef.current) return;
 
-    // Convert coordinates
-    const casaGrandeCoords = [-111.77060200008945, 32.86684249587934];
-    const worldPosition = projectToWorld(casaGrandeCoords);
+    // Keep checking every 0.5s until models are available
+    const waitForModels = setInterval(() => {
+      if (
+        warehouseModelCasa?.model &&
+        robotModel1Casa?.model &&
+        robotModel2Casa?.model &&
+        robotModel3Casa?.model &&
+        forkliftModel1Casa?.model &&
+        forkliftModel2Casa?.model &&
+        warehouseModelCornwall?.model
+      ) {
+        // models on which raycaster works
+        clickableObjectsRef.current.push(
+          robotModel1Cornwall?.model!,
+          robotModel2Cornwall?.model!,
+          robotModel3Cornwall?.model!,
+          forkliftModel1Cornwall?.model!,
+          forkliftModel2Cornwall?.model!
+        );
 
-    console.log("World position:", worldPosition);
+        // scale the models
+        warehouseGroupCasa.scale.set(0.165, 0.2, 0.21);
+        warehouseGroupCornwall.scale.set(0.2, 0.2, 0.2);
 
-    // Create test cube
-    const geometry = new THREE.BoxGeometry(20, 20, 20); // Smaller size
-    const material = new THREE.MeshStandardMaterial({
-      color: "red",
-    });
-    const cube = new THREE.Mesh(geometry, material);
+        // Convert coordinates
+        const casaGrandeCoords = [-111.77060200008945, 32.86684249587934];
+        const cornwallCoords = [-74.7077, 45.0489];
 
-    // Position the cube
-    cube.position.set(worldPosition.x, worldPosition.y, 0); // Above ground
-    console.log("Cube position:", cube.position);
+        const worldPositionCasa = projectToWorld(casaGrandeCoords);
+        const worldPositionCornwall = projectToWorld(cornwallCoords);
 
-    customWrapperRef.current.add(cube);
+        warehouseGroupCasa.position.set(
+          worldPositionCasa.x,
+          worldPositionCasa.y,
+          0
+        );
+        warehouseGroupCornwall.position.set(
+          worldPositionCornwall.x,
+          worldPositionCornwall.y,
+          0
+        );
+
+        warehouseGroupCasa.rotateX(degreesToRadians(90));
+        warehouseGroupCasa.rotateY(degreesToRadians(90));
+        warehouseGroupCornwall.rotateX(degreesToRadians(90));
+        warehouseGroupCornwall.rotateY(degreesToRadians(118));
+
+        customWrapperRef.current!.add(warehouseGroupCasa);
+        customWrapperRef.current!.add(warehouseGroupCornwall);
+
+        // Add the warehouse control to the map, passing the locationControl reference
+        mapRef.current!.addControl(
+          warehouseControls(
+            mapRef.current!,
+            locationControlsRef.current,
+            warehouseModelCasa!,
+            warehouseModelCornwall!
+          ),
+          "top-right"
+        );
+
+        setIsModelsLoaded(true);
+
+        clearInterval(waitForModels);
+      }
+    }, 500);
   };
+
+  useEffect(() => {
+    // === RAYCASTER SETUP ===
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    function onMouseClick(event: MouseEvent) {
+      //  setIsLeftSideBarOpen(true);
+
+      // convert mouse coords to normalized device coords (-1 to +1)
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, customWrapperRef.current!.camera!);
+      console.log("raycaster: ", raycaster);
+      console.log("clickableObjects: ", clickableObjectsRef.current);
+
+      const intersects = raycaster.intersectObjects(
+        customWrapperRef.current!.scene.children,
+        true
+      );
+      console.log("Intersects: ", intersects);
+
+      // <LeftSideBar />;
+      console.log("isLeftSideBarOpen: ", isLeftSideBarOpen);
+
+      if (intersects.length > 0) {
+        const selectedModel = intersects[0].object;
+        console.log(
+          "You clicked on:",
+          selectedModel.name,
+          selectedModel.userData
+        );
+        // Handle selection/highlight/etc.
+      }
+    }
+
+    window.addEventListener("click", onMouseClick);
+  }, []);
 
   return (
     <div>
