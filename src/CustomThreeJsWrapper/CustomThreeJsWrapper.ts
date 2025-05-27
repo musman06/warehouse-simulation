@@ -55,7 +55,7 @@ class CustomThreeJSWrapper {
   }
 
   add(object: any) {
-    console.log("I am here");
+    // console.log("I am here");
     this.scene.add(object);
   }
 
@@ -69,6 +69,87 @@ class CustomThreeJSWrapper {
     this.scene.add(dirLight);
     this.scene.add(hemiLight);
     this.scene.add(ambientLight);
+  }
+
+  dispose(target: any) {
+    if (target instanceof THREE.Mesh) {
+      // If the target is a Mesh
+      // Dispose materials and geometry of the mesh
+      if (target.material) {
+        if (
+          typeof target.material.dispose === "function" &&
+          !target.material._isDisposed
+        ) {
+          target.material.dispose();
+          target.material._isDisposed = true;
+        }
+        target.material = null;
+      }
+      if (target.geometry) {
+        if (
+          typeof target.geometry.dispose === "function" &&
+          !target.geometry._isDisposed
+        ) {
+          target.geometry.dispose();
+          target.geometry._isDisposed = true;
+        }
+        target.geometry = null;
+      }
+    } else if (target instanceof THREE.Object3D) {
+      // If the target is an Object3D
+      target.removeFromParent();
+      this.disposeObject(target);
+    }
+  }
+
+  disposeObject(object: any) {
+    object.traverse((child: any) => {
+      if (child instanceof THREE.Mesh && child.material) {
+        if (Array.isArray(child.material)) {
+          child.material.forEach((material) => {
+            this.disposeMaterial(material);
+          });
+        } else {
+          this.disposeMaterial(child.material);
+        }
+      }
+      if (child instanceof THREE.Mesh && child.geometry) {
+        this.disposeGeometry(child.geometry);
+      }
+      if (child instanceof THREE.Mesh && child.material && child.material.map) {
+        this.disposeTexture(child.material.map);
+      }
+      requestAnimationFrame(() => (child.children.length = 0));
+    });
+
+    if (object.parent) {
+      object.parent.remove(object);
+    }
+  }
+
+  disposeMaterial(material: any) {
+    if (material.dispose) {
+      material.dispose();
+    }
+  }
+
+  //  to dispose of a texture
+  disposeTexture(texture: any) {
+    if (texture.dispose) {
+      texture.dispose();
+    }
+  }
+
+  //  to dispose of a geometry
+  disposeGeometry(geometry: any) {
+    if (geometry.dispose) {
+      geometry.dispose();
+    }
+  }
+
+  remove(object: any) {
+    this.scene.remove(object);
+    object = null;
   }
 
   update() {

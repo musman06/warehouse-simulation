@@ -13,13 +13,13 @@ import {
   forkliftModel2Casa,
 } from "./ModelLoading/CasaGrande/gltfLoader";
 import {
-  warehouseGroupCornwall,
+  // warehouseGroupCornwall,
   warehouseModelCornwall,
-  robotModel1Cornwall,
-  robotModel2Cornwall,
-  robotModel3Cornwall,
-  forkliftModel1Cornwall,
-  forkliftModel2Cornwall,
+  // robotModel1Cornwall,
+  // robotModel2Cornwall,
+  // robotModel3Cornwall,
+  // forkliftModel1Cornwall,
+  // forkliftModel2Cornwall,
 } from "./ModelLoading/Cornwall/gltfLoader";
 import CustomThreeJSWrapper from "./CustomThreeJsWrapper/CustomThreeJsWrapper";
 import { projectToWorld } from "./CustomThreeJsWrapper/utility/utility";
@@ -71,7 +71,7 @@ const App = () => {
         },
 
         render() {
-          console.log("I am in renderer");
+          // console.log("I am in renderer");
           if (customWrapperRef.current) {
             customWrapperRef.current!.update();
             mapRef.current!.repaint = true;
@@ -167,44 +167,35 @@ const App = () => {
         forkliftModel2Casa?.model &&
         warehouseModelCornwall?.model
       ) {
-        // models on which raycaster works
-        clickableObjectsRef.current.push(
-          robotModel1Cornwall?.model!,
-          robotModel2Cornwall?.model!,
-          robotModel3Cornwall?.model!,
-          forkliftModel1Cornwall?.model!,
-          forkliftModel2Cornwall?.model!
-        );
-
         // scale the models
         warehouseGroupCasa.scale.set(0.165, 0.2, 0.21);
-        warehouseGroupCornwall.scale.set(0.2, 0.2, 0.2);
+        // warehouseGroupCornwall.scale.set(0.2, 0.2, 0.2);
 
         // Convert coordinates
         const casaGrandeCoords = [-111.77060200008945, 32.86684249587934];
-        const cornwallCoords = [-74.7077, 45.0489];
+        // const cornwallCoords = [-74.7077, 45.0489];
 
         const worldPositionCasa = projectToWorld(casaGrandeCoords);
-        const worldPositionCornwall = projectToWorld(cornwallCoords);
+        // const worldPositionCornwall = projectToWorld(cornwallCoords);
 
         warehouseGroupCasa.position.set(
           worldPositionCasa.x,
           worldPositionCasa.y,
           0
         );
-        warehouseGroupCornwall.position.set(
-          worldPositionCornwall.x,
-          worldPositionCornwall.y,
-          0
-        );
+        // warehouseGroupCornwall.position.set(
+        //   worldPositionCornwall.x,
+        //   worldPositionCornwall.y,
+        //   0
+        // );
 
         warehouseGroupCasa.rotateX(degreesToRadians(90));
         warehouseGroupCasa.rotateY(degreesToRadians(-90));
-        warehouseGroupCornwall.rotateX(degreesToRadians(90));
-        warehouseGroupCornwall.rotateY(degreesToRadians(-62.5));
+        // warehouseGroupCornwall.rotateX(degreesToRadians(90));
+        // warehouseGroupCornwall.rotateY(degreesToRadians(-62.5));
 
         customWrapperRef.current!.add(warehouseGroupCasa);
-        customWrapperRef.current!.add(warehouseGroupCornwall);
+        // customWrapperRef.current!.add(warehouseGroupCornwall);
 
         // Add the warehouse control to the map, passing the locationControl reference
         mapRef.current!.addControl(
@@ -217,51 +208,141 @@ const App = () => {
           "top-right"
         );
 
-        setIsModelsLoaded(true);
+        // ✅ Create an array of models to visualize bounding boxes
+        const modelsToBox = [
+          warehouseModelCasa.model,
+          robotModel1Casa.model,
+          robotModel2Casa.model,
+          robotModel3Casa.model,
+          forkliftModel1Casa.model,
+          forkliftModel2Casa.model,
+        ];
 
+        // console.log("modelsToBox: ", modelsToBox);
+
+        modelsToBox.forEach((model) => {
+          if (!model) return;
+
+          // ✅ Calculate bounding box
+          const boundingBox = new THREE.Box3().setFromObject(model);
+
+          // Optionally log or use the bounding box data
+          const size = new THREE.Vector3();
+          boundingBox.getSize(size);
+          console.log("Bounding box size:", size);
+
+          // ✅ Create and add BoxHelper to visualize it
+          const boxHelper = new THREE.BoxHelper(model, 0x00ff00);
+          boxHelper.update();
+
+          customWrapperRef.current!.scene.add(boxHelper);
+        });
+
+        setIsModelsLoaded(true);
         clearInterval(waitForModels);
       }
     }, 500);
   };
 
   useEffect(() => {
-    // === RAYCASTER SETUP ===
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
+    if (isModelsLoaded) {
+      // === RAYCASTER SETUP ===
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
 
-    function onMouseClick(event: MouseEvent) {
-      //  setIsLeftSideBarOpen(true);
+      // Create arrow helper for visualization (initially hidden)
+      let arrowHelper: any = null;
 
-      // convert mouse coords to normalized device coords (-1 to +1)
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      function onMouseClick(event: MouseEvent) {
+        // Get the map container bounds for accurate coordinate calculation
+        const mapContainer = mapRef.current!.getContainer();
+        const rect = mapContainer.getBoundingClientRect();
 
-      raycaster.setFromCamera(mouse, customWrapperRef.current!.camera!);
-      console.log("raycaster: ", raycaster);
-      console.log("clickableObjects: ", clickableObjectsRef.current);
+        // Calculate mouse position relative to the map container, not window
+        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
-      const intersects = raycaster.intersectObjects(
-        customWrapperRef.current!.scene.children,
-        true
-      );
-      console.log("Intersects: ", intersects);
+        console.log("Mouse Positions: ", mouse.x, mouse.y);
 
-      // <LeftSideBar />;
-      console.log("isLeftSideBarOpen: ", isLeftSideBarOpen);
+        // Set raycaster from camera
+        raycaster.setFromCamera(mouse, customWrapperRef.current!.camera!);
 
-      if (intersects.length > 0) {
-        const selectedModel = intersects[0].object;
-        console.log(
-          "You clicked on:",
-          selectedModel.name,
-          selectedModel.userData
+        // Remove previous arrow helper if it exists
+        if (arrowHelper) {
+          customWrapperRef.current!.scene.remove(arrowHelper);
+          arrowHelper.dispose?.(); // Clean up geometry and material
+          arrowHelper = null;
+        }
+
+        // Create arrow helper to visualize the ray
+        const rayOrigin = raycaster.ray.origin.clone();
+        const rayDirection = raycaster.ray.direction.clone();
+
+        // Calculate appropriate length based on camera distance
+        const camera = customWrapperRef.current!.camera!;
+        const cameraDistance = camera.position.distanceTo(rayOrigin);
+        const arrowLength = Math.max(cameraDistance * 0.5, 1000); // Adaptive length
+
+        // console.log("Ray Origin:", rayOrigin);
+        // console.log("Ray Direction:", rayDirection);
+        // console.log("Camera Position:", camera.position);
+        // console.log("Arrow Length:", arrowLength);
+
+        arrowHelper = new THREE.ArrowHelper(
+          rayDirection,
+          rayOrigin,
+          arrowLength,
+          0xff0000, // Red color
+          arrowLength * 0.1, // Head length (10% of total length)
+          arrowLength * 0.05 // Head width (5% of total length)
         );
-        // Handle selection/highlight/etc.
-      }
-    }
 
-    window.addEventListener("click", onMouseClick);
-  }, []);
+        // Add to scene
+        customWrapperRef.current!.scene.add(arrowHelper);
+
+        // Force a render update
+        customWrapperRef.current!.update();
+
+        // console.log("Arrow Helper added:", arrowHelper);
+        // console.log(
+        //   "Scene children count:",
+        //   customWrapperRef.current!.scene.children
+        // );
+
+        // console.log("raycaster: ", raycaster);
+        // console.log("clickableObjects: ", clickableObjectsRef.current);
+
+        const intersects = raycaster.intersectObjects(
+          customWrapperRef.current!.scene.children,
+          true
+        );
+
+        // console.log("All Intersects: ", intersects);
+
+        if (intersects.length > 0) {
+          const selectedModel = intersects[0].object;
+          // console.log(
+          //   "You clicked on:",
+          //   selectedModel.name,
+          //   selectedModel.userData
+          // );
+        }
+      }
+
+      // Add event listener to the map container, not window
+      const mapContainer = mapRef.current!.getContainer();
+      mapContainer.addEventListener("click", onMouseClick);
+
+      // Cleanup function
+      return () => {
+        mapContainer.removeEventListener("click", onMouseClick);
+        if (arrowHelper) {
+          customWrapperRef.current?.scene.remove(arrowHelper);
+          arrowHelper.dispose?.();
+        }
+      };
+    }
+  }, [isModelsLoaded]);
 
   return (
     <div>
