@@ -254,9 +254,9 @@ const App = () => {
       let arrowHelper: any = null;
 
       function onMouseClick(event: MouseEvent) {
-        // Get the map container bounds for accurate coordinate calculation
-        const mapContainer = mapRef.current!.getContainer();
-        const rect = mapContainer.getBoundingClientRect();
+        // CRITICAL: Get the map canvas element, not the container
+        const mapCanvas = mapRef.current!.getCanvas();
+        const rect = mapCanvas.getBoundingClientRect();
 
         // Calculate mouse position relative to the map container, not window
         mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -264,8 +264,13 @@ const App = () => {
 
         console.log("Mouse Positions: ", mouse.x, mouse.y);
 
+        // CRITICAL: Update camera matrices before raycasting
+        const camera = customWrapperRef.current!.camera!;
+        camera.updateMatrixWorld();
+        camera.updateProjectionMatrix();
+
         // Set raycaster from camera
-        raycaster.setFromCamera(mouse, customWrapperRef.current!.camera!);
+        raycaster.setFromCamera(mouse, camera);
 
         // Remove previous arrow helper if it exists
         if (arrowHelper) {
@@ -278,15 +283,13 @@ const App = () => {
         const rayOrigin = raycaster.ray.origin.clone();
         const rayDirection = raycaster.ray.direction.clone();
 
-        // Calculate appropriate length based on camera distance
-        const camera = customWrapperRef.current!.camera!;
-        const cameraDistance = camera.position.distanceTo(rayOrigin);
-        const arrowLength = Math.max(cameraDistance * 0.5, 1000); // Adaptive length
+        // Calculate appropriate length based on scene bounds
+        const arrowLength = 10000; // Increased length for better visibility
 
-        // console.log("Ray Origin:", rayOrigin);
-        // console.log("Ray Direction:", rayDirection);
-        // console.log("Camera Position:", camera.position);
-        // console.log("Arrow Length:", arrowLength);
+        console.log("Ray Origin:", rayOrigin);
+        console.log("Ray Direction:", rayDirection);
+        console.log("Camera Position:", camera.position);
+        console.log("Camera Matrix World:", camera.matrixWorld);
 
         arrowHelper = new THREE.ArrowHelper(
           rayDirection,
@@ -299,43 +302,75 @@ const App = () => {
 
         // Add to scene
         customWrapperRef.current!.scene.add(arrowHelper);
+  
+        // IMPROVED: Get all meshes for intersection testing
+        const meshesToTest: THREE.Object3D[] = [];
+      
+        // Recursively collect all meshes from the scene
+        customWrapperRef.current!.scene.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            meshesToTest.push(child);
+          }
+        });
 
-        // Force a render update
-        customWrapperRef.current!.update();
+        console.log("Meshes to test:", meshesToTest.length);
+        console.log("Scene children:", customWrapperRef.current!.scene.children.length);
+          
 
-        // console.log("Arrow Helper added:", arrowHelper);
-        // console.log(
-        //   "Scene children count:",
-        //   customWrapperRef.current!.scene.children
-        // );
+        // Test intersections with all meshes
+        const intersects = raycaster.intersectObjects(meshesToTest, false);
 
-        // console.log("raycaster: ", raycaster);
-        // console.log("clickableObjects: ", clickableObjectsRef.current);
-
-        const intersects = raycaster.intersectObjects(
-          customWrapperRef.current!.scene.children,
-          true
-        );
-
-        // console.log("All Intersects: ", intersects);
+        console.log("All Intersects: ", intersects);
 
         if (intersects.length > 0) {
-          const selectedModel = intersects[0].object;
-          // console.log(
-          //   "You clicked on:",
-          //   selectedModel.name,
-          //   selectedModel.userData
-          // );
+          const intersection = intersects[0];
+          const selectedModel = intersection.object;
+          
+          console.log("You clicked on:", selectedModel.name || "Unnamed object");
+          console.log("Object type:", selectedModel.type);
+          console.log("Object userData:", selectedModel.userData);
+          console.log("Intersection point:", intersection.point);
+          console.log("Distance:", intersection.distance);
+
+          // Optional: Add a marker at intersection point
+          const markerGeometry = new THREE.SphereGeometry(50, 8, 8);
+          const markerMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+          const marker = new THREE.Mesh(markerGeometry, markerMaterial);
+          marker.position.copy(intersection.point);
+          customWrapperRef.current!.scene.add(marker);
+
+          // Remove marker after 3 seconds
+          setTimeout(() => {
+            customWrapperRef.current?.scene.remove(marker);
+            markerGeometry.dispose();
+            markerMaterial.dispose();
+          }, 3000);
+        } else {
+          console.log("No intersections found");
+          
+          // Debug: Log camera and raycaster info
+          console.log("Camera position:", camera.position);
+          console.log("Camera rotation:", camera.rotation);
+          console.log("Raycaster origin:", raycaster.ray.origin);
+          console.log("Raycaster direction:", raycaster.ray.direction);
+          
+          // Debug: Check if models are in expected positions
+          console.log("Warehouse Casa position:", warehouseGroupCasa.position);
+          console.log("Warehouse Casa scale:", warehouseGroupCasa.scale);
+          console.log("Warehouse Casa rotation:", warehouseGroupCasa.rotation);
         }
+        // Force a render update
+        customWrapperRef.current!.update();
+        mapRef.current!.triggerRepaint();
       }
 
-      // Add event listener to the map container, not window
-      const mapContainer = mapRef.current!.getContainer();
-      mapContainer.addEventListener("click", onMouseClick);
+      // IMPORTANT: Add event listener to the map canvas, not container
+      const mapCanvas = mapRef.current!.getCanvas();
+      mapCanvas.addEventListener("click", onMouseClick);
 
       // Cleanup function
       return () => {
-        mapContainer.removeEventListener("click", onMouseClick);
+        mapCanvas.removeEventListener("click", onMouseClick);
         if (arrowHelper) {
           customWrapperRef.current?.scene.remove(arrowHelper);
           arrowHelper.dispose?.();
