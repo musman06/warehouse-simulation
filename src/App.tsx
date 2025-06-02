@@ -326,19 +326,25 @@ const App = () => {
 
       function onMouseClick(event: MouseEvent) {
         // CRITICAL: Get the map canvas element, not the container
-        const mapCanvas = mapRef.current!.getCanvas();
-        const rect = mapCanvas.getBoundingClientRect();
+        // const mapCanvas = mapRef.current!.getCanvas();
+        // const rect = mapCanvas.getBoundingClientRect();
 
         // Calculate mouse position relative to the map container, not window
-        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+        // mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        // mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
+        // Normalize mouse coordinates
+        const mouse = new THREE.Vector2(
+          (event.clientX / window.innerWidth) * 2 - 1,
+          -(event.clientY / window.innerHeight) * 2 + 1
+        );
+        
         console.log("Mouse Positions: ", mouse.x, mouse.y);
 
         // CRITICAL: Update camera matrices before raycasting
         const camera = customWrapperRef.current!.camera!;
-        camera.updateMatrixWorld();
-        camera.updateProjectionMatrix();
+        // camera.updateMatrixWorld();
+        // camera.updateProjectionMatrix();
 
         // Set raycaster from camera
         raycaster.setFromCamera(mouse, camera);
@@ -398,24 +404,34 @@ const App = () => {
         });
 
         console.log("Meshes to test:", meshesToTest.length);
-        console.log(
-          "Scene children:",
-          customWrapperRef.current!.scene.children.length
-        );
+        console.log("Scene children:", customWrapperRef.current!.scene.children.length);
+
+        const originalMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });  
+        const hoverMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        // Track the previously selected object
+        let previousSelection: THREE.Mesh | null = null;
+        let previousMaterial: THREE.Material = originalMaterial;
 
         // Test intersections with all meshes
-        const intersects = raycaster.intersectObjects(meshesToTest, false);
+        const intersects = raycaster.intersectObjects(customWrapperRef.current!.scene.children, true);
 
         console.log("All Intersects: ", intersects);
+
+        // Reset previous selection if it exists
+        if (previousSelection) {
+          previousSelection.material = previousMaterial;
+          previousSelection = null;
+        }
 
         if (intersects.length > 0) {
           const intersection = intersects[0];
           const selectedModel = intersection.object;
-
-          console.log(
-            "You clicked on:",
-            selectedModel.name || "Unnamed object"
-          );
+          if (selectedModel instanceof THREE.Mesh) {
+            previousSelection = selectedModel;
+            previousMaterial = selectedModel.material;
+            selectedModel.material = hoverMaterial;
+          }
+          console.log("You clicked on:", selectedModel.name || "Unnamed object");
           console.log("Object type:", selectedModel.type);
           console.log("Object userData:", selectedModel.userData);
           console.log("Intersection point:", intersection.point);
