@@ -222,7 +222,7 @@ gltfLoader.load(
     warehouseGroupCasa.add(robotsStartingPointMeshCasa);
 
     if (robotModel1Casa.model) {
-      robotCustomAnimation1(robotModel1Casa);
+      // robotCustomAnimation1(robotModel1Casa);
     }
   },
   (xhr) => {
@@ -258,7 +258,7 @@ gltfLoader.load(
     });
 
     if (robotModel2Casa!.model) {
-      robotCustomAnimation2(robotModel2Casa!);
+      // robotCustomAnimation2(robotModel2Casa!);
     }
   },
   (xhr) => {
@@ -281,7 +281,7 @@ gltfLoader.load(
     robotModel3Casa.model.scale.set(0.6, 0.6, 0.6);
     robotModel3Casa.model.position.set(-8.3, 0.15, 19.8);
     robotModel3Casa.model.rotateY(Math.PI);
-    warehouseGroupCasa.add(robotModel3Casa.model);
+    // warehouseGroupCasa.add(robotModel3Casa.model);
 
     // Updating texture of all the child objects
     robotModel3Casa.model.traverse((child) => {
@@ -294,7 +294,7 @@ gltfLoader.load(
     });
 
     if (robotModel3Casa!.model) {
-      robotCustomAnimation3(robotModel3Casa!);
+      // robotCustomAnimation3(robotModel3Casa!);
     }
   },
   (xhr) => {
@@ -341,7 +341,7 @@ gltfLoader.load(
     warehouseGroupCasa.add(forkliftsStartingPointMeshCasa);
 
     if (forkliftModel1Casa.model) {
-      forkLiftCustomAnimation1(forkliftModel1Casa);
+      // forkLiftCustomAnimation1(forkliftModel1Casa);
     }
   },
   (xhr) => {
@@ -376,7 +376,7 @@ gltfLoader.load(
     });
 
     if (forkliftModel2Casa!.model) {
-      forkLiftCustomAnimation2(forkliftModel2Casa!);
+      // forkLiftCustomAnimation2(forkliftModel2Casa!);
     }
   },
   (xhr) => {

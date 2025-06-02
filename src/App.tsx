@@ -58,7 +58,7 @@ const App = () => {
     mapRef.current.addControl(new maplibregl.ScaleControl({}));
 
     // Set up map load event
-    mapRef.current.on("style.load", () => {
+    mapRef.current.on("load", () => {
       console.log("Map loaded");
       setIsMapLoaded(true);
       const customLayer = {
@@ -178,6 +178,7 @@ const App = () => {
         const worldPositionCasa = projectToWorld(casaGrandeCoords);
         // const worldPositionCornwall = projectToWorld(cornwallCoords);
 
+        console.log("world Position: ", worldPositionCasa);
         warehouseGroupCasa.position.set(
           worldPositionCasa.x,
           worldPositionCasa.y,
@@ -194,6 +195,62 @@ const App = () => {
         // warehouseGroupCornwall.rotateX(degreesToRadians(90));
         // warehouseGroupCornwall.rotateY(degreesToRadians(-62.5));
 
+        // warehouseGroupCasa.children.forEach((child) => {
+        //   const boundingBox = new THREE.Box3().setFromObject(child);
+        //   // Optionally log or use the bounding box data
+        //   const size = new THREE.Vector3();
+        //   boundingBox.getSize(size);
+        //   console.log("Child Position :", child.position);
+        //   const helper = new THREE.Box3Helper(boundingBox, 0x00ff00); // Use Box3Helper for Box3
+        //   customWrapperRef.current!.scene.add(helper);
+        // });
+
+        warehouseGroupCasa.children.forEach((child) => {
+          const boundingBox = new THREE.Box3().setFromObject(child);
+          const helper = new THREE.Box3Helper(boundingBox, 0x00ff00);
+
+          // Add helper as child of warehouseGroupCasa instead of scene
+          // This way it inherits the parent's world position
+          warehouseGroupCasa.add(helper);
+        });
+
+        const boundingBox = new THREE.Box3().setFromObject(warehouseGroupCasa);
+        // Optionally log or use the bounding box data
+        const size = new THREE.Vector3();
+        boundingBox.getSize(size);
+
+        const helper = new THREE.Box3Helper(boundingBox, 0x00ff00); // Use Box3Helper for Box3
+        customWrapperRef.current!.scene.add(helper);
+
+        const camera = customWrapperRef.current!.camera!;
+        console.log("Camera position:", camera.position);
+        console.log("Camera world matrix:", camera.matrixWorld);
+        console.log(
+          "Camera world position:",
+          camera.getWorldPosition(new THREE.Vector3())
+        );
+
+        const map = mapRef.current;
+        console.log("MapLibre center:", map!.getCenter()); // Geographic coordinates
+        console.log("WarehouseCasa Group: ", warehouseGroupCasa);
+
+        // 2. Calculate distances
+        const cameraToModel = camera.position.distanceTo(
+          warehouseGroupCasa.position
+        );
+        console.log("Distance camera to model:", cameraToModel);
+
+        // 3. Move camera closer to model temporarily
+        // const originalPos = camera.position.clone();
+        // camera.position.set(317900, -99100, 100); // Near your model
+        // console.log("Camera moved to:", camera.position);
+
+        const testSphere = new THREE.Mesh(
+          new THREE.SphereGeometry(1000, 16, 16), // Large sphere
+          new THREE.MeshBasicMaterial({ color: 0xff0000 })
+        );
+        testSphere.position.set(0, 0, 0); // Same as camera
+        customWrapperRef.current!.add(testSphere);
         customWrapperRef.current!.add(warehouseGroupCasa);
         // customWrapperRef.current!.add(warehouseGroupCornwall);
 
@@ -223,19 +280,28 @@ const App = () => {
         modelsToBox.forEach((model) => {
           if (!model) return;
 
+          // console.log(
+          //   "World Position: ",
+          //   worldPositionCasa.x,
+          //   worldPositionCasa.y,
+          //   worldPositionCasa.z
+          // );
+          // console.log("Model: ", model);
           // ✅ Calculate bounding box
           const boundingBox = new THREE.Box3().setFromObject(model);
 
           // Optionally log or use the bounding box data
           const size = new THREE.Vector3();
           boundingBox.getSize(size);
-          console.log("Bounding box size:", size);
+          // console.log("Bounding box size:", size);
 
           // ✅ Create and add BoxHelper to visualize it
-          const boxHelper = new THREE.BoxHelper(model, 0x00ff00);
-          boxHelper.update();
+          // const helper = new THREE.Box3Helper(boundingBox, 0x00ff00); // Use Box3Helper for Box3
+          // customWrapperRef.current!.scene.add(helper);
+          // boxHelper.update();
 
-          customWrapperRef.current!.scene.add(boxHelper);
+          // console.log("Box Helpers: ", helper);
+          // customWrapperRef.current!.scene.add(boxHelper);
         });
 
         setIsModelsLoaded(true);
@@ -250,38 +316,56 @@ const App = () => {
       const raycaster = new THREE.Raycaster();
       const mouse = new THREE.Vector2();
 
+      const camera = customWrapperRef.current!.camera!;
+      // Temporarily move camera to model coordinates
+      camera.position.set(317925, -99081, 10); // 500 units above model
+      // camera.lookAt(317925, -99081, 0);
+
       // Create arrow helper for visualization (initially hidden)
       let arrowHelper: any = null;
 
       function onMouseClick(event: MouseEvent) {
         // Get the map container bounds for accurate coordinate calculation
-        const mapContainer = mapRef.current!.getContainer();
+        const mapContainer = mapRef.current!.getCanvas();
         const rect = mapContainer.getBoundingClientRect();
+
+        console.log("Rect: ", rect);
 
         // Calculate mouse position relative to the map container, not window
         mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
         mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
-        console.log("Mouse Positions: ", mouse.x, mouse.y);
-
         // Set raycaster from camera
-        raycaster.setFromCamera(mouse, customWrapperRef.current!.camera!);
+        raycaster.setFromCamera(mouse, camera);
 
         // Remove previous arrow helper if it exists
-        if (arrowHelper) {
-          customWrapperRef.current!.scene.remove(arrowHelper);
-          arrowHelper.dispose?.(); // Clean up geometry and material
-          arrowHelper = null;
-        }
+        // if (arrowHelper) {
+        //   customWrapperRef.current!.scene.remove(arrowHelper);
+        //   arrowHelper.dispose?.(); // Clean up geometry and material
+        //   arrowHelper = null;
+        // }
 
         // Create arrow helper to visualize the ray
         const rayOrigin = raycaster.ray.origin.clone();
+        const rayOffset = new THREE.Vector3(
+          317925.26791136555,
+          -99081.83693118006,
+          -1200
+        ); // example
+        const correctedRayOrigin = rayOrigin.clone().add(rayOffset);
         const rayDirection = raycaster.ray.direction.clone();
+        // console.log("RayOrigin: ", correctedRayOrigin);
+        console.log(
+          "Camera position:",
+          customWrapperRef.current?.camera!.position
+        );
+        // console.log("Arrow origin:", rayOrigin);
 
         // Calculate appropriate length based on camera distance
-        const camera = customWrapperRef.current!.camera!;
+        // const camera = customWrapperRef.current!.camera!;
         const cameraDistance = camera.position.distanceTo(rayOrigin);
-        const arrowLength = Math.max(cameraDistance * 0.5, 1000); // Adaptive length
+        // const arrowLength = Math.max(cameraDistance * 0.5, 1000); // Adaptive length
+        const arrowLength = 150; // Adaptive length
 
         // console.log("Ray Origin:", rayOrigin);
         // console.log("Ray Direction:", rayDirection);
@@ -290,13 +374,14 @@ const App = () => {
 
         arrowHelper = new THREE.ArrowHelper(
           rayDirection,
-          rayOrigin,
+          correctedRayOrigin,
           arrowLength,
           0xff0000, // Red color
           arrowLength * 0.1, // Head length (10% of total length)
           arrowLength * 0.05 // Head width (5% of total length)
         );
 
+        // console.log("Arrow Helper: ", arrowHelper);
         // Add to scene
         customWrapperRef.current!.scene.add(arrowHelper);
 
@@ -317,21 +402,82 @@ const App = () => {
           true
         );
 
-        // console.log("All Intersects: ", intersects);
+        const modifiedIntersects = intersects.filter((intersect) => {
+          if (intersect.object.type !== "Box3Helper") {
+            return intersect;
+          }
+        });
 
-        if (intersects.length > 0) {
-          const selectedModel = intersects[0].object;
-          // console.log(
-          //   "You clicked on:",
-          //   selectedModel.name,
-          //   selectedModel.userData
-          // );
+        console.log("All Intersects: ", modifiedIntersects);
+
+        if (modifiedIntersects.length > 0) {
+          const selectedModel = modifiedIntersects[0].object;
+          console.log(
+            "You clicked on:",
+            selectedModel.name,
+            selectedModel.userData
+          );
         }
       }
 
+      function onMouseMove(event: MouseEvent) {
+        const mapContainer = mapRef.current!.getCanvas();
+        const rect = mapContainer.getBoundingClientRect();
+        console.log("Rect: ", rect);
+
+        // Calculate mouse position relative to the map container, not window
+        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+        console.log("Mouse Positions: ", mouse.x, mouse.y);
+
+        // Set raycaster from camera
+        raycaster.setFromCamera(mouse, customWrapperRef.current!.camera!);
+
+        // Remove previous arrow helper if it exists
+        if (arrowHelper) {
+          customWrapperRef.current!.scene.remove(arrowHelper);
+          arrowHelper.dispose?.(); // Clean up geometry and material
+          arrowHelper = null;
+        }
+
+        // Create arrow helper to visualize the ray
+        const rayOrigin = raycaster.ray.origin.clone();
+        const rayOffset = new THREE.Vector3(
+          317925.26791136555,
+          -99081.83693118006,
+          -1200
+        ); // example
+        const correctedRayOrigin = rayOrigin.clone().add(rayOffset);
+        const rayDirection = raycaster.ray.direction.clone();
+        // console.log("RayOrigin: ", correctedRayOrigin);
+        console.log(
+          "Camera position:",
+          customWrapperRef.current?.camera!.position
+        );
+        const camera = customWrapperRef.current!.camera!;
+        const cameraDistance = camera.position.distanceTo(rayOrigin);
+        const arrowLength = 100; // Adaptive length
+
+        arrowHelper = new THREE.ArrowHelper(
+          rayDirection,
+          correctedRayOrigin,
+          arrowLength,
+          0xff0000, // Red color
+          arrowLength * 0.1, // Head length (10% of total length)
+          arrowLength * 0.05 // Head width (5% of total length)
+        );
+
+        customWrapperRef.current!.scene.add(arrowHelper);
+
+        // Force a render update
+        customWrapperRef.current!.update();
+      }
       // Add event listener to the map container, not window
       const mapContainer = mapRef.current!.getContainer();
       mapContainer.addEventListener("click", onMouseClick);
+      // mapContainer.addEventListener("mousemove", onMouseMove);
+      // window.addEventListener("click", onMouseClick);
 
       // Cleanup function
       return () => {
