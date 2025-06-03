@@ -44,11 +44,11 @@ const LeftSideBarWarehouse = ({
 }) => {
   return (
     <>
-      <div className="left-sidebar">
+      <div className="left-sidebar" style={{ width: "360px" }}>
         {/* Breadcrumb */}
         <div className="left-sidebar-div">
           {/* Object Name */}
-          <span style={{ fontWeight: 900 }}>{warehouseName}</span>
+          <span style={{ fontWeight: 700 }}>{warehouseName}</span>
         </div>
         <div
           style={{
@@ -61,7 +61,7 @@ const LeftSideBarWarehouse = ({
           {/* General Info */}
           <div
             style={{
-              width: "100%",
+              width: "280px",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -71,14 +71,28 @@ const LeftSideBarWarehouse = ({
             }}
           >
             <div>
-              <span style={{ fontWeight: 600 }}>General Info</span>
-              {/* TODO {name} */}
-              <div style={{ marginTop: "20px" }}>Name: {name}</div>
-              <div style={{ marginTop: "8px" }}>ID: {ID}</div>
-              <div style={{ marginTop: "8px" }}>Type: {type}</div>
-
+              <span style={{ fontWeight: 700 }}>General Info</span>
+              <div style={{ marginTop: "20px" }}>
+                <span style={{ fontWeight: 600 }}> Name: </span>
+                <span>{name}</span>
+              </div>
               <div style={{ marginTop: "8px" }}>
-                Order Fulfillment Time: {avgOrderFulfillmentTime} minutes
+                {" "}
+                <span style={{ fontWeight: 600 }}> ID: </span>
+                <span>{ID}</span>
+              </div>
+              <div style={{ marginTop: "8px" }}>
+                {" "}
+                <span style={{ fontWeight: 600 }}> Type: </span>
+                <span>{type}</span>
+              </div>
+              <div style={{ marginTop: "8px" }}>
+                {" "}
+                <span style={{ fontWeight: 600 }}>
+                  {" "}
+                  Order Fulfillment Time:{" "}
+                </span>
+                <span>{avgOrderFulfillmentTime} minutes</span>
               </div>
             </div>
           </div>
@@ -86,7 +100,7 @@ const LeftSideBarWarehouse = ({
           {/* Employees/AMVs/Forklifts Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -110,7 +124,7 @@ const LeftSideBarWarehouse = ({
           {/* Power Consumption Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -136,7 +150,7 @@ const LeftSideBarWarehouse = ({
           {/* Occupied/Free Space Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -160,7 +174,7 @@ const LeftSideBarWarehouse = ({
           {/* Throughput Rate Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -186,7 +200,7 @@ const LeftSideBarWarehouse = ({
           {/* Safety Incidents Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -213,14 +227,14 @@ const LeftSideBarWarehouse = ({
           {/* System Downtime Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
               border: "1px solid #e5e7eb",
               padding: "1rem",
               transform: "none",
-              marginBottom: "30px",
+              marginBottom: "10px",
             }}
           >
             <div style={{ fontWeight: 700, marginBottom: "10px" }}>

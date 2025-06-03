@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import maplibregl from "maplibre-gl";
+import maplibregl, { LngLatLike } from "maplibre-gl";
 import locationsControls from "./MapCustomControls/LocationControls/locationControls";
 import warehouseControls from "./MapCustomControls/warehouseInsideViewControl";
 import {
@@ -13,28 +13,32 @@ import {
   forkliftModel2Casa,
 } from "./ModelLoading/CasaGrande/gltfLoader";
 import {
-  // warehouseGroupCornwall,
+  warehouseGroupCornwall,
   warehouseModelCornwall,
-  // robotModel1Cornwall,
-  // robotModel2Cornwall,
-  // robotModel3Cornwall,
-  // forkliftModel1Cornwall,
-  // forkliftModel2Cornwall,
+  robotModel1Cornwall,
+  robotModel2Cornwall,
+  robotModel3Cornwall,
+  forkliftModel1Cornwall,
+  forkliftModel2Cornwall,
 } from "./ModelLoading/Cornwall/gltfLoader";
 import CustomThreeJSWrapper from "./CustomThreeJsWrapper/CustomThreeJsWrapper";
 import { projectToWorld } from "./CustomThreeJsWrapper/utility/utility";
-import LeftSideBarWarehouse from "./components/LeftSideBarWarehouse";
 import LeftSideBarSystem from "./components/LeftSideBarSystem";
+import LeftSideBarWarehouse from "./components/LeftSideBarWarehouse";
+import LeftSideBarRobot from "./components/LeftSideBarRobot";
+import LeftSideBarForklift from "./components/LeftSideBarForklift";
+import LeftSideBarStorageRack from "./components/LeftSideBarStorageRack";
 import NavBar from "./components/NavBar/NavBar";
 import { degreesToRadians } from "./utils";
+import locationPins from "./components/LocationPins/locationPins";
 
 const App = () => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const customWrapperRef = useRef<CustomThreeJSWrapper | null>(null);
   const locationControlsRef = useRef<any | null>(null);
-  const clickableObjectsRef = useRef<THREE.Object3D[]>([]);
-  const [isLeftSideBarOpen, setIsLeftSideBarOpen] = useState(true);
+  const locationPinsRef = useRef<any>(null);
+  const [raycastedObject, setRaycastedObject] = useState<string>("");
   const [selectedLocation, setSelectedLocation] = useState<string>("");
   const [isModelsLoaded, setIsModelsLoaded] = useState<boolean>(false);
   const [isMapLoaded, setIsMapLoaded] = useState<boolean>(false);
@@ -100,7 +104,8 @@ const App = () => {
       mapRef.current,
       (location) => {
         setSelectedLocation(location);
-      }
+      },
+      setRaycastedObject // Pass the setRaycastedObject function
     );
     mapRef.current.addControl(locationControlsRef.current, "top-left");
 
@@ -129,6 +134,32 @@ const App = () => {
     }
   }, []);
 
+  // 3. Adding Location Pins On Map
+  useEffect(() => {
+    if (!isMapLoaded || !mapRef.current) return;
+    console.log("Adding location pins");
+
+    const coordinates: LngLatLike[] = [
+      [-111.77060200008945, 32.86684249587934],
+      [-74.7077, 45.0489],
+    ];
+    const locationNames: string[] = ["Casa Grande", "Cornwall"];
+
+    // Store the returned controller
+    locationPinsRef.current = locationPins(
+      coordinates,
+      mapRef.current,
+      locationNames,
+      (location) => {
+        setSelectedLocation(location);
+        // Update the location control display
+        if (locationControlsRef.current) {
+          locationControlsRef.current.setSelectedLocation(location);
+        }
+      }
+    );
+  }, [isMapLoaded]);
+
   useEffect(() => {
     if (!isMapLoaded || !mapRef.current) return;
 
@@ -139,7 +170,6 @@ const App = () => {
     customWrapperRef.current.setEnvironment();
 
     // Setup 3D scene
-    setIsLeftSideBarOpen(true);
     setup3DScene();
 
     // Cleanup 3D resources
@@ -165,18 +195,23 @@ const App = () => {
         robotModel3Casa?.model &&
         forkliftModel1Casa?.model &&
         forkliftModel2Casa?.model &&
-        warehouseModelCornwall?.model
+        warehouseModelCornwall?.model &&
+        robotModel1Cornwall?.model &&
+        robotModel2Cornwall?.model &&
+        robotModel3Cornwall?.model &&
+        forkliftModel1Cornwall?.model &&
+        forkliftModel2Cornwall?.model
       ) {
         // scale the models
         warehouseGroupCasa.scale.set(0.165, 0.2, 0.21);
-        // warehouseGroupCornwall.scale.set(0.2, 0.2, 0.2);
+        warehouseGroupCornwall.scale.set(0.2, 0.2, 0.2);
 
         // Convert coordinates
         const casaGrandeCoords = [-111.77060200008945, 32.86684249587934];
-        // const cornwallCoords = [-74.7077, 45.0489];
+        const cornwallCoords = [-74.7077, 45.0489];
 
         const worldPositionCasa = projectToWorld(casaGrandeCoords);
-        // const worldPositionCornwall = projectToWorld(cornwallCoords);
+        const worldPositionCornwall = projectToWorld(cornwallCoords);
 
         console.log("world Position: ", worldPositionCasa);
         warehouseGroupCasa.position.set(
@@ -184,43 +219,16 @@ const App = () => {
           worldPositionCasa.y,
           0
         );
-        // warehouseGroupCornwall.position.set(
-        //   worldPositionCornwall.x,
-        //   worldPositionCornwall.y,
-        //   0
-        // );
+        warehouseGroupCornwall.position.set(
+          worldPositionCornwall.x,
+          worldPositionCornwall.y,
+          0
+        );
 
         warehouseGroupCasa.rotateX(degreesToRadians(90));
         warehouseGroupCasa.rotateY(degreesToRadians(-90));
-        // warehouseGroupCornwall.rotateX(degreesToRadians(90));
-        // warehouseGroupCornwall.rotateY(degreesToRadians(-62.5));
-
-        // warehouseGroupCasa.children.forEach((child) => {
-        //   const boundingBox = new THREE.Box3().setFromObject(child);
-        //   // Optionally log or use the bounding box data
-        //   const size = new THREE.Vector3();
-        //   boundingBox.getSize(size);
-        //   console.log("Child Position :", child.position);
-        //   const helper = new THREE.Box3Helper(boundingBox, 0x00ff00); // Use Box3Helper for Box3
-        //   customWrapperRef.current!.scene.add(helper);
-        // });
-
-        warehouseGroupCasa.children.forEach((child) => {
-          const boundingBox = new THREE.Box3().setFromObject(child);
-          const helper = new THREE.Box3Helper(boundingBox, 0x00ff00);
-
-          // Add helper as child of warehouseGroupCasa instead of scene
-          // This way it inherits the parent's world position
-          warehouseGroupCasa.add(helper);
-        });
-
-        const boundingBox = new THREE.Box3().setFromObject(warehouseGroupCasa);
-        // Optionally log or use the bounding box data
-        const size = new THREE.Vector3();
-        boundingBox.getSize(size);
-
-        const helper = new THREE.Box3Helper(boundingBox, 0x00ff00); // Use Box3Helper for Box3
-        customWrapperRef.current!.scene.add(helper);
+        warehouseGroupCornwall.rotateX(degreesToRadians(90));
+        warehouseGroupCornwall.rotateY(degreesToRadians(-62.5));
 
         const camera = customWrapperRef.current!.camera!;
         console.log("Camera position:", camera.position);
@@ -240,19 +248,8 @@ const App = () => {
         );
         console.log("Distance camera to model:", cameraToModel);
 
-        // 3. Move camera closer to model temporarily
-        // const originalPos = camera.position.clone();
-        // camera.position.set(317900, -99100, 100); // Near your model
-        // console.log("Camera moved to:", camera.position);
-
-        const testSphere = new THREE.Mesh(
-          new THREE.SphereGeometry(1000, 16, 16), // Large sphere
-          new THREE.MeshBasicMaterial({ color: 0xff0000 })
-        );
-        testSphere.position.set(0, 0, 0); // Same as camera
-        customWrapperRef.current!.add(testSphere);
         customWrapperRef.current!.add(warehouseGroupCasa);
-        // customWrapperRef.current!.add(warehouseGroupCornwall);
+        customWrapperRef.current!.add(warehouseGroupCornwall);
 
         // Add the warehouse control to the map, passing the locationControl reference
         mapRef.current!.addControl(
@@ -260,49 +257,20 @@ const App = () => {
             mapRef.current!,
             locationControlsRef.current,
             warehouseModelCasa!,
-            warehouseModelCornwall!
+            warehouseModelCornwall!,
+            (flag: boolean) => {
+              // Handle inside view toggle
+              if (locationPinsRef.current) {
+                if (flag) {
+                  locationPinsRef.current.hideMarkers();
+                } else {
+                  locationPinsRef.current.showMarkers();
+                }
+              }
+            }
           ),
           "top-right"
         );
-
-        // ✅ Create an array of models to visualize bounding boxes
-        const modelsToBox = [
-          warehouseModelCasa.model,
-          robotModel1Casa.model,
-          robotModel2Casa.model,
-          robotModel3Casa.model,
-          forkliftModel1Casa.model,
-          forkliftModel2Casa.model,
-        ];
-
-        // console.log("modelsToBox: ", modelsToBox);
-
-        modelsToBox.forEach((model) => {
-          if (!model) return;
-
-          // console.log(
-          //   "World Position: ",
-          //   worldPositionCasa.x,
-          //   worldPositionCasa.y,
-          //   worldPositionCasa.z
-          // );
-          // console.log("Model: ", model);
-          // ✅ Calculate bounding box
-          const boundingBox = new THREE.Box3().setFromObject(model);
-
-          // Optionally log or use the bounding box data
-          const size = new THREE.Vector3();
-          boundingBox.getSize(size);
-          // console.log("Bounding box size:", size);
-
-          // ✅ Create and add BoxHelper to visualize it
-          // const helper = new THREE.Box3Helper(boundingBox, 0x00ff00); // Use Box3Helper for Box3
-          // customWrapperRef.current!.scene.add(helper);
-          // boxHelper.update();
-
-          // console.log("Box Helpers: ", helper);
-          // customWrapperRef.current!.scene.add(boxHelper);
-        });
 
         setIsModelsLoaded(true);
         clearInterval(waitForModels);
@@ -317,6 +285,7 @@ const App = () => {
       const mouse = new THREE.Vector2();
 
       const camera = customWrapperRef.current!.camera!;
+
       // Temporarily move camera to model coordinates
       camera.position.set(317925, -99081, 10); // 500 units above model
       // camera.lookAt(317925, -99081, 0);
@@ -333,12 +302,14 @@ const App = () => {
         mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
         mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
-        console.log("Mouse Positions: ", mouse.x, mouse.y);
+        // console.log("Mouse Positions: ", mouse.x, mouse.y);
 
         // CRITICAL: Update camera matrices before raycasting
         const camera = customWrapperRef.current!.camera!;
         camera.updateMatrixWorld();
         camera.updateProjectionMatrix();
+
+        warehouseGroupCasa.scale.set(0.165, 0.2, 0.21);
 
         // Set raycaster from camera
         raycaster.setFromCamera(mouse, camera);
@@ -356,23 +327,23 @@ const App = () => {
           317925.26791136555,
           -99081.83693118006,
           -1200
-        ); // example
+        );
         const correctedRayOrigin = rayOrigin.clone().add(rayOffset);
         const rayDirection = raycaster.ray.direction.clone();
         // console.log("RayOrigin: ", correctedRayOrigin);
-        console.log(
-          "Camera position:",
-          customWrapperRef.current?.camera!.position
-        );
+        // console.log(
+        //   "Camera position:",
+        //   customWrapperRef.current?.camera!.position
+        // );
         // console.log("Arrow origin:", rayOrigin);
 
         // Calculate appropriate length based on scene bounds
         const arrowLength = 10000; // Increased length for better visibility
 
-        console.log("Ray Origin:", rayOrigin);
-        console.log("Ray Direction:", rayDirection);
-        console.log("Camera Position:", camera.position);
-        console.log("Camera Matrix World:", camera.matrixWorld);
+        // console.log("Ray Origin:", rayOrigin);
+        // console.log("Ray Direction:", rayDirection);
+        // console.log("Camera Position:", camera.position);
+        // console.log("Camera Matrix World:", camera.matrixWorld);
 
         arrowHelper = new THREE.ArrowHelper(
           rayDirection,
@@ -397,29 +368,35 @@ const App = () => {
           }
         });
 
-        console.log("Meshes to test:", meshesToTest.length);
-        console.log(
-          "Scene children:",
-          customWrapperRef.current!.scene.children.length
-        );
+        // console.log("Meshes to test:", meshesToTest.length);
+        // console.log(
+        //   "Scene children:",
+        //   customWrapperRef.current!.scene.children.length
+        // );
 
         // Test intersections with all meshes
-        const intersects = raycaster.intersectObjects(meshesToTest, false);
+        const intersects = raycaster.intersectObjects(
+          customWrapperRef.current!.scene.children,
+          true
+        );
 
-        console.log("All Intersects: ", intersects);
+        // console.log("All Intersects: ", intersects);
 
         if (intersects.length > 0) {
           const intersection = intersects[0];
           const selectedModel = intersection.object;
+          const raycastedObjectName = intersection.object.userData.modelName;
+          setRaycastedObject(raycastedObjectName);
+          console.log("Intersection[0]: ", intersection);
 
-          console.log(
-            "You clicked on:",
-            selectedModel.name || "Unnamed object"
-          );
+          // console.log(
+          //   "You clicked on:",
+          //   selectedModel.name || "Unnamed object"
+          // );
           console.log("Object type:", selectedModel.type);
-          console.log("Object userData:", selectedModel.userData);
-          console.log("Intersection point:", intersection.point);
-          console.log("Distance:", intersection.distance);
+          // console.log("Object userData:", selectedModel.userData);
+          // console.log("Intersection point:", intersection.point);
+          // console.log("Distance:", intersection.distance);
 
           // Optional: Add a marker at intersection point
           const markerGeometry = new THREE.SphereGeometry(50, 8, 8);
@@ -437,18 +414,16 @@ const App = () => {
             markerMaterial.dispose();
           }, 3000);
         } else {
-          console.log("No intersections found");
-
+          // console.log("No intersections found");
           // Debug: Log camera and raycaster info
-          console.log("Camera position:", camera.position);
-          console.log("Camera rotation:", camera.rotation);
-          console.log("Raycaster origin:", raycaster.ray.origin);
-          console.log("Raycaster direction:", raycaster.ray.direction);
-
-          // Debug: Check if models are in expected positions
-          console.log("Warehouse Casa position:", warehouseGroupCasa.position);
-          console.log("Warehouse Casa scale:", warehouseGroupCasa.scale);
-          console.log("Warehouse Casa rotation:", warehouseGroupCasa.rotation);
+          // console.log("Camera position:", camera.position);
+          // console.log("Camera rotation:", camera.rotation);
+          // console.log("Raycaster origin:", raycaster.ray.origin);
+          // console.log("Raycaster direction:", raycaster.ray.direction);
+          // // Debug: Check if models are in expected positions
+          // console.log("Warehouse Casa position:", warehouseGroupCasa.position);
+          // console.log("Warehouse Casa scale:", warehouseGroupCasa.scale);
+          // console.log("Warehouse Casa rotation:", warehouseGroupCasa.rotation);
         }
         // Force a render update
         customWrapperRef.current!.update();
@@ -474,7 +449,8 @@ const App = () => {
     <div>
       <NavBar />
 
-      {isLeftSideBarOpen && selectedLocation === "" && (
+      {/* Warehouse Twinware System SidebBar */}
+      {selectedLocation === "" && raycastedObject === "" && (
         <LeftSideBarSystem
           systemName="Warehouse Management System"
           name="JDI Distributors"
@@ -513,79 +489,228 @@ const App = () => {
         />
       )}
 
-      {isLeftSideBarOpen && selectedLocation === "Cornwall" && (
-        <LeftSideBarWarehouse
-          warehouseName="Warehouse Cornwall"
-          name="Warehouse Cornwall"
-          ID="WCW"
-          type="Distribution Center Warehouse"
-          avgOrderFulfillmentTime={45}
-          totalRobots={15}
-          totalForklifts={8}
-          totalEmployees={31}
-          powerConsumptionMonths={["Jan", "Feb", "Mar", "Apr", "May"]}
-          powerConsumptionAmount={[213, 196, 252, 207, 186]}
-          occupiedSpcae={60}
-          freeSpace={40}
-          throughputMonths={[
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15",
-            "16",
-            "17",
-            "18",
-          ]}
-          throughputRate={[34, 58, 26, 59, 70, 11, 41, 53, 66]}
-          safetyIncidentsMonths={["Jan", "Feb", "Mar", "Apr", "May"]}
-          safetyIncidentsRate={[1, 0, 3, 4, 2]}
-          systemDowntimeMonths={[
-            "Thunderstorms",
-            "Earth Quake",
-            "Windstorm",
-            "Blackout",
-          ]}
-          systemDowntimeDuration={[8, 12, 4, 7]}
+      {/* Warehouse SideBar */}
+      {selectedLocation &&
+        (raycastedObject === "" ||
+          raycastedObject === "Warehouse Model Casa Grande" ||
+          raycastedObject === "Warehouse Model Cornwall") && (
+          <LeftSideBarWarehouse
+            warehouseName={
+              selectedLocation.includes("Casa")
+                ? "Warehouse Casa Grande"
+                : "Warehouse Cornwall"
+            }
+            name={
+              selectedLocation.includes("Casa")
+                ? "Warehouse Casa Grande"
+                : "Warehouse Cornwall"
+            }
+            ID={selectedLocation.includes("Casa") ? "WCG" : "WCW"}
+            type="Distribution Center Warehouse"
+            avgOrderFulfillmentTime={
+              selectedLocation.includes("Casa") ? 55 : 45
+            }
+            totalRobots={selectedLocation.includes("Casa") ? 17 : 15}
+            totalForklifts={selectedLocation.includes("Casa") ? 9 : 8}
+            totalEmployees={selectedLocation.includes("Casa") ? 31 : 35}
+            powerConsumptionMonths={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+            powerConsumptionAmount={
+              selectedLocation.includes("Casa")
+                ? [243, 186, 222, 277, 166]
+                : [213, 196, 252, 207, 186]
+            }
+            occupiedSpcae={selectedLocation.includes("Casa") ? 69 : 60}
+            freeSpace={selectedLocation.includes("Casa") ? 31 : 40}
+            throughputMonths={[
+              "10",
+              "11",
+              "12",
+              "13",
+              "14",
+              "15",
+              "16",
+              "17",
+              "18",
+            ]}
+            throughputRate={
+              selectedLocation.includes("Casa")
+                ? [31, 57, 29, 53, 80, 19, 35, 63, 76]
+                : [34, 58, 26, 59, 70, 11, 41, 53, 66]
+            }
+            safetyIncidentsMonths={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+            safetyIncidentsRate={
+              selectedLocation.includes("Casa")
+                ? [0, 1, 4, 3, 2, 2]
+                : [1, 0, 3, 4, 2, 3]
+            }
+            systemDowntimeMonths={[
+              "Thunderstorms",
+              "Earth Quake",
+              "Windstorm",
+              "Blackout",
+            ]}
+            systemDowntimeDuration={
+              selectedLocation.includes("Casa") ? [11, 7, 6, 3] : [8, 12, 4, 7]
+            }
+          />
+        )}
+
+      {/* Robot SideBar */}
+      {raycastedObject.includes("Robot Model") && (
+        <LeftSideBarRobot
+          warehouseName={
+            selectedLocation.includes("Casa")
+              ? "Warehouse Casa Grande"
+              : "Warehouse Cornwall"
+          }
+          name={raycastedObject}
+          ID={`RM-${raycastedObject.slice(-1)}`}
+          type="AMV"
+          status="Transporting"
+          batteryLevel={
+            raycastedObject.includes("1")
+              ? "80%"
+              : raycastedObject.includes("2")
+              ? "60%"
+              : "40%"
+          }
+          speed={
+            raycastedObject.includes("1")
+              ? 22
+              : raycastedObject.includes("2")
+              ? 20
+              : 17
+          }
+          tct={
+            raycastedObject.includes("1")
+              ? 33
+              : raycastedObject.includes("2")
+              ? 31
+              : 35
+          }
+          batteryEfficiency={
+            raycastedObject.includes("1")
+              ? 7
+              : raycastedObject.includes("2")
+              ? 7.2
+              : 6.9
+          }
+          collisions={
+            raycastedObject.includes("1")
+              ? 2
+              : raycastedObject.includes("2")
+              ? 1
+              : 1
+          }
+          nearMisses={
+            raycastedObject.includes("1")
+              ? 7
+              : raycastedObject.includes("2")
+              ? 10
+              : 4
+          }
+          isDowntime={
+            raycastedObject.includes("1")
+              ? true
+              : raycastedObject.includes("2")
+              ? false
+              : true
+          }
+          downtimeReason={
+            raycastedObject.includes("1")
+              ? "Circuit Breakdown"
+              : raycastedObject.includes("2")
+              ? ""
+              : "Wheel Ruptured"
+          }
+          downtimeDuaration={
+            raycastedObject.includes("1")
+              ? 2
+              : raycastedObject.includes("2")
+              ? 0
+              : 1
+          }
+          working={
+            raycastedObject.includes("1")
+              ? 88
+              : raycastedObject.includes("2")
+              ? 90
+              : 94
+          }
+          idle={
+            raycastedObject.includes("1")
+              ? 12
+              : raycastedObject.includes("2")
+              ? 10
+              : 6
+          }
+          maintenanceDates={
+            raycastedObject.includes("1")
+              ? ["16/5", "11/7", "2/8", "6/9", "1/10"]
+              : raycastedObject.includes("2")
+              ? ["17/5", "9/7", "12/9", "6/10", "11/11"]
+              : ["18/5", "6/6", "22/7", "16/8", "1/9"]
+          }
+          maintenanceDurations={
+            raycastedObject.includes("1")
+              ? [4, 1.6, 2.2, 0.5, 1.4]
+              : raycastedObject.includes("2")
+              ? [3.4, 1.33, 2.12, 1.5, 0.4]
+              : [0.6, 1.9, 1.2, 3.5, 2.4]
+          }
         />
       )}
 
-      {isLeftSideBarOpen && selectedLocation === "Casa Grande" && (
-        <LeftSideBarWarehouse
-          warehouseName="Warehouse Cornwall"
-          name="Warehouse Cornwall"
-          ID="WCW"
-          type="Distribution Center Warehouse"
-          avgOrderFulfillmentTime={45}
-          totalRobots={15}
-          totalForklifts={8}
-          totalEmployees={31}
-          powerConsumptionMonths={["Jan", "Feb", "Mar", "Apr", "May"]}
-          powerConsumptionAmount={[213, 196, 252, 207, 186]}
-          occupiedSpcae={60}
-          freeSpace={40}
-          throughputMonths={[
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15",
-            "16",
-            "17",
-            "18",
-          ]}
-          throughputRate={[34, 58, 26, 59, 70, 11, 41, 53, 66]}
-          safetyIncidentsMonths={["Jan", "Feb", "Mar", "Apr", "May"]}
-          safetyIncidentsRate={[1, 0, 3, 4, 2]}
-          systemDowntimeMonths={[
-            "Thunderstorms",
-            "Earth Quake",
-            "Windstorm",
-            "Blackout",
-          ]}
-          systemDowntimeDuration={[8, 12, 4, 7]}
+      {/* Forklift SideBar */}
+      {raycastedObject.includes("Fork Lift Model") && (
+        <LeftSideBarForklift
+          warehouseName={
+            selectedLocation.includes("Casa")
+              ? "Warehouse Casa Grande"
+              : "Warehouse Cornwall"
+          }
+          name={raycastedObject}
+          ID={`FM-${raycastedObject.slice(-1)}`}
+          type="Forklift"
+          status="Transporting"
+          fuelLevel={raycastedObject.includes("1") ? "80%" : "40%"}
+          load={raycastedObject.includes("1") ? 122 : 140}
+          speed={raycastedObject.includes("1") ? 50 : 71}
+          operator={
+            raycastedObject.includes("1") ? "Khalil Ahmad" : "Rehan Amjad"
+          }
+          loadHours={["10", "11", "12", "13", "14", "15", "16", "17", "18"]}
+          loadMovedPerHour={[856, 455, 1022, 106, 978, 566, 411, 378, 788]}
+          tripHours={["10", "11", "12", "13", "14", "15", "16", "17", "18"]}
+          totalTrips={[4, 2, 1, 5, 0, 6, 3, 4]}
+          isDowntime={raycastedObject.includes("1") ? true : false}
+          downtimeReason={raycastedObject.includes("1") ? "Flat Tire" : ""}
+          downtimeDuaration={raycastedObject.includes("1") ? 1 : 0}
+          fuelEfficiency={raycastedObject.includes("1") ? 15.5 : 14.2}
+        />
+      )}
+
+      {/* Storage Rack SideBar */}
+      {raycastedObject.includes("Storage Rack") && (
+        <LeftSideBarStorageRack
+          warehouseName={
+            selectedLocation.includes("Casa")
+              ? "Warehouse Casa Grande"
+              : "Warehouse Cornwall"
+          }
+          name={raycastedObject}
+          ID={`SR-${raycastedObject.slice(-1)}`}
+          type="Storage Rack"
+          totalItemsStored={550}
+          orderFulfillmentRate={19}
+          usedCapacity={81}
+          idleCapacity={19}
+          stockIn={45}
+          stockOut={55}
+          stockoutMonths={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+          stockoutIncidents={[6, 11, 5, 1, 4, 2]}
+          inventoryAgeMonths={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+          inventoryAgeTime={[53, 96, 67.8, 128, 125, 233.3]}
         />
       )}
 

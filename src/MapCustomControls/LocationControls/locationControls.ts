@@ -10,7 +10,8 @@ interface LocationControl extends maplibregl.IControl {
 // Locations Control
 function locationsControls(
   map: maplibregl.Map,
-  onLocationChange: (location: string) => void
+  onLocationChange: (location: string) => void,
+  setRaycastedObject: (value: string) => void
 ): LocationControl {
   // Create locationSelected variable - initially empty string
   let locationSelected: string = "";
@@ -80,6 +81,7 @@ function locationsControls(
   const setSelectedLocation = (location: string) => {
     locationSelected = location;
     currentPositionButtonText.textContent = location || "Locations";
+    setRaycastedObject("");
     onLocationChange(location);
   };
 

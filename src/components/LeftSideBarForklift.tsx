@@ -40,11 +40,11 @@ const LeftSideBarForklift = ({
 }) => {
   return (
     <>
-      <div className="left-sidebar">
+      <div className="left-sidebar" style={{ width: "360px" }}>
         {/* Breadcrumb */}
         <div className="left-sidebar-div">
           {/* Object Name */}
-          <span style={{ fontWeight: 900 }}>{warehouseName}</span>
+          <span style={{ fontWeight: 700 }}>{warehouseName}</span>
         </div>
         <div
           style={{
@@ -57,7 +57,7 @@ const LeftSideBarForklift = ({
           {/* General Info */}
           <div
             style={{
-              width: "100%",
+              width: "280px",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -67,17 +67,27 @@ const LeftSideBarForklift = ({
             }}
           >
             <div>
-              <span style={{ fontWeight: 600 }}>General Info</span>
-              {/* TODO {name} */}
-              <div style={{ marginTop: "20px" }}>Name: {name}</div>
-              <div style={{ marginTop: "8px" }}>ID: {ID}</div>
-              <div style={{ marginTop: "8px" }}>Type: {type}</div>
+              <span style={{ fontWeight: 700 }}>General Info</span>
+              <div style={{ marginTop: "20px" }}>
+                <span style={{ fontWeight: 600 }}> Name: </span>
+                <span>{name}</span>
+              </div>
               <div style={{ marginTop: "8px" }}>
-                Status:
+                {" "}
+                <span style={{ fontWeight: 600 }}> ID: </span>
+                <span>{ID}</span>
+              </div>
+              <div style={{ marginTop: "8px" }}>
+                {" "}
+                <span style={{ fontWeight: 600 }}> Type: </span>
+                <span>{type}</span>
+              </div>
+              <div style={{ marginTop: "8px" }}>
+                <span style={{ fontWeight: 600 }}> Status: </span>
                 <span
                   style={{
-                    marginLeft: "2px",
-                    backgroundColor: "rgb(223 73 73)",
+                    marginLeft: "5px",
+                    backgroundColor: "rgb(74 222 128)",
                     color: "white",
                     padding: "0.25rem 0.5rem 0.25rem 0.5rem",
                     borderRadius: "10px",
@@ -86,13 +96,13 @@ const LeftSideBarForklift = ({
                   {status}
                 </span>
               </div>
-              <div style={{ marginTop: "16px" }}>
-                <span>Fuel Level:</span>
+              <div style={{ marginTop: "10px" }}>
+                <span style={{ fontWeight: 600 }}>Fuel Level:</span>
                 <div
                   style={{
                     width: "100%",
                     height: "25px",
-                    marginTop: "13px",
+                    marginTop: "10px",
                     backgroundColor: "rgb(229 231 235 )",
                     borderRadius: "10px",
                     display: "flex",
@@ -103,8 +113,14 @@ const LeftSideBarForklift = ({
                   <span
                     style={{
                       color: "white",
-                      background: "rgb(213 223 73)",
-                      width: "80%",
+                      background: (() => {
+                        const level = parseInt(fuelLevel.replace("%", ""));
+                        if (level >= 80) return "rgb(74 222 128)"; // Green
+                        if (level >= 50) return "rgb(217 222 74)"; // Yellow
+                        if (level > 20) return "rgb(255 165 0)"; // Orange
+                        return "rgb(239 68 68)"; // Red
+                      })(),
+                      width: fuelLevel,
                       height: "100%",
                       borderRadius: "10px",
                       display: "flex",
@@ -117,20 +133,28 @@ const LeftSideBarForklift = ({
                 </div>
               </div>
               <div style={{ marginTop: "8px" }}>
-                Fuel Efficiency: {fuelEfficiency}km per liter
+                <span style={{ fontWeight: 600 }}> Fuel Efficiency: </span>
+                <span>{fuelEfficiency}km per liter</span>
               </div>
-              <div style={{ marginTop: "8px" }}>Speed: {speed} m/s</div>
               <div style={{ marginTop: "8px" }}>
-                Operator Assigned: {operator}
+                <span style={{ fontWeight: 600 }}> Speed: </span>
+                <span>{speed} m/s</span>
               </div>
-              <div style={{ marginTop: "8px" }}>Load Weight: {load}Kg</div>
+              <div style={{ marginTop: "8px" }}>
+                <span style={{ fontWeight: 600 }}> Operator Assigned: </span>
+                <span>{operator}</span>
+              </div>
+              <div style={{ marginTop: "8px" }}>
+                <span style={{ fontWeight: 600 }}> Load Weight: </span>
+                <span>{load}Kg</span>
+              </div>
             </div>
           </div>
 
           {/* Downtime Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -159,7 +183,7 @@ const LeftSideBarForklift = ({
           {/* Avg Load Moved per hour Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -186,9 +210,9 @@ const LeftSideBarForklift = ({
           {/* Trips per hour Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
-              marginBottom: "36px",
+              marginBottom: "10px",
               backgroundColor: "white",
               borderRadius: "0.75rem",
               border: "1px solid #e5e7eb",

@@ -35,11 +35,11 @@ const LeftSideBarStorageRack = ({
 }) => {
   return (
     <>
-      <div className="left-sidebar">
+      <div className="left-sidebar" style={{ width: "360px" }}>
         {/* Breadcrumb */}
         <div className="left-sidebar-div">
           {/* Object Name */}
-          <span style={{ fontWeight: 900 }}>{warehouseName}</span>
+          <span style={{ fontWeight: 700 }}>{warehouseName}</span>
         </div>
         <div
           style={{
@@ -52,7 +52,7 @@ const LeftSideBarStorageRack = ({
           {/* General Info */}
           <div
             style={{
-              width: "100%",
+              width: "280px",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -62,17 +62,33 @@ const LeftSideBarStorageRack = ({
             }}
           >
             <div>
-              <span style={{ fontWeight: 600 }}>General Info</span>
-              {/* TODO {name} */}
-              <div style={{ marginTop: "20px" }}>Name: {name}</div>
-              <div style={{ marginTop: "8px" }}>ID: {ID}</div>
-              <div style={{ marginTop: "8px" }}>Type: {type}</div>
-              <div style={{ marginTop: "8px" }}>
-                Total Items Stored: {totalItemsStored}
+              <span style={{ fontWeight: 700 }}>General Info</span>
+              <div style={{ marginTop: "20px" }}>
+                <span style={{ fontWeight: 600 }}> Name: </span>
+                <span>{name}</span>
               </div>
-              <div style={{ marginTop: "8px", width: "220px" }}>
-                Order Fulfillment Rate: {orderFulfillmentRate} order per day on
-                avg.
+              <div style={{ marginTop: "8px" }}>
+                {" "}
+                <span style={{ fontWeight: 600 }}> ID: </span>
+                <span>{ID}</span>
+              </div>
+              <div style={{ marginTop: "8px" }}>
+                {" "}
+                <span style={{ fontWeight: 600 }}> Type: </span>
+                <span>{type}</span>
+              </div>
+              <div style={{ marginTop: "8px" }}>
+                {" "}
+                <span style={{ fontWeight: 600 }}> Total Items Stored: </span>
+                <span>{totalItemsStored}</span>
+              </div>
+              <div style={{ marginTop: "8px" }}>
+                {" "}
+                <span style={{ fontWeight: 600 }}>
+                  {" "}
+                  Order Fulfillment Rate:{" "}
+                </span>
+                <span>{orderFulfillmentRate} orders per day on avg.</span>
               </div>
             </div>
           </div>
@@ -80,7 +96,7 @@ const LeftSideBarStorageRack = ({
           {/* Capacity Utilization Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -104,7 +120,7 @@ const LeftSideBarStorageRack = ({
           {/* Turnover Rate Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -128,7 +144,7 @@ const LeftSideBarStorageRack = ({
           {/* Stockout Incidents Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
@@ -154,14 +170,14 @@ const LeftSideBarStorageRack = ({
           {/* Inventory Age Graph */}
           <div
             style={{
-              width: "100%",
+              width: "90%",
               height: "auto",
               backgroundColor: "white",
               borderRadius: "0.75rem",
               border: "1px solid #e5e7eb",
               padding: "1rem",
               transform: "none",
-              marginBottom: "36px",
+              marginBottom: "10px",
             }}
           >
             <div style={{ fontWeight: 700, marginBottom: "10px" }}>
@@ -173,7 +189,7 @@ const LeftSideBarStorageRack = ({
                 dataPoints={inventoryAgeTime}
                 isXAxisText={true}
                 xAxisText="Months"
-                yAxisText="avg. time items stayed in rack"
+                yAxisText="avg. time items stayed in rack (Mins)"
               />
             }
           </div>
