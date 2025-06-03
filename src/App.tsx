@@ -295,8 +295,8 @@ const App = () => {
 
       function onMouseClick(event: MouseEvent) {
         // CRITICAL: Get the map canvas element, not the container
-        const mapCanvas = mapRef.current!.getCanvas();
-        const rect = mapCanvas.getBoundingClientRect();
+        // const mapCanvas = mapRef.current!.getCanvas();
+        // const rect = mapCanvas.getBoundingClientRect();
 
         // Calculate mouse position relative to the map container, not window
         mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
