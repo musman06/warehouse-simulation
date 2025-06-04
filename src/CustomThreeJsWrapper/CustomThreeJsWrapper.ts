@@ -39,8 +39,8 @@ class CustomThreeJSWrapper {
       this.map.getCanvas().clientHeight
     );
     this.renderer.autoClear = false;
-    // this.fov = (Math.atan(3 / 4) * 180) / Math.PI;
-    this.fov = 75;
+    this.fov = (Math.atan(3 / 4) * 180) / Math.PI;
+    // this.fov = 75;
 
     const h = this.map.getCanvas().clientHeight;
     const w = this.map.getCanvas().clientWidth;

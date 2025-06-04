@@ -75,7 +75,6 @@ const App = () => {
         },
 
         render() {
-          // console.log("I am in renderer");
           if (customWrapperRef.current) {
             customWrapperRef.current!.update();
             mapRef.current!.repaint = true;
@@ -105,7 +104,7 @@ const App = () => {
       (location) => {
         setSelectedLocation(location);
       },
-      setRaycastedObject // Pass the setRaycastedObject function
+      setRaycastedObject
     );
     mapRef.current.addControl(locationControlsRef.current, "top-left");
 
@@ -175,8 +174,6 @@ const App = () => {
     // Cleanup 3D resources
     return () => {
       if (customWrapperRef.current) {
-        // Add cleanup logic for 3D resources
-        // customWrapperRef.current.dispose?.();
         customWrapperRef.current = null;
       }
     };
@@ -213,7 +210,6 @@ const App = () => {
         const worldPositionCasa = projectToWorld(casaGrandeCoords);
         const worldPositionCornwall = projectToWorld(cornwallCoords);
 
-        console.log("world Position: ", worldPositionCasa);
         warehouseGroupCasa.position.set(
           worldPositionCasa.x,
           worldPositionCasa.y,
@@ -229,24 +225,6 @@ const App = () => {
         warehouseGroupCasa.rotateY(degreesToRadians(-90));
         warehouseGroupCornwall.rotateX(degreesToRadians(90));
         warehouseGroupCornwall.rotateY(degreesToRadians(-62.5));
-
-        const camera = customWrapperRef.current!.camera!;
-        console.log("Camera position:", camera.position);
-        console.log("Camera world matrix:", camera.matrixWorld);
-        console.log(
-          "Camera world position:",
-          camera.getWorldPosition(new THREE.Vector3())
-        );
-
-        const map = mapRef.current;
-        console.log("MapLibre center:", map!.getCenter()); // Geographic coordinates
-        console.log("WarehouseCasa Group: ", warehouseGroupCasa);
-
-        // 2. Calculate distances
-        const cameraToModel = camera.position.distanceTo(
-          warehouseGroupCasa.position
-        );
-        console.log("Distance camera to model:", cameraToModel);
 
         customWrapperRef.current!.add(warehouseGroupCasa);
         customWrapperRef.current!.add(warehouseGroupCornwall);
@@ -282,97 +260,60 @@ const App = () => {
     if (isModelsLoaded) {
       // === RAYCASTER SETUP ===
       const raycaster = new THREE.Raycaster();
-      const mouse = new THREE.Vector2();
 
       const camera = customWrapperRef.current!.camera!;
 
       // Temporarily move camera to model coordinates
-      camera.position.set(317925, -99081, 10); // 500 units above model
-      // camera.lookAt(317925, -99081, 0);
+      camera.position.set(317925, -99081, 1);
 
       // Create arrow helper for visualization (initially hidden)
       let arrowHelper: any = null;
 
       function onMouseClick(event: MouseEvent) {
-        // CRITICAL: Get the map canvas element, not the container
-        // const mapCanvas = mapRef.current!.getCanvas();
-        // const rect = mapCanvas.getBoundingClientRect();
-
-        // Calculate mouse position relative to the map container, not window
-        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-        // console.log("Mouse Positions: ", mouse.x, mouse.y);
+        // Normalize mouse coordinates
+        const mouse = new THREE.Vector2(
+          (event.clientX / window.innerWidth) * 2 - 1,
+          -(event.clientY / window.innerHeight) * 2 + 1
+        );
 
         // CRITICAL: Update camera matrices before raycasting
         const camera = customWrapperRef.current!.camera!;
         camera.updateMatrixWorld();
         camera.updateProjectionMatrix();
 
-        warehouseGroupCasa.scale.set(0.165, 0.2, 0.21);
-
         // Set raycaster from camera
         raycaster.setFromCamera(mouse, camera);
 
         // Remove previous arrow helper if it exists
-        // if (arrowHelper) {
-        //   customWrapperRef.current!.scene.remove(arrowHelper);
-        //   arrowHelper.dispose?.(); // Clean up geometry and material
-        //   arrowHelper = null;
-        // }
+        if (arrowHelper) {
+          customWrapperRef.current!.scene.remove(arrowHelper);
+          arrowHelper.dispose?.(); // Clean up geometry and material
+          arrowHelper = null;
+        }
 
         // Create arrow helper to visualize the ray
         const rayOrigin = raycaster.ray.origin.clone();
         const rayOffset = new THREE.Vector3(
           317925.26791136555,
           -99081.83693118006,
-          -1200
+          10
         );
         const correctedRayOrigin = rayOrigin.clone().add(rayOffset);
         const rayDirection = raycaster.ray.direction.clone();
-        // console.log("RayOrigin: ", correctedRayOrigin);
-        // console.log(
-        //   "Camera position:",
-        //   customWrapperRef.current?.camera!.position
-        // );
-        // console.log("Arrow origin:", rayOrigin);
 
         // Calculate appropriate length based on scene bounds
         const arrowLength = 10000; // Increased length for better visibility
-
-        // console.log("Ray Origin:", rayOrigin);
-        // console.log("Ray Direction:", rayDirection);
-        // console.log("Camera Position:", camera.position);
-        // console.log("Camera Matrix World:", camera.matrixWorld);
 
         arrowHelper = new THREE.ArrowHelper(
           rayDirection,
           correctedRayOrigin,
           arrowLength,
           0xff0000, // Red color
-          arrowLength * 0.1, // Head length (10% of total length)
-          arrowLength * 0.05 // Head width (5% of total length)
+          arrowLength * 0.1,
+          arrowLength * 0.05
         );
-
-        // console.log("Arrow Helper: ", arrowHelper);
         // Add to scene
         customWrapperRef.current!.scene.add(arrowHelper);
-
-        // IMPROVED: Get all meshes for intersection testing
-        const meshesToTest: THREE.Object3D[] = [];
-
-        // Recursively collect all meshes from the scene
-        customWrapperRef.current!.scene.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            meshesToTest.push(child);
-          }
-        });
-
-        // console.log("Meshes to test:", meshesToTest.length);
-        // console.log(
-        //   "Scene children:",
-        //   customWrapperRef.current!.scene.children.length
-        // );
 
         // Test intersections with all meshes
         const intersects = raycaster.intersectObjects(
@@ -380,50 +321,10 @@ const App = () => {
           true
         );
 
-        // console.log("All Intersects: ", intersects);
-
         if (intersects.length > 0) {
           const intersection = intersects[0];
-          const selectedModel = intersection.object;
           const raycastedObjectName = intersection.object.userData.modelName;
           setRaycastedObject(raycastedObjectName);
-          console.log("Intersection[0]: ", intersection);
-
-          // console.log(
-          //   "You clicked on:",
-          //   selectedModel.name || "Unnamed object"
-          // );
-          console.log("Object type:", selectedModel.type);
-          // console.log("Object userData:", selectedModel.userData);
-          // console.log("Intersection point:", intersection.point);
-          // console.log("Distance:", intersection.distance);
-
-          // Optional: Add a marker at intersection point
-          const markerGeometry = new THREE.SphereGeometry(50, 8, 8);
-          const markerMaterial = new THREE.MeshBasicMaterial({
-            color: 0x00ff00,
-          });
-          const marker = new THREE.Mesh(markerGeometry, markerMaterial);
-          marker.position.copy(intersection.point);
-          customWrapperRef.current!.scene.add(marker);
-
-          // Remove marker after 3 seconds
-          setTimeout(() => {
-            customWrapperRef.current?.scene.remove(marker);
-            markerGeometry.dispose();
-            markerMaterial.dispose();
-          }, 3000);
-        } else {
-          // console.log("No intersections found");
-          // Debug: Log camera and raycaster info
-          // console.log("Camera position:", camera.position);
-          // console.log("Camera rotation:", camera.rotation);
-          // console.log("Raycaster origin:", raycaster.ray.origin);
-          // console.log("Raycaster direction:", raycaster.ray.direction);
-          // // Debug: Check if models are in expected positions
-          // console.log("Warehouse Casa position:", warehouseGroupCasa.position);
-          // console.log("Warehouse Casa scale:", warehouseGroupCasa.scale);
-          // console.log("Warehouse Casa rotation:", warehouseGroupCasa.rotation);
         }
         // Force a render update
         customWrapperRef.current!.update();
