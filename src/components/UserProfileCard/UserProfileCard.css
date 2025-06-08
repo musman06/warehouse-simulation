@@ -1,0 +1,93 @@
+.user-profile-card {
+  position: absolute;
+  top: 4rem;
+  right: 1rem;
+  width: 260px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  z-index: 999;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+/* Fade animation */
+.fade-in {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.fade-out {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.user-profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.user-profile-heading {
+  font-size: 18px;
+  color: #333;
+  margin: 0;
+}
+
+.user-profile-heading::selection {
+  background-color: #eb841b;
+}
+
+.close-icon {
+  color: #666;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.close-icon:hover {
+  color: #da5817;
+}
+
+.user-profile-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  background-color: #eb841b;
+  border-radius: 50%;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar::selection {
+  background-color: black;
+  color: white;
+}
+
+.user-info .user-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.user-email {
+  font-size: 14px;
+  color: #666;
+}
+
+.user-info::selection {
+  background-color: #eb841b;
+}

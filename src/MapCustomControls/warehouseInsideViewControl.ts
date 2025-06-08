@@ -19,6 +19,7 @@ function warehouseControls(
   warehouseInsideViewContainer.className =
     "maplibregl-ctrl maplibregl-ctrl-group";
   warehouseInsideViewContainer.style.margin = "10px";
+  warehouseInsideViewContainer.style.marginTop = "90px";
 
   // Warehouse view button element
   const warehouseInsideViewButton = document.createElement("button");
@@ -26,17 +27,33 @@ function warehouseControls(
   warehouseInsideViewButton.className = "maplibregl-ctrl-icon";
   warehouseInsideViewButton.setAttribute("aria-label", "Move inside Warehouse");
   warehouseInsideViewButton.style.display = "flex";
+  warehouseInsideViewButton.style.flexDirection = "column";
   warehouseInsideViewButton.style.alignItems = "center";
   warehouseInsideViewButton.style.justifyContent = "center";
-  warehouseInsideViewButton.style.width = "30px";
-  warehouseInsideViewButton.style.height = "30px";
+  warehouseInsideViewButton.style.width = "50px";
+  warehouseInsideViewButton.style.height = "50px";
   warehouseInsideViewButton.style.opacity = "0.5"; // Initially faded
   warehouseInsideViewButton.style.cursor = "not-allowed"; // Initially not accessible
 
   // Warehouse view button icon
   const warehouseInsideViewButtonIcon = document.createElement("span");
   warehouseInsideViewButtonIcon.textContent = "🎦";
+  warehouseInsideViewButtonIcon.style.fontSize = "20px";
   warehouseInsideViewButton.appendChild(warehouseInsideViewButtonIcon);
+
+  // Warehouse view button text
+  const warehouseInsideViewButtonText1 = document.createElement("span");
+  warehouseInsideViewButtonText1.textContent = "Enter";
+  warehouseInsideViewButtonText1.style.fontSize = "8px";
+  warehouseInsideViewButtonText1.style.fontWeight = "700";
+  warehouseInsideViewButtonText1.style.marginTop = "3px";
+  warehouseInsideViewButton.appendChild(warehouseInsideViewButtonText1);
+
+  const warehouseInsideViewButtonText2 = document.createElement("span");
+  warehouseInsideViewButtonText2.textContent = "Warehouse";
+  warehouseInsideViewButtonText2.style.fontSize = "8px";
+  warehouseInsideViewButtonText2.style.fontWeight = "700";
+  warehouseInsideViewButton.appendChild(warehouseInsideViewButtonText2);
 
   // Define Casa Grande warehouse settings
   const warehouseCenterLngCasa = -111.77060200008945;

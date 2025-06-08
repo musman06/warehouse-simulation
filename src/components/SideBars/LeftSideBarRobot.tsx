@@ -1,42 +1,45 @@
 import "./leftSideBarStyle.css";
-import ColumnChart from "./Charts/ColumnChart";
+import DonutChart from "../Charts/DonutChart";
+import ColumnChart from "../Charts/ColumnChart";
 
-const LeftSideBarForklift = ({
-  warehouseName,
+const LeftSideBarRobot = ({
+  breadcrumbValue,
   name,
   ID,
   type,
   status,
-  fuelLevel,
-  load,
+  batteryLevel,
   speed,
-  operator,
-  loadHours,
-  loadMovedPerHour,
-  tripHours,
-  totalTrips,
+  tct,
+  batteryEfficiency,
+  collisions,
+  nearMisses,
   isDowntime,
   downtimeReason,
   downtimeDuaration,
-  fuelEfficiency,
+  working,
+  idle,
+  maintenanceDates,
+  maintenanceDurations,
 }: {
-  warehouseName: string;
+  breadcrumbValue: string;
   name: string;
   ID: string;
   type: string;
   status: string;
-  fuelLevel: string;
-  load: number;
+  batteryLevel: string;
   speed: number;
-  operator: string;
-  loadHours: string[];
-  loadMovedPerHour: number[];
-  tripHours: string[];
-  totalTrips: number[];
+  tct: number;
+  batteryEfficiency: number;
+  collisions: number;
+  nearMisses: number;
   isDowntime: boolean;
   downtimeReason: string;
   downtimeDuaration: number;
-  fuelEfficiency: number;
+  working: number;
+  idle: number;
+  maintenanceDates: string[];
+  maintenanceDurations: number[];
 }) => {
   return (
     <>
@@ -44,7 +47,7 @@ const LeftSideBarForklift = ({
         {/* Breadcrumb */}
         <div className="left-sidebar-div">
           {/* Object Name */}
-          <span style={{ fontWeight: 700 }}>{warehouseName}</span>
+          <span style={{ fontWeight: 700 }}>{breadcrumbValue}</span>
         </div>
         <div
           style={{
@@ -97,7 +100,7 @@ const LeftSideBarForklift = ({
                 </span>
               </div>
               <div style={{ marginTop: "10px" }}>
-                <span style={{ fontWeight: 600 }}>Fuel Level:</span>
+                <span style={{ fontWeight: 600 }}>Battery Level:</span>
                 <div
                   style={{
                     width: "100%",
@@ -114,13 +117,13 @@ const LeftSideBarForklift = ({
                     style={{
                       color: "white",
                       background: (() => {
-                        const level = parseInt(fuelLevel.replace("%", ""));
+                        const level = parseInt(batteryLevel.replace("%", ""));
                         if (level >= 80) return "rgb(74 222 128)"; // Green
                         if (level >= 50) return "rgb(217 222 74)"; // Yellow
                         if (level > 20) return "rgb(255 165 0)"; // Orange
                         return "rgb(239 68 68)"; // Red
                       })(),
-                      width: fuelLevel,
+                      width: batteryLevel,
                       height: "100%",
                       borderRadius: "10px",
                       display: "flex",
@@ -128,27 +131,47 @@ const LeftSideBarForklift = ({
                       alignItems: "center",
                     }}
                   >
-                    {fuelLevel}
+                    {batteryLevel}
                   </span>
                 </div>
-              </div>
-              <div style={{ marginTop: "8px" }}>
-                <span style={{ fontWeight: 600 }}> Fuel Efficiency: </span>
-                <span>{fuelEfficiency}km per liter</span>
               </div>
               <div style={{ marginTop: "8px" }}>
                 <span style={{ fontWeight: 600 }}> Speed: </span>
                 <span>{speed} m/s</span>
               </div>
               <div style={{ marginTop: "8px" }}>
-                <span style={{ fontWeight: 600 }}> Operator Assigned: </span>
-                <span>{operator}</span>
+                <span style={{ fontWeight: 600 }}> Task Completion Time: </span>
+                <span>{tct} minutes per task</span>
               </div>
               <div style={{ marginTop: "8px" }}>
-                <span style={{ fontWeight: 600 }}> Load Weight: </span>
-                <span>{load}Kg</span>
+                <span style={{ fontWeight: 600 }}> Battery Efficiency: </span>
+                <span>{batteryEfficiency} tasks per charge</span>
               </div>
             </div>
+          </div>
+
+          {/* Collisions Graph */}
+          <div
+            style={{
+              width: "90%",
+              height: "auto",
+              backgroundColor: "white",
+              borderRadius: "0.75rem",
+              border: "1px solid #e5e7eb",
+              padding: "1rem",
+              transform: "none",
+            }}
+          >
+            <div style={{ fontWeight: 700, marginBottom: "10px" }}>
+              Collisions / Near Misses
+            </div>
+            {
+              <DonutChart
+                labels={["Collisions", "Near Misses"]}
+                labelsValues={[collisions, nearMisses]}
+                isPercent={false}
+              />
+            }
           </div>
 
           {/* Downtime Graph */}
@@ -180,7 +203,7 @@ const LeftSideBarForklift = ({
             )}
           </div>
 
-          {/* Avg Load Moved per hour Graph */}
+          {/* Utilization Rate Graph */}
           <div
             style={{
               width: "90%",
@@ -193,21 +216,18 @@ const LeftSideBarForklift = ({
             }}
           >
             <div style={{ fontWeight: 700, marginBottom: "10px" }}>
-              Avg. Load Moved Per Hour
+              Utilization Rate (%)
             </div>
             {
-              <ColumnChart
-                reason={loadHours}
-                duration={loadMovedPerHour}
-                yAxisText="Duration (h)"
-                isXAxisText={true}
-                xAxisText="Time in hour"
-                isAverage={true}
+              <DonutChart
+                labels={["Idle", "Working"]}
+                labelsValues={[idle, working]}
+                isPercent={true}
               />
             }
           </div>
 
-          {/* Trips per hour Graph */}
+          {/* Maintenance Graph */}
           <div
             style={{
               width: "90%",
@@ -221,15 +241,15 @@ const LeftSideBarForklift = ({
             }}
           >
             <div style={{ fontWeight: 700, marginBottom: "10px" }}>
-              Trips per hour
+              Maintenance Intervals
             </div>
             {
               <ColumnChart
-                reason={tripHours}
-                duration={totalTrips}
+                reason={maintenanceDates}
+                duration={maintenanceDurations}
                 yAxisText="Duration (h)"
                 isXAxisText={true}
-                xAxisText="Time in hour"
+                xAxisText="Date"
                 isAverage={false}
               />
             }
@@ -240,4 +260,4 @@ const LeftSideBarForklift = ({
   );
 };
 
-export default LeftSideBarForklift;
+export default LeftSideBarRobot;

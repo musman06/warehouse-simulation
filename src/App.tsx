@@ -23,23 +23,26 @@ import {
 } from "./ModelLoading/Cornwall/gltfLoader";
 import CustomThreeJSWrapper from "./CustomThreeJsWrapper/CustomThreeJsWrapper";
 import { projectToWorld } from "./CustomThreeJsWrapper/utility/utility";
-import LeftSideBarSystem from "./components/LeftSideBarSystem";
-import LeftSideBarWarehouse from "./components/LeftSideBarWarehouse";
-import LeftSideBarRobot from "./components/LeftSideBarRobot";
-import LeftSideBarForklift from "./components/LeftSideBarForklift";
-import LeftSideBarStorageRack from "./components/LeftSideBarStorageRack";
+import LeftSideBarSystem from "./components/SideBars/LeftSideBarSystem";
+import LeftSideBarWarehouse from "./components/SideBars/LeftSideBarWarehouse";
+import LeftSideBarRobot from "./components/SideBars/LeftSideBarRobot";
+import LeftSideBarForklift from "./components/SideBars/LeftSideBarForklift";
+import LeftSideBarStorageRack from "./components/SideBars/LeftSideBarStorageRack";
 import NavBar from "./components/NavBar/NavBar";
 import { degreesToRadians } from "./utils";
 import locationPins from "./components/LocationPins/locationPins";
+import AlertsPanel from "./components/AlertsPanel/AlertsPanel";
 
 const App = () => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const customWrapperRef = useRef<CustomThreeJSWrapper | null>(null);
   const locationControlsRef = useRef<any | null>(null);
+  const topRightControlsRef = useRef<any | null>(null);
   const locationPinsRef = useRef<any>(null);
   const [raycastedObject, setRaycastedObject] = useState<string>("");
   const [selectedLocation, setSelectedLocation] = useState<string>("");
+  const [isLocationSelected, setIsLocationSelected] = useState<boolean>(false);
   const [isModelsLoaded, setIsModelsLoaded] = useState<boolean>(false);
   const [isMapLoaded, setIsMapLoaded] = useState<boolean>(false);
 
@@ -104,7 +107,8 @@ const App = () => {
       (location) => {
         setSelectedLocation(location);
       },
-      setRaycastedObject
+      setRaycastedObject,
+      setIsLocationSelected
     );
     mapRef.current.addControl(locationControlsRef.current, "top-left");
 
@@ -113,7 +117,7 @@ const App = () => {
     const topLeftControls = mapContainer.querySelector(
       ".maplibregl-ctrl-top-left"
     );
-    const topRightControls = mapContainer.querySelector(
+    topRightControlsRef.current = mapContainer.querySelector(
       ".maplibregl-ctrl-top-right"
     );
     const bottomLeftControls = mapContainer.querySelector(
@@ -125,8 +129,8 @@ const App = () => {
       (topLeftControls as HTMLElement).style.top = "1.75vh";
       (topLeftControls as HTMLElement).style.zIndex = "10000000000000";
     }
-    if (topRightControls) {
-      (topRightControls as HTMLElement).style.top = "10.5vh";
+    if (topRightControlsRef.current) {
+      (topRightControlsRef.current as HTMLElement).style.top = "10.5vh";
     }
     if (bottomLeftControls) {
       (bottomLeftControls as HTMLElement).style.left = "360px";
@@ -168,6 +172,10 @@ const App = () => {
     customWrapperRef.current = new CustomThreeJSWrapper(mapRef.current);
     customWrapperRef.current.setEnvironment();
 
+    mapRef.current.on("resize", () => {
+      customWrapperRef.current!.resize();
+    });
+
     // Setup 3D scene
     setup3DScene();
 
@@ -178,6 +186,37 @@ const App = () => {
       }
     };
   }, [isMapLoaded]);
+
+  // Adding warehouse inside view button and adjusting top-right controls position when location selected
+  useEffect(() => {
+    // Add the warehouse control to the map, passing the locationControl reference
+    isLocationSelected &&
+      mapRef.current!.addControl(
+        warehouseControls(
+          mapRef.current!,
+          locationControlsRef.current,
+          warehouseModelCasa!,
+          warehouseModelCornwall!,
+          (flag: boolean) => {
+            // Handle inside view toggle
+            if (locationPinsRef.current) {
+              if (flag) {
+                locationPinsRef.current.hideMarkers();
+              } else {
+                locationPinsRef.current.showMarkers();
+              }
+            }
+          }
+        ),
+        "top-left"
+      );
+
+    if (isLocationSelected) {
+      if (topRightControlsRef.current) {
+        (topRightControlsRef.current as HTMLElement).style.right = "284px";
+      }
+    }
+  }, [isLocationSelected]);
 
   // Helper function to setup 3D scene
   const setup3DScene = () => {
@@ -228,27 +267,6 @@ const App = () => {
 
         customWrapperRef.current!.add(warehouseGroupCasa);
         customWrapperRef.current!.add(warehouseGroupCornwall);
-
-        // Add the warehouse control to the map, passing the locationControl reference
-        mapRef.current!.addControl(
-          warehouseControls(
-            mapRef.current!,
-            locationControlsRef.current,
-            warehouseModelCasa!,
-            warehouseModelCornwall!,
-            (flag: boolean) => {
-              // Handle inside view toggle
-              if (locationPinsRef.current) {
-                if (flag) {
-                  locationPinsRef.current.hideMarkers();
-                } else {
-                  locationPinsRef.current.showMarkers();
-                }
-              }
-            }
-          ),
-          "top-right"
-        );
 
         setIsModelsLoaded(true);
         clearInterval(waitForModels);
@@ -390,6 +408,9 @@ const App = () => {
         />
       )}
 
+      {/* Alerts Panel */}
+      {selectedLocation && <AlertsPanel />}
+
       {/* Warehouse SideBar */}
       {selectedLocation &&
         (raycastedObject === "" ||
@@ -397,9 +418,7 @@ const App = () => {
           raycastedObject === "Warehouse Model Cornwall") && (
           <LeftSideBarWarehouse
             warehouseName={
-              selectedLocation.includes("Casa")
-                ? "Warehouse Casa Grande"
-                : "Warehouse Cornwall"
+              selectedLocation.includes("Casa") ? "Casa Grande" : "Cornwall"
             }
             name={
               selectedLocation.includes("Casa")
@@ -459,10 +478,10 @@ const App = () => {
       {/* Robot SideBar */}
       {raycastedObject.includes("Robot Model") && (
         <LeftSideBarRobot
-          warehouseName={
+          breadcrumbValue={
             selectedLocation.includes("Casa")
-              ? "Warehouse Casa Grande"
-              : "Warehouse Cornwall"
+              ? `Casa Grande -> RM-${raycastedObject.slice(-1)}`
+              : `Cornwall -> RM-${raycastedObject.slice(-1)}`
           }
           name={raycastedObject}
           ID={`RM-${raycastedObject.slice(-1)}`}
@@ -565,10 +584,10 @@ const App = () => {
       {/* Forklift SideBar */}
       {raycastedObject.includes("Fork Lift Model") && (
         <LeftSideBarForklift
-          warehouseName={
+          breadcrumbValue={
             selectedLocation.includes("Casa")
-              ? "Warehouse Casa Grande"
-              : "Warehouse Cornwall"
+              ? `Casa Grande -> FM-${raycastedObject.slice(-1)}`
+              : `Cornwall -> FM-${raycastedObject.slice(-1)}`
           }
           name={raycastedObject}
           ID={`FM-${raycastedObject.slice(-1)}`}
@@ -594,10 +613,10 @@ const App = () => {
       {/* Storage Rack SideBar */}
       {raycastedObject.includes("Storage Rack") && (
         <LeftSideBarStorageRack
-          warehouseName={
+          breadcrumbValue={
             selectedLocation.includes("Casa")
-              ? "Warehouse Casa Grande"
-              : "Warehouse Cornwall"
+              ? `Casa Grande -> SR-${raycastedObject.slice(-1)}`
+              : `Cornwall -> SR-${raycastedObject.slice(-1)}`
           }
           name={raycastedObject}
           ID={`SR-${raycastedObject.slice(-1)}`}

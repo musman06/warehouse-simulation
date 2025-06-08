@@ -5,6 +5,16 @@ function addCasaGrandeLocation(
 ) {
   const casaGrandeItem = document.createElement("div");
   casaGrandeItem.textContent = "Casa Grande";
+  casaGrandeItem.classList.add("location-icon-selection");
+
+  const styleTag = document.createElement("style");
+  styleTag.textContent = `
+    .location-selection::selection {
+  background-color: #eb841b;
+    }
+  `;
+  document.head.appendChild(styleTag);
+
   casaGrandeItem.style.setProperty(
     "font-family",
     "'Exo 2', sans-serif",
@@ -12,7 +22,7 @@ function addCasaGrandeLocation(
   );
   casaGrandeItem.style.padding = "10px";
   casaGrandeItem.style.cursor = "pointer";
-  casaGrandeItem.style.borderBottom = "1px solid #eb841b";
+  casaGrandeItem.style.borderBottom = "1px solid #da5817";
   casaGrandeItem.addEventListener("mouseenter", () => {
     casaGrandeItem.style.backgroundColor = "#f0f0f0";
   });

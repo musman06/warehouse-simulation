@@ -18,6 +18,10 @@
   overflow-y: auto; /* custom-scrollbar if implemented */
 }
 
+.left-sidebar::selection {
+  background-color: #eb841b;
+}
+
 .left-sidebar::-webkit-scrollbar {
   width: 12px; /* Width of the scrollbar */
 }
