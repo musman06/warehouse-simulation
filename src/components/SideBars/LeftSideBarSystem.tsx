@@ -1,46 +1,61 @@
 import "./leftSideBarStyle.css";
-import ColumnChart from "./Charts/ColumnChart";
-import LineChart from "./Charts/LineChart";
-import DonutChart from "./Charts/DonutChart";
+import ColumnChart from "../Charts/ColumnChart";
+import LineChart from "../Charts/LineChart";
+import DonutChart from "../Charts/DonutChart";
+import StackedColumnChart from "../Charts/StackedColumnChart";
 
-const LeftSideBarWarehouse = ({
-  warehouseName,
+const LeftSideBarSystem = ({
+  systemName,
   name,
   ID,
   type,
-  avgOrderFulfillmentTime,
+  topPerformingWH,
+  leastPerformingWH,
+  trainingHoursPerEmployee,
+  totalEnergyConsumption,
+  totalCarbonEmission,
   totalRobots,
   totalForklifts,
   totalEmployees,
-  powerConsumptionMonths,
-  powerConsumptionAmount,
-  occupiedSpcae,
-  freeSpace,
   throughputMonths,
   throughputRate,
-  safetyIncidentsMonths,
-  safetyIncidentsRate,
-  systemDowntimeMonths,
-  systemDowntimeDuration,
+  cornwallVolumePercentage,
+  casaGrandeVolumePercentage,
+  avgOrderCycleMonths,
+  avgOrderCycleValue,
+  backOrderRateMonths,
+  backOrderRatePercent,
+  globalInventoryAccuracyMonths,
+  globalInventoryAccuracyPercent,
+  costPerOrderMonths,
+  costPerOrderCasaGrande,
+  costPerOrderCornwall,
 }: {
-  warehouseName: string;
+  systemName: string;
   name: string;
   ID: string;
   type: string;
-  avgOrderFulfillmentTime: number;
+  topPerformingWH: string;
+  leastPerformingWH: string;
+  trainingHoursPerEmployee: number;
+  totalEnergyConsumption: number;
+  totalCarbonEmission: number;
   totalRobots: number;
   totalForklifts: number;
   totalEmployees: number;
-  powerConsumptionMonths: string[];
-  powerConsumptionAmount: number[];
-  occupiedSpcae: number;
-  freeSpace: number;
+  cornwallVolumePercentage: number;
+  casaGrandeVolumePercentage: number;
   throughputMonths: string[];
   throughputRate: number[];
-  safetyIncidentsMonths: string[];
-  safetyIncidentsRate: number[];
-  systemDowntimeMonths: string[];
-  systemDowntimeDuration: number[];
+  avgOrderCycleMonths: string[];
+  avgOrderCycleValue: number[];
+  backOrderRateMonths: string[];
+  backOrderRatePercent: number[];
+  globalInventoryAccuracyMonths: string[];
+  globalInventoryAccuracyPercent: number[];
+  costPerOrderMonths: string[];
+  costPerOrderCasaGrande: number[];
+  costPerOrderCornwall: number[];
 }) => {
   return (
     <>
@@ -48,7 +63,7 @@ const LeftSideBarWarehouse = ({
         {/* Breadcrumb */}
         <div className="left-sidebar-div">
           {/* Object Name */}
-          <span style={{ fontWeight: 700 }}>{warehouseName}</span>
+          <span style={{ fontWeight: 700 }}>{systemName}</span>
         </div>
         <div
           style={{
@@ -86,13 +101,36 @@ const LeftSideBarWarehouse = ({
                 <span style={{ fontWeight: 600 }}> Type: </span>
                 <span>{type}</span>
               </div>
+
               <div style={{ marginTop: "8px" }}>
-                {" "}
+                <span style={{ fontWeight: 600 }}>
+                  Top Performing Warehouse:{" "}
+                </span>
+                <span>{topPerformingWH}</span>
+              </div>
+              <div style={{ marginTop: "8px" }}>
                 <span style={{ fontWeight: 600 }}>
                   {" "}
-                  Order Fulfillment Time:{" "}
+                  Least Performing Warehouse:{" "}
                 </span>
-                <span>{avgOrderFulfillmentTime} minutes</span>
+                <span>{leastPerformingWH}</span>
+              </div>
+              <div style={{ marginTop: "8px" }}>
+                <span style={{ fontWeight: 600 }}>
+                  {" "}
+                  Training Hours Per Employee:{" "}
+                </span>
+                <span>{trainingHoursPerEmployee} hrs</span>
+              </div>
+              <div style={{ marginTop: "8px" }}>
+                <span style={{ fontWeight: 600 }}>
+                  Total Energy Consumption:{" "}
+                </span>
+                <span>{totalEnergyConsumption} MWh per day</span>
+              </div>
+              <div style={{ marginTop: "8px" }}>
+                <span style={{ fontWeight: 600 }}>Total Carbon Emission: </span>
+                <span>{totalCarbonEmission} tCO₂e per month</span>
               </div>
             </div>
           </div>
@@ -121,7 +159,7 @@ const LeftSideBarWarehouse = ({
             }
           </div>
 
-          {/* Power Consumption Graph */}
+          {/* Average Order Cycle Time Graph */}
           <div
             style={{
               width: "90%",
@@ -134,39 +172,15 @@ const LeftSideBarWarehouse = ({
             }}
           >
             <div style={{ fontWeight: 700, marginBottom: "10px" }}>
-              Power Consumption
+              Average Order Cycle Time
             </div>
             {
               <LineChart
-                labels={powerConsumptionMonths}
-                dataPoints={powerConsumptionAmount}
+                labels={avgOrderCycleMonths}
+                dataPoints={avgOrderCycleValue}
                 isXAxisText={true}
                 xAxisText="Months"
-                yAxisText="Power (kWh)"
-              />
-            }
-          </div>
-
-          {/* Occupied/Free Space Graph */}
-          <div
-            style={{
-              width: "90%",
-              height: "auto",
-              backgroundColor: "white",
-              borderRadius: "0.75rem",
-              border: "1px solid #e5e7eb",
-              padding: "1rem",
-              transform: "none",
-            }}
-          >
-            <div style={{ fontWeight: 700, marginBottom: "10px" }}>
-              Occupied/Free Space
-            </div>
-            {
-              <DonutChart
-                labels={["Occupied", "Free"]}
-                labelsValues={[occupiedSpcae, freeSpace]}
-                isPercent={false}
+                yAxisText="Throughput"
               />
             }
           </div>
@@ -191,13 +205,13 @@ const LeftSideBarWarehouse = ({
                 labels={throughputMonths}
                 dataPoints={throughputRate}
                 isXAxisText={true}
-                xAxisText="Time in hours"
+                xAxisText="Days"
                 yAxisText="Throughput"
               />
             }
           </div>
 
-          {/* Safety Incidents Graph */}
+          {/* Global Inventory Accuracy % Graph */}
           <div
             style={{
               width: "90%",
@@ -210,13 +224,13 @@ const LeftSideBarWarehouse = ({
             }}
           >
             <div style={{ fontWeight: 700, marginBottom: "10px" }}>
-              Safety Incidents
+              Global Inventory Accuracy %
             </div>
             {
               <ColumnChart
-                reason={safetyIncidentsMonths}
-                duration={safetyIncidentsRate}
-                yAxisText="Incidents"
+                reason={globalInventoryAccuracyMonths}
+                duration={globalInventoryAccuracyPercent}
+                yAxisText="Accuracy (%)"
                 isXAxisText={true}
                 xAxisText="Month"
                 isAverage={false}
@@ -224,7 +238,62 @@ const LeftSideBarWarehouse = ({
             }
           </div>
 
-          {/* System Downtime Graph */}
+          {/* Backorder Rate % Graph */}
+          <div
+            style={{
+              width: "90%",
+              height: "auto",
+              backgroundColor: "white",
+              borderRadius: "0.75rem",
+              border: "1px solid #e5e7eb",
+              padding: "1rem",
+              transform: "none",
+            }}
+          >
+            <div style={{ fontWeight: 700, marginBottom: "10px" }}>
+              Backorder Rate %
+            </div>
+            {
+              <ColumnChart
+                reason={backOrderRateMonths}
+                duration={backOrderRatePercent}
+                yAxisText="Backorder (%)"
+                isXAxisText={true}
+                xAxisText="Months"
+                isAverage={false}
+              />
+            }
+          </div>
+
+          {/* Cost Per Order Graph */}
+          <div
+            style={{
+              width: "90%",
+              height: "auto",
+              backgroundColor: "white",
+              borderRadius: "0.75rem",
+              border: "1px solid #e5e7eb",
+              padding: "1rem",
+              transform: "none",
+            }}
+          >
+            <div style={{ fontWeight: 700, marginBottom: "10px" }}>
+              Cost Per Order
+            </div>
+            {
+              <StackedColumnChart
+                timePeriod={costPerOrderMonths}
+                value1={costPerOrderCasaGrande}
+                value2={costPerOrderCornwall}
+                yAxisText="Cost ($)"
+                isXAxisText={true}
+                xAxisText="Months"
+                isAverage={true}
+              />
+            }
+          </div>
+
+          {/* Orders Volume Distribution Graph */}
           <div
             style={{
               width: "90%",
@@ -238,16 +307,16 @@ const LeftSideBarWarehouse = ({
             }}
           >
             <div style={{ fontWeight: 700, marginBottom: "10px" }}>
-              System Downtime
+              Orders Volume Distribution
             </div>
             {
-              <ColumnChart
-                reason={systemDowntimeMonths}
-                duration={systemDowntimeDuration}
-                yAxisText="Duration (h)"
-                isXAxisText={false}
-                xAxisText=""
-                isAverage={false}
+              <DonutChart
+                labels={["Forklifts", "AMVs", "Employees"]}
+                labelsValues={[
+                  cornwallVolumePercentage,
+                  casaGrandeVolumePercentage,
+                ]}
+                isPercent={false}
               />
             }
           </div>
@@ -257,4 +326,4 @@ const LeftSideBarWarehouse = ({
   );
 };
 
-export default LeftSideBarWarehouse;
+export default LeftSideBarSystem;

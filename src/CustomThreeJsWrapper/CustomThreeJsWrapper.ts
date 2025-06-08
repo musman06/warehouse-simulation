@@ -152,6 +152,19 @@ class CustomThreeJSWrapper {
     object = null;
   }
 
+  resize() {
+    if (!this.camera || !this.renderer || !this.map) return;
+
+    const canvas = this.map.getCanvas();
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
+
+    this.renderer.setSize(width, height);
+  }
+
   update() {
     if (this.map.repaint) this.map.repaint = false;
     // console.log("I am here");

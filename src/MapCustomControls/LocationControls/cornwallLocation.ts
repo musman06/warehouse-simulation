@@ -5,6 +5,16 @@ function addCornwallLocation(
 ) {
   const cornwallItem = document.createElement("div");
   cornwallItem.textContent = "Cornwall";
+  cornwallItem.classList.add("location-icon-selection");
+
+  const styleTag = document.createElement("style");
+  styleTag.textContent = `
+    .location-selection::selection {
+  background-color: #eb841b;
+    }
+  `;
+
+  document.head.appendChild(styleTag);
   cornwallItem.style.setProperty(
     "font-family",
     "'Exo 2', sans-serif",
@@ -12,7 +22,6 @@ function addCornwallLocation(
   );
   cornwallItem.style.padding = "10px";
   cornwallItem.style.cursor = "pointer";
-  // cornwallItem.style.borderBottom = "1px solid #eb841b";
   cornwallItem.addEventListener("mouseenter", () => {
     cornwallItem.style.backgroundColor = "#f0f0f0";
   });

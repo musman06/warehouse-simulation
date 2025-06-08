@@ -11,7 +11,8 @@ interface LocationControl extends maplibregl.IControl {
 function locationsControls(
   map: maplibregl.Map,
   onLocationChange: (location: string) => void,
-  setRaycastedObject: (value: string) => void
+  setRaycastedObject: (value: string) => void,
+  setIsLocationSelected: (value: boolean) => void
 ): LocationControl {
   // Create locationSelected variable - initially empty string
   let locationSelected: string = "";
@@ -23,7 +24,7 @@ function locationsControls(
   currentPositionContainer.style.width = "auto"; // Auto width to fit content
   currentPositionContainer.style.minWidth = "80px"; // Minimum width
   currentPositionContainer.style.position = "relative"; // For dropdown positioning
-  currentPositionContainer.style.border = "2px solid #eb841b";
+  currentPositionContainer.style.border = "2px solid #da5817";
   currentPositionContainer.style.borderRadius = "5px";
   currentPositionContainer.style.boxShadow = "0 0 0 0 ";
 
@@ -43,21 +44,41 @@ function locationsControls(
   // Text element
   const currentPositionButtonText = document.createElement("span");
   currentPositionButtonText.textContent = "Locations";
+  currentPositionButtonText.classList.add("location-selection");
+
   currentPositionButtonText.style.setProperty(
     "font-family",
     "'Exo 2', sans-serif",
     "important"
   );
 
+  const styleTag = document.createElement("style");
+  styleTag.textContent = `
+    .location-selection::selection {
+  background-color: #eb841b;
+    }
+  `;
+  document.head.appendChild(styleTag);
+
   // Icon element
   const currentPositionButtonIcon = document.createElement("span");
   currentPositionButtonIcon.textContent = "📍";
   currentPositionButtonIcon.style.fontSize = "16px";
+  currentPositionButtonIcon.classList.add("location-icon-selection");
+
   currentPositionButtonIcon.style.setProperty(
     "font-family",
     "'Exo 2', sans-serif",
     "important"
   );
+
+  const styleTag2 = document.createElement("style");
+  styleTag2.textContent = `
+    .location-icon-selection::selection {
+  background-color: #eb841b;
+    }
+  `;
+  document.head.appendChild(styleTag2);
 
   // Add text and icon to button
   currentPositionButton.appendChild(currentPositionButtonText);
@@ -82,6 +103,7 @@ function locationsControls(
     locationSelected = location;
     currentPositionButtonText.textContent = location || "Locations";
     setRaycastedObject("");
+    setIsLocationSelected(true);
     onLocationChange(location);
   };
 

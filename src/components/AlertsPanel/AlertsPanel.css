@@ -1,0 +1,55 @@
+.alerts-panel {
+  width: 284px;
+  height: 100%;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: flex-start;
+  align-items: center;
+  position: fixed;
+  top: 10vh;
+  right: 0;
+  bottom: 0;
+  border-right: 1px solid rgba(28, 28, 28, 0.1); /* dark:border-[#FFFFFF1A] */
+  background-color: rgba(249, 249, 249, 0.75); /* bg-[#F9F9F9BF] */
+  z-index: 1000000000000;
+  overflow-y: auto; /* custom-scrollbar if implemented */
+}
+
+.alerts-panel::selection {
+  background-color: #eb841b;
+}
+
+.alerts-panel-div {
+  font-size: 1.125rem; /* Equivalent to text-lg */
+  color: black; /* Equivalent to text-black */
+  line-height: 1.5rem; /* Equivalent to leading-6 */
+  padding-left: 1rem; /* Equivalent to px-4 */
+  padding-right: 1rem; /* Equivalent to px-4 */
+  padding-top: 0.5rem; /* Equivalent to py-2 */
+  padding-bottom: 0.5rem; /* Equivalent to py-2 */
+  border-radius: 0.75rem; /* Equivalent to rounded-xl */
+  background-color: white; /* Equivalent to bg-white */
+  text-transform: capitalize; /* Equivalent to capitalize */
+}
+
+.alerts-panel-div::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
+}
+
+.alerts-panel-div::-webkit-scrollbar-track {
+  background: "transparent"; /* Background of the track */
+}
+
+.alerts-panel-div::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2); /* Color of the scrollbar */
+  border-radius: 10px; /* Rounded corners */
+  border: 2px solid transparent; /* Optional padding look */
+  background-clip: content-box;
+}
+
+.alerts-panel-div::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.4); /* Darker on hover */
+}

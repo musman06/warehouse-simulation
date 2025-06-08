@@ -1,9 +1,9 @@
 import "./leftSideBarStyle.css";
-import DonutChart from "./Charts/DonutChart";
-import LineChart from "./Charts/LineChart";
+import DonutChart from "../Charts/DonutChart";
+import LineChart from "../Charts/LineChart";
 
 const LeftSideBarStorageRack = ({
-  warehouseName,
+  breadcrumbValue,
   name,
   ID,
   type,
@@ -18,7 +18,7 @@ const LeftSideBarStorageRack = ({
   inventoryAgeMonths,
   inventoryAgeTime,
 }: {
-  warehouseName: string;
+  breadcrumbValue: string;
   name: string;
   ID: string;
   type: string;
@@ -39,7 +39,7 @@ const LeftSideBarStorageRack = ({
         {/* Breadcrumb */}
         <div className="left-sidebar-div">
           {/* Object Name */}
-          <span style={{ fontWeight: 700 }}>{warehouseName}</span>
+          <span style={{ fontWeight: 700 }}>{breadcrumbValue}</span>
         </div>
         <div
           style={{
